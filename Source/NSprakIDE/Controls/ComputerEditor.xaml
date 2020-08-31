@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="NSprakIDE.Controls.ComputerEditor"
+             
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Fluent="urn:fluent-ribbon"
+
+             xmlns:cmd="clr-namespace:NSprakIDE.Commands"
+             xmlns:general="clr-namespace:NSprakIDE.Controls.General"
+
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+        <DockPanel LastChildFill="True">
+        <StackPanel Background="{DynamicResource NSprakIDE.Toolbar}" DockPanel.Dock="Top" Orientation="Horizontal">
+            <!-- Header buttons -->
+            <Fluent:Ribbon AreTabHeadersVisible="False" IsQuickAccessToolBarMenuDropDownVisible="False" CanMinimize="False">
+                <Fluent:RibbonTabItem>
+                    <!-- View (switch between editor views) -->
+                    <Fluent:RibbonGroupBox Header="View">
+                        <general:CommandButton IconName="Source" UICommand="{x:Static cmd:EditorCommands.ViewCode}"/>
+                        <general:CommandButton IconName="ExpressionTree" UICommand="{x:Static cmd:EditorCommands.ViewExpressionTree}"/>
+                        <general:CommandButton IconName="Operations" UICommand="{x:Static cmd:EditorCommands.ViewOperations}"/>
+                    </Fluent:RibbonGroupBox>
+                    <!-- Debug -->
+                    <Fluent:RibbonGroupBox Header="Debug">
+                        <general:CommandButton Size="Large" IconName="ContinueDebug" UICommand="{x:Static cmd:EditorCommands.StartDebug}"/>
+                        <general:CommandButton Size="Large" IconName="Pause" UICommand="{x:Static cmd:EditorCommands.Pause}"/>
+                        <general:CommandButton Size="Large" IconName="Stop" UICommand="{x:Static cmd:EditorCommands.Stop}"/>
+                        <general:CommandButton IconName="StepInto" UICommand="{x:Static cmd:EditorCommands.StepInto}"/>
+                        <general:CommandButton IconName="StepOut" UICommand="{x:Static cmd:EditorCommands.StepOut}"/>
+                        <general:CommandButton IconName="StepOver" UICommand="{x:Static cmd:EditorCommands.StepOver}"/>
+                    </Fluent:RibbonGroupBox>
+                    <!-- Breakpoints -->
+                    <Fluent:RibbonGroupBox Header="Breakpoints">
+                        <general:CommandButton Size="Middle" IconName="Breakpoint" UICommand="{x:Static cmd:EditorCommands.ToggleBreakpoint}"/>
+                    </Fluent:RibbonGroupBox>
+                </Fluent:RibbonTabItem>
+            </Fluent:Ribbon>
+        </StackPanel>
+        <!-- Border -->
+        <Rectangle HorizontalAlignment="Stretch" Height="1" Stroke="{DynamicResource AvalonDock_Expression_BaseColor10}" DockPanel.Dock="Top"/>
+        <Rectangle HorizontalAlignment="Stretch" Height="2" Stroke="{DynamicResource AvalonDock_Expression_BaseColor4}" DockPanel.Dock="Top"/>
+        <!-- Main content (set in code behind to an editor view) -->
+        <ContentControl Name="MainContent"/>
+    </DockPanel>
+</UserControl>

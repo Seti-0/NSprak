@@ -1,0 +1,68 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:local="clr-namespace:NSprakIDE.Icons">
+    
+    <!-- In order to allow these resources to work with both FluentRibbon and
+     standard WPF images, the Icon extension markup returns a BitmapImage. -->
+    
+    <!-- General -->
+
+    <local:Icon x:Key="Icon_Refresh" IconName="restart"/>
+    <local:Icon x:Key="LargeIcon_Refresh" IconName="restart" Large="true"/>
+
+    <!-- Code Editor View -->
+
+    <local:Icon x:Key="Icon_Source" IconName="code"/>
+    <local:Icon x:Key="LargeIcon_Source" IconName="code" Large="true"/>
+
+    <local:Icon x:Key="Icon_ExpressionTree" IconName="outline"/>
+    <local:Icon x:Key="LargeIcon_ExpressionTree" IconName="outline" Large="true"/>
+
+    <local:Icon x:Key="Icon_Operations" IconName="automatic"/>
+    <local:Icon x:Key="LargeIcon_Operations" IconName="automatic" Large="true"/>
+
+    <!-- Code Editor Debug -->
+
+    <local:Icon x:Key="Icon_Continue" IconName="circled-play"/>
+    <local:Icon x:Key="LargeIcon_Continue" IconName="circled-play" Large="true"/>
+
+    <local:Icon x:Key="Icon_Stop" IconName="stop"/>
+    <local:Icon x:Key="LargeIcon_Stop" IconName="stop" Large="true"/>
+
+    <local:Icon x:Key="Icon_ContinueDebug" IconName="circled-play-debug"/>
+    <local:Icon x:Key="LargeIcon_ContinueDebug" IconName="circled-play-debug" Large="true"/>
+
+    <local:Icon x:Key="Icon_Pause" IconName="pause-button"/>
+    <local:Icon x:Key="LargeIcon_Pause" IconName="pause-button" Large="true"/>
+
+    <local:Icon x:Key="Icon_StepOver" IconName="arrow-right"/>
+    <local:Icon x:Key="LargeIcon_StepOver" IconName="arrow-right" Large="true"/>
+
+    <local:Icon x:Key="Icon_StepInto" IconName="arrow-down"/>
+    <local:Icon x:Key="LargeIcon_StepInto" IconName="arrow-down" Large="true"/>
+
+    <local:Icon x:Key="Icon_StepOut" IconName="arrow-up"/>
+    <local:Icon x:Key="LargeIcon_StepOut" IconName="arrow-up" Large="true"/>
+
+    <!-- Breakpoints -->
+
+    <local:Icon x:Key="Icon_Breakpoint" IconName="breakpoint"/>
+    <local:Icon x:Key="LargeIcon_Breakpoint" IconName="breakpoint" Large="true"/>
+
+    <local:Icon x:Key="Icon_BreakpointDisabled" IconName="breakpoint-disabled"/>
+    <local:Icon x:Key="LargeIcon_BreakpointDisabled" IconName="breakpoint-disabled" Large="true"/>
+
+    <local:Icon x:Key="Icon_BreakpointActive" IconName="breakpoint-active"/>
+
+    <!-- File Tree -->
+
+    <local:Icon x:Key="Icon_Folder" IconName="folder"/>
+    <local:Icon x:Key="LargeIcon_Folder" IconName="folder" Large="true"/>
+
+    <local:Icon x:Key="Icon_OpenIn" IconName="arrow"/>
+    <local:Icon x:Key="LargeIcon_OpenIn" IconName="arrow" Large="true"/>
+
+    <local:Icon x:Key="Icon_Computer" IconName="computer"/>
+
+</ResourceDictionary>

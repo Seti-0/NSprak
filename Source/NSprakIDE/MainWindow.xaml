@@ -1,0 +1,72 @@
+﻿<Window x:Class="NSprakIDE.MainWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NSprakIDE"
+             xmlns:editor="clr-namespace:NSprakIDE.Controls"
+             xmlns:foreign="clr-namespace:AvalonDock.Themes;assembly=AvalonDock.Themes.Expression"
+             xmlns:Fluent="urn:fluent-ribbon"
+             xmlns:theme="clr-namespace:NSprakIDE.Themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Closing="Window_Closing" WindowState="Maximized">
+    <DockPanel>
+        <DockingManager
+        x:Name="DockingManager"
+        AllowMixedOrientation="True"
+        >
+
+            <DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Title}" Margin="5,0,5,0"/>
+                </DataTemplate>
+            </DockingManager.DocumentHeaderTemplate>
+
+            <DockingManager.Theme>
+                <!--<theme:Vs2013RedTheme/>-->
+                <!--<foreign:ExpressionLightTheme/>-->
+                <theme:MyExpressionLightTheme/>
+            </DockingManager.Theme>
+
+            <LayoutRoot>
+                <LayoutPanel/>
+            </LayoutRoot>
+
+            <!--
+            <LayoutRoot>
+                <LayoutPanel Orientation="Horizontal">
+
+                    <LayoutDocumentPane>
+                        <LayoutDocument x:Name="Doc1" Title="Hello World">
+                            <editor:ComputerEditor Source="HelloWorld"/>
+                        </LayoutDocument>
+                        <LayoutDocument Title="Fibonnacci">
+                            <editor:ComputerEditor Source="Fibonnacci"/>
+                        </LayoutDocument>
+                        <LayoutDocument Title="Stats">
+                            <editor:ComputerEditor x:Name="Stats" Source="Stats"/>
+                        </LayoutDocument>
+                    </LayoutDocumentPane>
+
+                    <LayoutAnchorablePane DockWidth="600">
+                        <LayoutAnchorable Title="Output">
+                            <RichTextBox x:Name="ConsoleOutput" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="0" 
+                                         IsReadOnly="True" Background="Black" VerticalScrollBarVisibility="Auto" Foreground="White">
+                                <FlowDocument>
+                                    <Paragraph/>
+                                </FlowDocument>
+                            </RichTextBox>
+                        </LayoutAnchorable>
+                    </LayoutAnchorablePane>
+
+                    <LayoutDocumentPaneGroup>
+                    </LayoutDocumentPaneGroup>
+
+                </LayoutPanel>
+            </LayoutRoot>
+            -->
+
+        </DockingManager>
+    </DockPanel>
+</Window>

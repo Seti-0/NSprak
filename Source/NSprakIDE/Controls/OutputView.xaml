@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="NSprakIDE.Controls.OutputView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NSprakIDE.Controls.Output"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Background="{StaticResource NSprakIDE.Toolbar}">
+            <TextBlock Text="Show output from: " Margin="5,8,5,5" Background="{x:Null}"/>
+            <ComboBox Name="OutputSelection" Margin="5,5,5,5" SelectionChanged="OutputSelection_SelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border x:Name="Border" BorderThickness="0">
+                            <TextBlock Text="{Binding Value}" />
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Underline}">
+                                <Setter TargetName="Border" Property="BorderThickness" Value="0,0,5,0"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+        <Border BorderBrush="#343434" BorderThickness="5">
+            <RichTextBox Name="RichText" IsReadOnly="True" Background="Black" 
+                         VerticalScrollBarVisibility="Auto" BorderThickness="0"/>
+        </Border>
+    </DockPanel>
+</UserControl>

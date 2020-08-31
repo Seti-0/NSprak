@@ -1,0 +1,212 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controls\Code\ExpressionSeekerOld.cs" />
+    <Compile Remove="Controls\Code\ISeekerCollector.cs" />
+    <Compile Remove="Controls\Code\Old\ISeekerCollector.cs" />
+    <Compile Remove="Controls\Output\TextBoxConsole.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Icons\binary_dark.png" />
+    <None Remove="Icons\diagram.png" />
+    <None Remove="Icons\diagram2.png" />
+    <None Remove="Icons\icons8-automatic-30.png" />
+    <None Remove="Icons\icons8-code-30.png" />
+    <None Remove="Icons\icons8-outline-30.png" />
+    <None Remove="Icons\Images\icons8-add-folder-30.png" />
+    <None Remove="Icons\Images\icons8-arrow-16.png" />
+    <None Remove="Icons\Images\icons8-arrow-30.png" />
+    <None Remove="Icons\Images\icons8-arrow-down-16.png" />
+    <None Remove="Icons\Images\icons8-arrow-down-30.png" />
+    <None Remove="Icons\Images\icons8-arrow-right-16.png" />
+    <None Remove="Icons\Images\icons8-arrow-right-30.png" />
+    <None Remove="Icons\Images\icons8-arrow-up-16.png" />
+    <None Remove="Icons\Images\icons8-arrow-up-30.png" />
+    <None Remove="Icons\Images\icons8-automatic-16.png" />
+    <None Remove="Icons\Images\icons8-automatic-30.png" />
+    <None Remove="Icons\Images\icons8-available-updates-30.png" />
+    <None Remove="Icons\Images\icons8-below-30.png" />
+    <None Remove="Icons\Images\icons8-blue-screen-of-death-30.png" />
+    <None Remove="Icons\Images\icons8-breakpoint-16.png" />
+    <None Remove="Icons\Images\icons8-breakpoint-30.png" />
+    <None Remove="Icons\Images\icons8-breakpoint-active-16.png" />
+    <None Remove="Icons\Images\icons8-breakpoint-disabled-16.png" />
+    <None Remove="Icons\Images\icons8-breakpoint-disabled-30.png" />
+    <None Remove="Icons\Images\icons8-cancel-16.png" />
+    <None Remove="Icons\Images\icons8-circled-play-16.png" />
+    <None Remove="Icons\Images\icons8-circled-play-30%281%29.png" />
+    <None Remove="Icons\Images\icons8-circled-play-30.png" />
+    <None Remove="Icons\Images\icons8-circled-play-debug-16.png" />
+    <None Remove="Icons\Images\icons8-circled-play-debug-30.png" />
+    <None Remove="Icons\Images\icons8-circled-right-30.png" />
+    <None Remove="Icons\Images\icons8-code-16.png" />
+    <None Remove="Icons\Images\icons8-code-30.png" />
+    <None Remove="Icons\Images\icons8-comments-16.png" />
+    <None Remove="Icons\Images\icons8-comments-30.png" />
+    <None Remove="Icons\Images\icons8-computer-16.png" />
+    <None Remove="Icons\Images\icons8-console-16.png" />
+    <None Remove="Icons\Images\icons8-console-24.png" />
+    <None Remove="Icons\Images\icons8-console-30.png" />
+    <None Remove="Icons\Images\icons8-delete-folder-30.png" />
+    <None Remove="Icons\Images\icons8-design-30.png" />
+    <None Remove="Icons\Images\icons8-download-30.png" />
+    <None Remove="Icons\Images\icons8-electricity-30.png" />
+    <None Remove="Icons\Images\icons8-end-30.png" />
+    <None Remove="Icons\Images\icons8-error-30.png" />
+    <None Remove="Icons\Images\icons8-folder-16.png" />
+    <None Remove="Icons\Images\icons8-folder-30.png" />
+    <None Remove="Icons\Images\icons8-folder-delete-16.png" />
+    <None Remove="Icons\Images\icons8-folder-delete-30.png" />
+    <None Remove="Icons\Images\icons8-folder-error-16.png" />
+    <None Remove="Icons\Images\icons8-folder-error-30.png" />
+    <None Remove="Icons\Images\icons8-folder-question-16.png" />
+    <None Remove="Icons\Images\icons8-folder-question-30.png" />
+    <None Remove="Icons\Images\icons8-folder-tree-16.png" />
+    <None Remove="Icons\Images\icons8-folder-tree-30.png" />
+    <None Remove="Icons\Images\icons8-go-back-30.png" />
+    <None Remove="Icons\Images\icons8-historical-30.png" />
+    <None Remove="Icons\Images\icons8-icosahedron-30.png" />
+    <None Remove="Icons\Images\icons8-opened-folder-30.png" />
+    <None Remove="Icons\Images\icons8-outline-16.png" />
+    <None Remove="Icons\Images\icons8-outline-30.png" />
+    <None Remove="Icons\Images\icons8-pause-button-16.png" />
+    <None Remove="Icons\Images\icons8-pause-button-30.png" />
+    <None Remove="Icons\Images\icons8-refresh-16.png" />
+    <None Remove="Icons\Images\icons8-restart-16.png" />
+    <None Remove="Icons\Images\icons8-restart-30.png" />
+    <None Remove="Icons\Images\icons8-stop-16.png" />
+    <None Remove="Icons\Images\icons8-stop-30.png" />
+    <None Remove="Icons\Images\icons8-switch-off-30.png" />
+    <None Remove="Icons\Images\icons8-switch-on-30.png" />
+    <None Remove="Icons\Images\icons8-system-information-30.png" />
+    <None Remove="Icons\Images\icons8-system-report-30.png" />
+    <None Remove="Icons\Images\icons8-system-task-30.png" />
+    <None Remove="Icons\Images\icons8-tree-structure-30.png" />
+    <None Remove="Icons\Images\icons8-upward-arrow-30.png" />
+    <None Remove="Icons\Images\icons8-variable-30.png" />
+    <None Remove="Icons\order.png" />
+    <None Remove="Icons\writing.png" />
+    <None Remove="Themes\MyExpression\PinClose.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Themes\RibbonThemeOld.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Controls\Code\Old\ExpressionSeekerOld.cs" />
+    <None Include="Controls\Code\Old\ISeekerCollector.cs" />
+    <None Include="Controls\Output\TextBoxConsole.cs" />
+    <None Include="Themes\RibbonThemeOld.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.0.1" />
+    <PackageReference Include="Dirkster.AvalonDock" Version="4.30.0" />
+    <PackageReference Include="Dirkster.AvalonDock.Themes.Expression" Version="4.30.0" />
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="4.6.82" />
+    <PackageReference Include="Fluent.Ribbon" Version="8.0.0" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+    <PackageReference Include="SerilogAnalyzer" Version="0.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NSprak\NSprak.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\Images\icons8-add-folder-30.png" />
+    <Resource Include="Icons\Images\icons8-arrow-16.png" />
+    <Resource Include="Icons\Images\icons8-arrow-30.png" />
+    <Resource Include="Icons\Images\icons8-arrow-down-16.png" />
+    <Resource Include="Icons\Images\icons8-arrow-down-30.png" />
+    <Resource Include="Icons\Images\icons8-arrow-right-16.png" />
+    <Resource Include="Icons\Images\icons8-arrow-right-30.png" />
+    <Resource Include="Icons\Images\icons8-arrow-up-16.png" />
+    <Resource Include="Icons\Images\icons8-arrow-up-30.png" />
+    <Resource Include="Icons\Images\icons8-automatic-16.png" />
+    <Resource Include="Icons\Images\icons8-automatic-30.png" />
+    <Resource Include="Icons\Images\icons8-available-updates-30.png" />
+    <Resource Include="Icons\Images\icons8-below-30.png" />
+    <Resource Include="Icons\Images\icons8-blue-screen-of-death-30.png" />
+    <Resource Include="Icons\Images\icons8-breakpoint-16.png" />
+    <Resource Include="Icons\Images\icons8-breakpoint-30.png" />
+    <Resource Include="Icons\Images\icons8-breakpoint-active-16.png" />
+    <Resource Include="Icons\Images\icons8-breakpoint-disabled-16.png" />
+    <Resource Include="Icons\Images\icons8-breakpoint-disabled-30.png" />
+    <Resource Include="Icons\Images\icons8-cancel-16.png" />
+    <Resource Include="Icons\Images\icons8-circled-play-16.png" />
+    <Resource Include="Icons\Images\icons8-circled-play-30.png" />
+    <Resource Include="Icons\Images\icons8-circled-play-debug-16.png" />
+    <Resource Include="Icons\Images\icons8-circled-play-debug-30.png" />
+    <Resource Include="Icons\Images\icons8-circled-right-30.png" />
+    <Resource Include="Icons\Images\icons8-code-16.png" />
+    <Resource Include="Icons\Images\icons8-code-30.png" />
+    <Resource Include="Icons\Images\icons8-comments-16.png" />
+    <Resource Include="Icons\Images\icons8-comments-30.png" />
+    <Resource Include="Icons\Images\icons8-computer-16.png" />
+    <Resource Include="Icons\Images\icons8-console-16.png" />
+    <Resource Include="Icons\Images\icons8-console-24.png" />
+    <Resource Include="Icons\Images\icons8-console-30.png" />
+    <Resource Include="Icons\Images\icons8-delete-folder-30.png" />
+    <Resource Include="Icons\Images\icons8-design-30.png" />
+    <Resource Include="Icons\Images\icons8-download-30.png" />
+    <Resource Include="Icons\Images\icons8-electricity-30.png" />
+    <Resource Include="Icons\Images\icons8-end-30.png" />
+    <Resource Include="Icons\Images\icons8-error-30.png" />
+    <Resource Include="Icons\Images\icons8-folder-16.png" />
+    <Resource Include="Icons\Images\icons8-folder-30.png" />
+    <Resource Include="Icons\Images\icons8-folder-delete-16.png" />
+    <Resource Include="Icons\Images\icons8-folder-delete-30.png" />
+    <Resource Include="Icons\Images\icons8-folder-error-16.png" />
+    <Resource Include="Icons\Images\icons8-folder-error-30.png" />
+    <Resource Include="Icons\Images\icons8-folder-question-16.png" />
+    <Resource Include="Icons\Images\icons8-folder-question-30.png" />
+    <Resource Include="Icons\Images\icons8-folder-tree-16.png" />
+    <Resource Include="Icons\Images\icons8-folder-tree-30.png" />
+    <Resource Include="Icons\Images\icons8-go-back-30.png" />
+    <Resource Include="Icons\Images\icons8-historical-30.png" />
+    <Resource Include="Icons\Images\icons8-icosahedron-30.png" />
+    <Resource Include="Icons\Images\icons8-opened-folder-30.png" />
+    <Resource Include="Icons\Images\icons8-outline-16.png" />
+    <Resource Include="Icons\Images\icons8-outline-30.png" />
+    <Resource Include="Icons\Images\icons8-pause-button-16.png" />
+    <Resource Include="Icons\Images\icons8-pause-button-30.png" />
+    <Resource Include="Icons\Images\icons8-refresh-16.png" />
+    <Resource Include="Icons\Images\icons8-restart-16.png" />
+    <Resource Include="Icons\Images\icons8-restart-30.png" />
+    <Resource Include="Icons\Images\icons8-stop-16.png" />
+    <Resource Include="Icons\Images\icons8-stop-30.png" />
+    <Resource Include="Icons\Images\icons8-switch-off-30.png" />
+    <Resource Include="Icons\Images\icons8-switch-on-30.png" />
+    <Resource Include="Icons\Images\icons8-system-information-30.png" />
+    <Resource Include="Icons\Images\icons8-system-report-30.png" />
+    <Resource Include="Icons\Images\icons8-system-task-30.png" />
+    <Resource Include="Icons\Images\icons8-tree-structure-30.png" />
+    <Resource Include="Icons\Images\icons8-upward-arrow-30.png" />
+    <Resource Include="Icons\Images\icons8-variable-30.png" />
+    <Resource Include="Themes\MyExpression\PinClose.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Controls\Operations\Brushes.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Settings\" />
+  </ItemGroup>
+
+</Project>

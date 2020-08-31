@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="NSprakIDE.Controls.FileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NSprakIDE.Controls.Files"
+             xmlns:fluent="urn:fluent-ribbon"
+             xmlns:cmd ="clr-namespace:NSprakIDE.Commands"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel Background="{StaticResource NSprakIDE.Toolbar}">
+        <!-- Main Tree -->
+        <TreeView Name="Tree" Margin="5,5,5,5" 
+        SelectedItemChanged="Tree_SelectedItemChanged"
+        PreviewMouseRightButtonDown="Tree_PreviewMouseRightButtonDown"
+        >
+            <TreeView.Resources>
+                <!-- Creating an editable textbox: two states -->
+                <DataTemplate x:Key="EditingTemplate">
+                    <TextBox Text="{Binding NewName}" LostFocus="FilenameEditor_LostFocus"
+                             FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="DefaultTemplate">
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+                <!-- A style that can switch between them -->
+                <Style x:Key="EditableCell" TargetType="ContentPresenter">
+                    <Setter Property="ContentTemplate" Value="{StaticResource DefaultTemplate}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                            <Setter Property="ContentTemplate" Value="{StaticResource EditingTemplate}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+                <!-- Context Menus -->
+                <!-- The command bindings are in code-behind -->
+                <ContextMenu x:Key ="{x:Static local:FileContexts.Root}"  StaysOpen="true">
+                    <MenuItem Command="{x:Static cmd:FileCommands.AddFile}"/>
+                    <MenuItem Command="{x:Static cmd:FileCommands.AddFolder}"/>
+                    <MenuItem Command="{x:Static cmd:FileCommands.OpenInFileExplorer}"/>
+                    <Separator/>
+                    <MenuItem Command="{x:Static cmd:GeneralCommands.RefreshView}"/>
+                </ContextMenu>
+                <ContextMenu x:Key ="{x:Static local:FileContexts.Folder}"  StaysOpen="true">
+                    <MenuItem Command="{x:Static cmd:FileCommands.AddFile}"/>
+                    <MenuItem Command="{x:Static cmd:FileCommands.AddFolder}"/>
+                    <MenuItem Command="{x:Static cmd:GeneralCommands.Rename}"/>
+                    <MenuItem Command="ApplicationCommands.Delete"/>
+                    <MenuItem Command="{x:Static cmd:FileCommands.OpenInFileExplorer}"/>
+                    <Separator/>
+                    <MenuItem Command="{x:Static cmd:GeneralCommands.RefreshView}"/>
+                </ContextMenu>
+                <ContextMenu x:Key ="{x:Static local:FileContexts.Computer}"  StaysOpen="true">
+                    <MenuItem Command="{x:Static cmd:FileCommands.OpenSelected}"/>
+                    <MenuItem Command="{x:Static cmd:GeneralCommands.Rename}"/>
+                    <MenuItem Command="ApplicationCommands.Delete"/>
+                    <Separator/>
+                    <MenuItem Command="{x:Static cmd:GeneralCommands.RefreshView}"/>
+                </ContextMenu>
+            </TreeView.Resources>
+            <TreeView.ItemContainerStyle>
+                <!-- Hack: This stores expansion and selection state between item refreshes -->
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <!-- Item template meant to be used with FileTreeItem.cs as its context -->
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image x:Name="Icon" Source="{StaticResource Icon_Folder}" Margin="5,2.5,5,2.5"/>
+                        <ContentPresenter Style="{StaticResource EditableCell}" Content="{Binding}" Margin="0,2.5,5,2.5"/>
+                    </StackPanel>
+                    <HierarchicalDataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsFile}" Value="True">
+                            <Setter TargetName="Icon" Property="Source" Value="{StaticResource Icon_Computer}"/>
+                        </DataTrigger>
+                    </HierarchicalDataTemplate.Triggers>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </DockPanel>
+</UserControl>

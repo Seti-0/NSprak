@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NSprakIDE.Controls.Operations">
+
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.Main}" Color="Black"/>
+
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.Param}" Color="#FF357CF7"/>
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.NumberParam}" Color="#FF357CF7"/>
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.NameParam}" Color="#FF357CF7"/>
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.ValueParam}" Color="#FF357CF7"/>
+
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.Error}" Color="#FFFF2300"/>
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.Comment}" Color="#FF538544"/>
+
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.Background}" Color="White"/>
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.Next}" Color="#FFFFE800"/>
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.Breakpoint}" Color="#FFEA3A3A"/>
+
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.IndexForeground}" Color="#FFB4B4B4"/>
+
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.OpBackground}" Color="White"/>
+    <SolidColorBrush x:Key="{x:Static local:OpBrushNames.OpBackgroundAlternate}" Color="WhiteSmoke"/>
+
+</ResourceDictionary>

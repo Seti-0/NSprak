@@ -1,0 +1,21 @@
+# Ignore anything not listed here
+# Caveat: It will not ignore files that have no extension
+*.*
+
+# Repo-related
+!.gitignore
+!LICENSE
+!README.md
+
+# CSharp
+!*.cs
+!*.xaml
+!*.csproj
+!*.sln
+
+# Icons
+!*.png
+
+# Project-specific
+!*.sprak
+!*.layout
