@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NSprakIDE.Controls.Code">
+
+    <SolidColorBrush x:Key="{x:Static local:BrushNames.Next}" Color="#FFFFE800"/>
+    <SolidColorBrush x:Key="{x:Static local:BrushNames.Breakpoint}" Color="#FFEA3A3A"/>
+
+</ResourceDictionary>

@@ -200,6 +200,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Controls\Code\Brushes.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Controls\Operations\Brushes.xaml">
       <SubType>Designer</SubType>
     </Page>

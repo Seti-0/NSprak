@@ -40,6 +40,11 @@ namespace NSprakIDE.Controls
             }
         }
 
+        public int CaretOffset
+        {
+            get => MainEditor.CaretOffset;
+        }
+
         public SourceEditor()
         {
             InitializeComponent();
@@ -56,7 +61,8 @@ namespace NSprakIDE.Controls
             {
                 Elements = new List<IColorizerElement<NSprak.Expressions.Expression>>
                 {
-                    //new TestExpressions()
+                    //new TestExpressions(),
+                    new RuntimeHighlighter(TryFindBrush)
                 }
             };
 

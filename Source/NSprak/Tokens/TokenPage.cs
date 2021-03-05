@@ -10,6 +10,10 @@ namespace NSprak.Tokens
 {
     public class TokenPage : IEnumerable<PageLine>
     {
+        public int CharacterCount { get; private set; }
+
+        public int TokenCount { get; private set; }
+
         private readonly List<PageLine> _lines = new List<PageLine>();
 
         public int LineCount => _lines.Count;
@@ -26,6 +30,9 @@ namespace NSprak.Tokens
             IList<int> indices;
             StringHelper.Split(source, '\n', out elements, out indices);
 
+            TokenCount = 0;
+            CharacterCount = 0;
+
             for (int i = 0; i < elements.Count; i++)
             {
                 int start = indices[i];
@@ -41,6 +48,9 @@ namespace NSprak.Tokens
                 TokenHelper.TryParse(line, out IList<RawToken> tokens);
                 PageLine pageLine = new PageLine(this, start, end, tokens, messenger);
                 _lines.Add(pageLine);
+
+                CharacterCount = end;
+                TokenCount += pageLine.TokenCount;
             }
 
             // I don't think this is actually needed
@@ -72,6 +82,22 @@ namespace NSprak.Tokens
         public override string ToString()
         {
             return string.Join("\n", _lines.Select(x => x.ToShortString()));
+        }
+
+        public Token GetToken(int offset)
+        {
+            Token result = null;
+
+            foreach (PageLine line in _lines)
+                foreach (Token token in line)
+                {
+                    result = token;
+
+                    if (token.End > offset)
+                        break;
+                }
+
+            return result;
         }
     }
 }

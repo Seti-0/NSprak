@@ -7,7 +7,7 @@ using System.Windows.Controls;
 
 using NSprak;
 using NSprak.Execution;
-
+using NSprak.Tokens;
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.General;
 using NSprakIDE.Controls.Output;
@@ -111,6 +111,25 @@ namespace NSprakIDE.Controls
             Bind(this, EditorCommands.ToggleBreakpoint, _operationsView.ToggleBreakpoint);
         }
 
+        private void ToggleBreakpoint()
+        {
+            if (Mode == ComputerEditorMode.Operations)
+                _operationsView.ToggleBreakpoint();
+
+            switch (Mode)
+            {
+                case ComputerEditorMode.Operations:
+                    _operationsView.ToggleBreakpoint();
+                    break;
+
+                case ComputerEditorMode.Expressions:
+                    break;
+
+                case ComputerEditorMode.Source:
+                    break;
+            }
+        }
+
         private void UpdateMode(ComputerEditorMode mode)
         {
             Mode = mode;
@@ -119,6 +138,7 @@ namespace NSprakIDE.Controls
             {
                 case ComputerEditorMode.Source:
                     MainContent.Content = _sourceEditor;
+                    _executor.StepMode = ExecutorStepMode.Expression;
                     break;
 
                 case ComputerEditorMode.Expressions:
@@ -127,6 +147,7 @@ namespace NSprakIDE.Controls
 
                 case ComputerEditorMode.Operations:
                     MainContent.Content = _operationsView;
+                    _executor.StepMode = ExecutorStepMode.Operation;
                     break;
             }
         }
