@@ -35,7 +35,7 @@ namespace NSprakIDE.Controls
     /// <summary>
     /// Interaction logic for ComputerEditor.xaml
     /// </summary>
-    public partial class ComputerEditor : UserControl
+    public partial class ComputerEditor : UserControl, IDisposable
     {
         public ComputerEditorEnviroment Enviroment { get; }
 
@@ -50,6 +50,7 @@ namespace NSprakIDE.Controls
         private OperationsView _operationsView;
 
         private LocalsView _localsView;
+        private OutputLog _outputLog;
 
         public ComputerEditor(ComputerEditorEnviroment enviroment)
         {
@@ -58,8 +59,8 @@ namespace NSprakIDE.Controls
             Enviroment = enviroment;
 
             string name = Path.GetFileNameWithoutExtension(enviroment.FilePath);
-            OutputLog log = enviroment.OutputView.StartLog(MainWindow.ComputerLogCategory, name);
-            IConsole console = new ComputerOutput(log);
+            _outputLog = enviroment.OutputView.StartLog(MainWindow.ComputerLogCategory, name);
+            IConsole console = new ComputerOutput(_outputLog);
 
             Computer = new Computer()
             {
@@ -91,6 +92,11 @@ namespace NSprakIDE.Controls
             {
                 Dispatcher.Invoke(Compile);
             };
+        }
+
+        public void Dispose()
+        {
+            _outputLog.End();
         }
 
         private void SetupBindings()

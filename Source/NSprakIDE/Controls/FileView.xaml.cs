@@ -184,7 +184,7 @@ namespace NSprakIDE.Controls
                 pathAction(fullPath);
             }
 
-            PerformFileOp(Action, $"Error performing action \"{errorName}\" at path \"{fullPath}\": "+errorName);
+            PerformFileOp(Action, $"Error performing action \"{errorName}\" at path \"{fullPath}\"");
         }
 
         private void PerformFileOp(Action action, string errorMessage)

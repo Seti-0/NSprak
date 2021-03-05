@@ -1,10 +1,12 @@
-﻿using AvalonDock.Layout;
-using NSprakIDE.Controls;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+
+using AvalonDock.Layout;
+
+using NSprakIDE.Controls;
+using NSprakIDE.Logging;
 
 namespace NSprakIDE.Docking
 {
@@ -38,14 +40,29 @@ namespace NSprakIDE.Docking
             document.IsActive = true;
 
             _openDocuments.Add(id, document);
-            document.Closing += CloseHandler(id);
+            document.Closing += CloseHandler(id, editor);
+
+            Logging.Log.Core.Debug("Create called for " + id);
         }
 
-        private EventHandler<CancelEventArgs> CloseHandler(string name)
+        private EventHandler<CancelEventArgs> CloseHandler(string name, ComputerEditor editor)
         {
             void Action(object sender, CancelEventArgs e)
             {
-                _openDocuments.Remove(name);
+                // I don't know why, but exceptions thrown in this callback
+                // are not caught in any of the global exception handlers.
+                // Hence the try-catch here.
+
+                try
+                {
+                    _openDocuments.Remove(name);
+                    editor.Dispose();
+                }
+                catch (Exception exception)
+                {
+                    string msg = "Unexpected error while closing window.";
+                    Log.Core.Error(msg, exception);
+                }
             }
 
             return Action;

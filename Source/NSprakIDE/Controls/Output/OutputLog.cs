@@ -23,10 +23,16 @@ namespace NSprakIDE.Controls.Output
         public OutputLog(string name, string category, OutputView parent)
         {
             Name = name;
+            Category = category;
             _parent = parent;
 
             _paragraph = new Paragraph();
             Document.Blocks.Add(_paragraph);
+        }
+
+        public void End()
+        {
+            _parent.EndLog(Name);
         }
 
         public void Write(string text)
