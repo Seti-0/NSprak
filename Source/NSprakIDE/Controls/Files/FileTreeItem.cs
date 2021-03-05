@@ -111,21 +111,18 @@ namespace NSprakIDE.Controls.Files
 
         public void Refresh()
         {
-            UpdateLazy();
+            Update();
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Children)));
         }
 
-        private void UpdateLazy()
+        private void Update()
         {
-            if (_children == null) return;
-
             UpdateChildren();
 
             if (_children == null) return;
 
             foreach (FileTreeItem item in _children.Values)
-                item.UpdateLazy();
-
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Children)));
+                item.Update();
         }
 
         private void UpdateChildren()
@@ -142,6 +139,8 @@ namespace NSprakIDE.Controls.Files
                 .Values
                 .Where(x => x.Unknown)
                 .Select(x => x.Name);
+
+            Logging.Log.Core.Debug(toRemove.Count() + " values to remove.");
 
             foreach (string key in toRemove)
                 _children.Remove(key);
@@ -168,7 +167,7 @@ namespace NSprakIDE.Controls.Files
             FileTreeItem result = new FileTreeItem(Name, newParent, IsFile)
             {
                 IsExpanded = IsExpanded,
-                IsEditing = IsEditing,
+                IsSelected = IsSelected,
             };
            
             if (Children != null)

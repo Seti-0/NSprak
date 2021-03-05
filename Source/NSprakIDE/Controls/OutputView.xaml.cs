@@ -133,6 +133,7 @@ namespace NSprakIDE.Controls
 
             RichText.Document = _selectedLog.Document;
             OutputSelection.SelectedItem = _selectedItem;
+            RichText.ScrollToEnd();
         }
 
         private void UpdateOptions()

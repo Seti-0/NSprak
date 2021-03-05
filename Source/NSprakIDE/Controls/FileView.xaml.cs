@@ -64,6 +64,7 @@ namespace NSprakIDE.Controls
 
             Root = new FileTreeItem(SaveDir, parent: null, isFile: false);
             Root.IsExpanded = true;
+            Root.IsSelected = true;
 
             SetupBindings();
         }
@@ -89,7 +90,7 @@ namespace NSprakIDE.Controls
         private void StartEditingSelected()
         {
             if (_editTarget != null)
-                _editTarget.IsEditing = false;
+                return;
 
             FileTreeItem item = (FileTreeItem)Tree.SelectedItem;
 
@@ -102,14 +103,35 @@ namespace NSprakIDE.Controls
 
         private void StopEditing()
         {
+            // This is a funny one.
+            
+            // But updating the tree causes loss of focus, which in turn
+            // causes the tree to update and everything crashes down.
+
+            // The easiest solution I can see is just to lose focus from
+            // the get go and trigger the update that way.
+            // (See FilenameEditor_LostFocus)
+
+            Tree.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+        }
+
+        private void FilenameEditor_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ApplyEdit();
+        }
+
+        private void ApplyEdit()
+        {
+            Log.Core.Debug("Call: Apply Edit");
+
             if (_editTarget != null)
             {
-                _editTarget.IsEditing = false;
-
                 void Rename()
                 {
                     FileHelper.Rename(_editTarget.Path, _editTarget.NewName);
                 }
+
+                Log.Core.Debug("Performing file op.");
 
                 string error = $"Error occured while renaming {_editTarget.Path} to {_editTarget.NewName}";
                 PerformFileOp(Rename, error);
@@ -126,20 +148,34 @@ namespace NSprakIDE.Controls
             // After trying lots of different things, Items.Refresh works for additions (but not deletions!)
 
             // Note: this would reset the expansion state of the tree without the two-way binding
-            // between expansion in xaml and "IsExpanded" in the FileTreeIte
+            // between expansion in xaml and "IsExpanded" in the FileTreeItem
 
             Root = Root.CloneDeep();
-            Tree.Items.Refresh();
+            //Tree.Items.Refresh();
+
+            // It seems that the selection isn't focused by default after the 
+            // tree is reconstructed, this an attempt to amend that.
+            // It returns true, but does not seem to work.
+            (Tree.ItemContainerGenerator
+                .ContainerFromItem(Tree.SelectedItem) as TreeViewItem)?.Focus();
         }
 
         public void OpenFile()
         {
-            void Action(string path)
-            {
-                OnFileOpened(new FileOpenedEventArgs(path));
-            };
+            FileTreeItem item = (FileTreeItem)Tree.SelectedItem;
 
-            PerformFileOp(Action, "open file");
+            if (item.IsEditing)
+                StopEditing();
+
+            else if (item.IsFile)
+            {
+                void Action(string path)
+                {
+                    OnFileOpened(new FileOpenedEventArgs(path));
+                };
+
+                PerformFileOp(Action, "open file");
+            }
         }
 
         public void AddFile()
@@ -238,14 +274,17 @@ namespace NSprakIDE.Controls
             }
         }
 
-        private void FilenameEditor_LostFocus(object sender, RoutedEventArgs e)
+        private void Tree_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            StopEditing();
-        }
+            TreeViewItem item = Search(e.OriginalSource as DependencyObject);
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Refresh();
+            if (item != null)
+            {
+                item.Focus();
+                item.IsSelected = true;
+                OpenFile();
+                e.Handled = true;
+            }
         }
     }
 }
