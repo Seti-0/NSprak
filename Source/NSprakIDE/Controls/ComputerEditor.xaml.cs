@@ -86,6 +86,11 @@ namespace NSprakIDE.Controls
 
             _executor.Paused += Executor_OnPaused;
             _executor.Stopped += Executor_OnStopped;
+
+            _sourceEditor.FinishedEditing += (obj, e) =>
+            {
+                Dispatcher.Invoke(Compile);
+            };
         }
 
         private void SetupBindings()
