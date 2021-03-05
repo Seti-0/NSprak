@@ -55,7 +55,7 @@ namespace NSprakIDE.Docking
             result.Children.Add(_outputPane);
 
             left.DockWidth = new GridLength(0.55, GridUnitType.Star);
-            _outputPane.DockWidth = new GridLength(400, GridUnitType.Pixel);
+            _outputPane.DockWidth = new GridLength(0.45, GridUnitType.Star);
 
             _documentPane.DockHeight = new GridLength(0.65, GridUnitType.Star);
             _debugPane.DockHeight = new GridLength(300, GridUnitType.Pixel);
