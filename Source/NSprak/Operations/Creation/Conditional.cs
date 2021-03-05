@@ -46,13 +46,15 @@ namespace NSprak.Operations.Creation
             string continueLabel = builder.DeclareLabel("LoopContinue");
             builder.ContinueLabels.Push(continueLabel);
 
+            string indexName = null;
+
             if (header.IsInfinite)
                 builder.SetLabelToNext(continueLabel);
 
             else if (header.IsRange)
             {
                 builder.PushIndex();
-                string indexName = builder.GetIndexedName();
+                indexName = header.Name;
 
                 // For the end expression, don't use a variable if a literal could be used instead
                 // Actually, it would be better if this were generalized to statements that translate to a single
@@ -80,13 +82,11 @@ namespace NSprak.Operations.Creation
                 builder.AddOp(endOp);
                 builder.AddOp(new GreaterThanOrEqualTo());
                 builder.AddOp(new JumpLabelConditional(endLabel));
-
-                builder.AddOp(new Increment(indexName));
             }
             else
             {
                 builder.PushIndex();
-                string indexName = builder.GetIndexedName("index");
+                indexName = builder.GetIndexedName("index");
                 string arrayName = builder.GetIndexedName("array");
                 string countName = builder.GetIndexedName("count");
                 string currentName = header.Name ?? "@";
@@ -126,6 +126,9 @@ namespace NSprak.Operations.Creation
 
             if (requiresScopes)
                 builder.AddOp(new ScopeEnd());
+
+            if (header.IsRange)
+                builder.AddOp(new Increment(indexName));
 
             builder.AddOp(new JumpLabel(continueLabel));
             builder.SetLabelToNext(endLabel);

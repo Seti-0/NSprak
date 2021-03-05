@@ -59,11 +59,14 @@ namespace NSprak.Expressions.Types
             LoopType = LoopType.Infinite;
         }
 
-        public LoopHeader(Token loop, Expression start, Expression end)
+        public LoopHeader(Token loop, Token nameToken,
+            Expression start, Expression end)
         {
+            nameToken.AssertName();
             loop.AssertKeyword(Keywords.Loop);
+            
             LoopToken = loop;
-
+            NameToken = nameToken;
 
             RangeStart = start;
             RangeEnd = end;

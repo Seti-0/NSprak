@@ -62,7 +62,7 @@ namespace NSprak.Expressions.Creation
                     iterator.AssertExpression(out Expression end);
                     iterator.AssertEnd();
 
-                    LoopHeader result = new LoopHeader(startToken, start, end);
+                    LoopHeader result = new LoopHeader(startToken, name, start, end);
                     return result;
                 }
             }
