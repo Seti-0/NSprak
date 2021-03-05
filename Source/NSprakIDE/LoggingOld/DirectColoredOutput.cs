@@ -31,7 +31,8 @@ namespace NSprakIDE.Logging
             { LogType.Important, new ColorScheme(Blue, DarkBlue) },
             { LogType.Info, new ColorScheme(Gray, DarkGray) },
             { LogType.Success, new ColorScheme(Green, DarkGreen) },
-            { LogType.Warning, new ColorScheme(Yellow, DarkYellow) }
+            { LogType.Warning, new ColorScheme(Yellow, DarkYellow) },
+            { LogType.Debug, new ColorScheme(Gray, DarkGray) }
         };
 
         private static readonly ColorScheme traceColors = new ColorScheme(DarkRed, DarkGray);
@@ -135,6 +136,7 @@ namespace NSprakIDE.Logging
             {
                 ApplyIndent();
                 WriteDark("Caused by Inner Exception:");
+                _writer.WriteLine();
                 WriteException(e.InnerException);
             }
         }
@@ -154,7 +156,7 @@ namespace NSprakIDE.Logging
             {
                 ApplyIndent(offset: 1);
 
-                LogFormatUtility.SplitMethodSignature(frame.GetMethod().ToString(), out string methodName, out string arguments);
+                LogFormatUtility.GetSignatureElements(frame.GetMethod(), out string methodName, out string arguments);
 
                 string fileName = frame.GetFileName();
                 bool missingFilename = string.IsNullOrWhiteSpace(fileName);
@@ -170,7 +172,7 @@ namespace NSprakIDE.Logging
                 {
                     WriteDark("line ");
                     WriteLight(lineNumber.ToString());
-                    WriteLight(" of ");
+                    WriteDark(" in ");
                 }
 
                 WriteLight(methodName);
@@ -183,7 +185,10 @@ namespace NSprakIDE.Logging
             }
 
             if (missingInfo)
+            {
                 WriteDark($"(Some info is missing. This is expected if release-mode code is involved)");
+                _writer.WriteLine();
+            }
         }
     }
 }

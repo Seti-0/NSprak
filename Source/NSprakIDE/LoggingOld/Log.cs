@@ -30,6 +30,8 @@ namespace NSprakIDE.Logging
             new DirectOutput(new DebugWriter())
         };
 
+        private static List<LogEntry> _replay = new List<LogEntry>();
+
         public static int Indent { get; private set; }
 
         public static void Begin()
@@ -74,6 +76,20 @@ namespace NSprakIDE.Logging
                 output.End();
         }
 
+        public static void ReplayAll(ILogOutput output)
+        {
+            try
+            {
+                foreach (LogEntry entry in _replay)
+                    output.Send(entry);
+            }
+            catch (Exception e)
+            {
+                string message = $"Exception from log output while replaying: {output.GetType().Name}";
+                Core.Error(message, e);
+            }                
+        }
+
         public static void PushIndent()
         {
             Indent++;
@@ -96,10 +112,16 @@ namespace NSprakIDE.Logging
 
         public void Append(LogEntry entry, List<ILogOutput> targets = null)
         {
+            // Keep a memory of entries so that new log outputs
+            // can replay previous outputs. That list shouldn't contain logs only
+            // meant for a subset of existing logs though.
+            if (targets == null)
+                _replay.Add(entry);
+
             targets ??= Outputs;
 
             List<ILogOutput> passed = new List<ILogOutput>(targets.Count);
-            List<LogEntry> fails = new List<LogEntry>(targets.Count);
+            List<LogEntry> failed = new List<LogEntry>(targets.Count);
 
             foreach (ILogOutput output in targets)
             {
@@ -111,22 +133,22 @@ namespace NSprakIDE.Logging
                 catch (Exception e)
                 {
                     string message = $"Exception from log output: {output.GetType().Name}";
-                    fails.Add(Create(LogType.Error, message, e));
+                    failed.Add(Create(LogType.Error, message, e));
                 }
             }
 
-            if (fails.Count > 0)
+            if (failed.Count > 0)
             {
                 if (passed.Count == 0)
                 {
                     string message = "Logging Failure";
-                    Exception e = fails.First().Exception;
+                    Exception e = failed.First().Exception;
 
                     throw new Exception(message, e);
                 }
                 else
                 {
-                    foreach (LogEntry failure in fails)
+                    foreach (LogEntry failure in failed)
                         Core.Append(failure, passed);
                 }
             }

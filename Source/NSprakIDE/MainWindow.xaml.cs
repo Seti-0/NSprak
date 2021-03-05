@@ -42,6 +42,12 @@ namespace NSprakIDE
             _output = new OutputView();
             _output.Name = "Output";
 
+            OutputLog debug = _output.StartLog(OutputView.MainCategory, "Debug");
+            ILogOutput output = new DirectColoredOutput(new OutputLogWriter(debug));
+            output.Begin();
+            Log.ReplayAll(output);
+            Log.Outputs.Add(output);
+
             _locals = new LocalsView();
             _locals.Name = "Locals";
 
@@ -49,11 +55,6 @@ namespace NSprakIDE
             _files.Name = "Files";
 
             InitDocking();
-
-            OutputLog debug = _output.StartLog(OutputView.MainCategory, "Debug");
-            ILogOutput output = new DirectColoredOutput(new OutputLogWriter(debug));
-            output.Begin();
-            Log.Outputs.Add(output);
 
             _output.CreateCategory(ComputerLogCategory);
 

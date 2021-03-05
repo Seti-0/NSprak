@@ -95,7 +95,7 @@ namespace NSprakIDE.Logging
             foreach (var frame in trace)
             {
                 LogFormatUtility.ApplyIndent(_writer, _entry.Indent + 1);
-                LogFormatUtility.SplitMethodSignature(frame.GetMethod().ToString(), out string methodName, out string arguments);
+                LogFormatUtility.GetSignatureElements(frame.GetMethod(), out string methodName, out string arguments);
 
                 string fileName = frame.GetFileName();
                 bool missingFilename = string.IsNullOrWhiteSpace(fileName);

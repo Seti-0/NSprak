@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace NSprakIDE.Logging
 {
@@ -46,7 +50,22 @@ namespace NSprakIDE.Logging
             }
         }
 
-        public static void SplitMethodSignature(string input, out string name, out string arguments)
+        public static void GetSignatureElements(MethodBase info, out string name, out string arguments)
+        {
+            name = info.Name;
+
+            if (info.DeclaringType != null)
+                name = info.DeclaringType.Name + "." + name;
+
+            IEnumerable<string> argumentTypes = info
+                .GetParameters()
+                .Select(x => x.ParameterType.Name);
+
+            arguments = string.Join(", ", argumentTypes);
+            arguments = "(" + arguments + ")";
+        }
+
+        private static void SplitMethodSignature(string input, out string name, out string arguments)
         {
             int argumentIndex = input.IndexOf('(');
             int genericIndex = input.IndexOf('<');
