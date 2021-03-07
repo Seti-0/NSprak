@@ -38,12 +38,21 @@ namespace NSprak
             _signatureLookup.SpecifyOperationBindings(new List<OperationBinding>());
         }
 
-        public void Compile()
+        public bool Compile()
         {
             CompilationEnvironment environment = new CompilationEnvironment(
                 Messages, _signatureLookup, _assignmentLookup);
 
-            Executable = Compiler.Compile(Source, environment);
+            Executable exe = Compiler.Compile(Source, environment);
+            
+            if (exe == null)
+                return false;
+
+            else
+            {
+                Executable = exe;
+                return true;
+            }
         }
 
         public Executor CreateExecutor()

@@ -43,7 +43,10 @@ namespace NSprak
             Tokens.Update(source, environment.Messages);
             ExpressionTree.Update(Tokens, environment);
 
-            return CodeGenerator.Create(ExpressionTree);
+            if (!environment.Messages.HasErrors)
+                return CodeGenerator.Create(ExpressionTree);
+
+            else return null;
         }
     }
 }
