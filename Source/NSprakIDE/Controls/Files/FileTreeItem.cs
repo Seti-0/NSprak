@@ -140,8 +140,6 @@ namespace NSprakIDE.Controls.Files
                 .Where(x => x.Unknown)
                 .Select(x => x.Name);
 
-            Logging.Log.Core.Debug(toRemove.Count() + " values to remove.");
-
             foreach (string key in toRemove)
                 _children.Remove(key);
 

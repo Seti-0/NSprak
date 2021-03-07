@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
+using Microsoft.Extensions.Logging;
+
 using AvalonDock.Layout;
 
 using NSprakIDE.Controls;
-using NSprakIDE.Logging;
 
 namespace NSprakIDE.Docking
 {
@@ -41,8 +42,6 @@ namespace NSprakIDE.Docking
 
             _openDocuments.Add(id, document);
             document.Closing += CloseHandler(id, editor);
-
-            Logging.Log.Core.Debug("Create called for " + id);
         }
 
         private EventHandler<CancelEventArgs> CloseHandler(string name, ComputerEditor editor)
@@ -61,7 +60,7 @@ namespace NSprakIDE.Docking
                 catch (Exception exception)
                 {
                     string msg = "Unexpected error while closing window.";
-                    Log.Core.Error(msg, exception);
+                    Logs.Core.LogError(exception, msg);
                 }
             }
 

@@ -10,23 +10,10 @@ namespace NSprakIDE.Logging
     public class FileWriter : IWriter
     {
         private string _filePath;
-        private int headerLength;
 
         public FileWriter(string filePath)
         {
             _filePath = filePath;
-        }
-
-        public void Begin()
-        {
-            string header = $"============ Begin Log: {DateTime.Now} ============\n";
-            File.AppendAllText(_filePath, header);
-            headerLength = header.Length;
-        }
-
-        public void End()
-        {
-            File.AppendAllText(_filePath, new string('=', headerLength-1) + "\n");
         }
 
         public void Write(string text)

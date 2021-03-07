@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+
+using Serilog.Core;
+using Serilog.Events;
 
 namespace NSprakIDE.Logging
 {
@@ -11,7 +15,7 @@ namespace NSprakIDE.Logging
         public ConsoleColor Color { set; get; }
     }
 
-    public class DirectColoredOutput : ILogOutput
+    public class Output : ILogEventSink
     {
         private class ColorScheme
         {
@@ -25,45 +29,35 @@ namespace NSprakIDE.Logging
             }
         }
 
-        private static readonly Dictionary<LogType, ColorScheme> colorLookup = new Dictionary<LogType, ColorScheme>
+        private static readonly Dictionary<LogEventLevel, ColorScheme> colorLookup = new Dictionary<LogEventLevel, ColorScheme>
         {
-            { LogType.Error, new ColorScheme(Red, DarkRed) },
-            { LogType.Important, new ColorScheme(Blue, DarkBlue) },
-            { LogType.Info, new ColorScheme(Gray, DarkGray) },
-            { LogType.Success, new ColorScheme(Green, DarkGreen) },
-            { LogType.Warning, new ColorScheme(Yellow, DarkYellow) },
-            { LogType.Debug, new ColorScheme(Gray, DarkGray) }
+            { LogEventLevel.Fatal, new ColorScheme(Red, DarkRed) },
+            { LogEventLevel.Error, new ColorScheme(Red, DarkRed) },
+            { LogEventLevel.Warning, new ColorScheme(Yellow, DarkYellow) },
+            { LogEventLevel.Information, new ColorScheme(Gray, DarkGray) },
+            { LogEventLevel.Verbose, new ColorScheme(Gray, DarkGray) },
+            { LogEventLevel.Debug, new ColorScheme(Gray, DarkGray) },
         };
 
         private static readonly ColorScheme traceColors = new ColorScheme(DarkRed, DarkGray);
 
         private IColoredWriter _writer;
-        private LogEntry _entry;
+        private IFormatProvider _formatProvider;
+        private LogEvent _entry;
         private string _lastDate;
         private string _previousText;
         private ColorScheme _currentColors;
 
-        public DirectColoredOutput(IColoredWriter writer)
+        public Output(IColoredWriter writer, IFormatProvider formatProvider = null)
         {
             _writer = writer;
+            _formatProvider = formatProvider;
         }
 
-        public void Begin()
-        {
-            _writer.Begin();
-        }
-
-        public void End()
-        {
-            _writer.End();
-        }
-
-        public void Send(LogEntry entry)
+        public void Emit(LogEvent entry)
         {
             _entry = entry;
-            _currentColors = colorLookup[entry.Type];
-
-            LogFormatUtility.ApplyIndent(_writer, entry.Indent);
+            _currentColors = colorLookup[entry.Level];
 
             _writer.Color = DarkGray;
             LogFormatUtility.WritePrefix(_writer, _entry, ref _lastDate);
@@ -71,11 +65,13 @@ namespace NSprakIDE.Logging
             // The idea is to apply a little bit of shading - words that 
             // appeared in the previous message will be darkened.
 
-            if (!colorLookup.TryGetValue(_entry.Type, out ColorScheme colors))
+            if (!colorLookup.TryGetValue(_entry.Level, out ColorScheme colors))
                 colors = new ColorScheme(Magenta, Gray);
 
+            string message = entry.RenderMessage(_formatProvider);
+
             const string pattern = @"[^\w]+";
-            string remainingText = _entry.Message;
+            string remainingText = message;
             bool isRepeat;
 
             _previousText ??= "";
@@ -92,15 +88,10 @@ namespace NSprakIDE.Logging
             _writer.Color = isRepeat ? colors.Dark : colors.Light;
             _writer.WriteLine(remainingText);
 
-            _previousText = _entry.Message;
+            _previousText = message;
 
             if (_entry.Exception != null)
                 WriteException(_entry.Exception);
-        }
-
-        private void ApplyIndent(int offset = 0)
-        {
-            LogFormatUtility.ApplyIndent(_writer, _entry.Indent + offset);
         }
 
         private void WriteLight(string text)
@@ -125,7 +116,6 @@ namespace NSprakIDE.Logging
 
             _currentColors = traceColors;
 
-            ApplyIndent();
             WriteLight($"[{name}] {message}");
             _writer.WriteLine();
 
@@ -134,7 +124,6 @@ namespace NSprakIDE.Logging
 
             if (e.InnerException != null)
             {
-                ApplyIndent();
                 WriteDark("Caused by Inner Exception:");
                 _writer.WriteLine();
                 WriteException(e.InnerException);
@@ -145,7 +134,6 @@ namespace NSprakIDE.Logging
         {
             if (trace == null)
             {
-                ApplyIndent();
                 WriteDark("(Stacktrace is null)");
                 return;
             }
@@ -154,8 +142,6 @@ namespace NSprakIDE.Logging
 
             foreach (var frame in trace)
             {
-                ApplyIndent(offset: 1);
-
                 LogFormatUtility.GetSignatureElements(frame.GetMethod(), out string methodName, out string arguments);
 
                 string fileName = frame.GetFileName();

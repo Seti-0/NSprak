@@ -11,9 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-using NSprakIDE.Commands;
-using NSprakIDE.Logging;
+using Microsoft.Extensions.Logging;
 
+using NSprakIDE.Commands;
 using NSprakIDE.Controls.Files;
 
 namespace NSprakIDE.Controls
@@ -122,7 +122,7 @@ namespace NSprakIDE.Controls
 
         private void ApplyEdit()
         {
-            Log.Core.Debug("Call: Apply Edit");
+            Logs.Core.LogDebug("Call: Apply Edit");
 
             if (_editTarget != null)
             {
@@ -131,10 +131,10 @@ namespace NSprakIDE.Controls
                     FileHelper.Rename(_editTarget.Path, _editTarget.NewName);
                 }
 
-                Log.Core.Debug("Performing file op.");
+                Logs.Core.LogDebug("Performing file op.");
 
-                string error = $"Error occured while renaming {_editTarget.Path} to {_editTarget.NewName}";
-                PerformFileOp(Rename, error);
+                string error = "Error occured while renaming {Path} to {NewName}";
+                PerformFileOp(Rename, error, _editTarget.Path, _editTarget.NewName);
 
                 _editTarget = null;
             }
@@ -206,7 +206,7 @@ namespace NSprakIDE.Controls
 
             if (item.Unknown)
             {
-                Log.Core.Warning($"Attempted an action a location that does not exist: {item.Path}");
+                Logs.Core.LogWarning("Attempted an action a location that does not exist: {Path}", item.Path);
                 return;
             }
 
@@ -220,10 +220,10 @@ namespace NSprakIDE.Controls
                 pathAction(fullPath);
             }
 
-            PerformFileOp(Action, $"Error performing action \"{errorName}\" at path \"{fullPath}\"");
+            PerformFileOp(Action, "Error performing action \"{Name}\" at path \"{Path}\"", errorName, item.Path);
         }
 
-        private void PerformFileOp(Action action, string errorMessage)
+        private void PerformFileOp(Action action, string errorMessage, params object[] errorParams)
         {
             try
             {
@@ -231,7 +231,7 @@ namespace NSprakIDE.Controls
             }
             catch (Exception e)
             {
-                Log.Core.Error(errorMessage, e);
+                Logs.Core.LogError(e, errorMessage, errorParams);
             }
 
             Refresh();

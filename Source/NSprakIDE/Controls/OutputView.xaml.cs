@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Media;
-using Microsoft.Xaml.Behaviors.Media;
-using NSprak;
-using NSprakIDE.Logging;
 
 using NSprakIDE.Controls.Output;
 

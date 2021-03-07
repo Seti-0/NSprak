@@ -4,10 +4,12 @@ using System.Configuration;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+
+using Microsoft.Extensions.Logging;
+
 using AvalonDock;
 using AvalonDock.Controls;
 using AvalonDock.Layout;
-using NSprakIDE.Logging;
 
 namespace NSprakIDE.Docking
 {
@@ -73,8 +75,8 @@ namespace NSprakIDE.Docking
 
             if (!TryFindDocumentPane(out LayoutDocumentPane pane))
             {
-                Log.Core.Error("Failed to find document pane");
-                Log.Core.Debug($"Unable to add {content.GetType().Name}: \"{title}\"");
+                Logs.Core.LogError("Failed to find document pane");
+                Logs.Core.LogDebug("Unable to add {Name}: \"{Title}\"", content.GetType().Name, title);
                 return null;
             }
 
@@ -103,8 +105,8 @@ namespace NSprakIDE.Docking
 
             if (!TryFindAnchorable(paneName, out LayoutAnchorablePane pane))
             {
-                Log.Core.Error($"Failed to find anchorable pane: {paneName}");
-                Log.Core.Debug($"Unable to add {content.GetType().Name}: \"{contentName}\"");
+                Logs.Core.LogError("Failed to find anchorable pane: {Name}", paneName);
+                Logs.Core.LogDebug("Unable to add {Type}: \"{Name}\"", content.GetType().Name, contentName);
                 return null;
             }
 

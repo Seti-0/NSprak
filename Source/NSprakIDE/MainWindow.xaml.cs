@@ -4,12 +4,14 @@ using AvalonDock.Layout.Serialization;
 using System;
 using System.Windows;
 
+using Serilog;
+using Serilog.Core;
+using Serilog.Extensions.Logging;
+
 using NSprakIDE.Controls;
-using NSprakIDE.Controls.Execution;
-using NSprakIDE.Controls.Files;
-using NSprakIDE.Controls.Output;
 using NSprakIDE.Docking;
 using NSprakIDE.Logging;
+using NSprakIDE.Controls.Output;
 
 namespace NSprakIDE
 {
@@ -43,10 +45,14 @@ namespace NSprakIDE
             _output.Name = "Output";
 
             OutputLog debug = _output.StartLog(OutputView.MainCategory, "Debug");
-            ILogOutput output = new DirectColoredOutput(new OutputLogWriter(debug));
-            output.Begin();
-            Log.ReplayAll(output);
-            Log.Outputs.Add(output);
+            ILogEventSink output = new Output(new OutputLogWriter(debug));
+
+            ILogger logger = new LoggerConfiguration()
+                .WriteTo.Sink(output)
+                .MinimumLevel.Debug()
+                .CreateLogger();
+
+            Logs.Factory.AddSerilog(logger);
 
             _locals = new LocalsView();
             _locals.Name = "Locals";

@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 using System.Windows.Controls;
-
+using System.CodeDom;
+using System.Reflection.Metadata;
+using System.Diagnostics;
 using System.IO;
 
 using AvalonDock;
 using AvalonDock.Layout;
-using System.Linq;
 using AvalonDock.Layout.Serialization;
-using System.CodeDom;
-using System.Reflection.Metadata;
-using System.Diagnostics;
-using NSprakIDE.Logging;
+
+using Microsoft.Extensions.Logging;
 
 namespace NSprakIDE.Docking
 {
@@ -70,7 +70,7 @@ namespace NSprakIDE.Docking
             }
             catch(Exception e)
             {
-                Log.Core.Error($"Unable to save layout \"{withName}\" to path \"{path}\"", e);
+                Logs.Core.LogError(e, "Unable to save layout {Name} to path \"{Path}\"", withName, path);
             }
         }
 
@@ -89,8 +89,8 @@ namespace NSprakIDE.Docking
 
             if (!File.Exists(path))
             {
-                Log.Core.Error("Unable to load layout: " + name);
-                Log.Core.Debug("Unable to find file: " + path);
+                Logs.Core.LogError("Unable to load layout: {Name}", name);
+                Logs.Core.LogDebug("Unable to find file: {Path}", path);
             }
 
             Current = name;
@@ -105,8 +105,8 @@ namespace NSprakIDE.Docking
 
             if (!File.Exists(path))
             {
-                Log.Core.Error("Unable to load dummy layout");
-                Log.Core.Debug("Unable to find file: " + path);
+                Logs.Core.LogError("Unable to load dummy layout");
+                Logs.Core.LogDebug("Unable to find file: {Path}", path);
                 return;
             }
 
@@ -122,7 +122,7 @@ namespace NSprakIDE.Docking
             }
             catch (Exception e)
             {
-                Log.Core.Error("Error while loading layout: " + path, e);
+                Logs.Core.LogError(e, "Error while loading layout: " + path);
             }
         }
 

@@ -53,7 +53,8 @@ namespace NSprakIDE.Controls
             {
                 Elements = new List<IColorizerElement<Token>>
                 {
-                    new SyntaxHighlighting(new SyntaxHighlighterTheme(TryFindBrush))
+                    new SyntaxHighlighting(new SyntaxHighlighterTheme(TryFindBrush)),
+                    //new ErrorHighlighter()
                 }
             };
 

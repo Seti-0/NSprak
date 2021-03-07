@@ -5,31 +5,28 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
+
 namespace NSprakIDE.Logging
 {
     public static class LogFormatUtility
     {
-        public static void ApplyIndent(IWriter writer, int indent)
+        public static void WritePrefix(IWriter writer, LogEvent entry, ref string _lastDate)
         {
-            if (indent < 0)
-                indent = 0;
-
-            writer.Write(new string('\t', indent));
-        }
-
-        public static void WritePrefix(IWriter writer, LogEntry entry, ref string _lastDate)
-        {
-            string dateText = entry.Time.ToShortDateString();
-
+            string dateText = entry.Timestamp.UtcDateTime.ToShortDateString();
+            
             if (dateText != _lastDate)
             {
                 writer.WriteLine($"[{dateText}]");
                 _lastDate = dateText;
             }
 
+            string timeText = entry.Timestamp.UtcDateTime.ToShortTimeString();
 
-            string type = Enum.GetName(typeof(LogType), entry.Type);
-            writer.Write($"[{entry.Time.ToShortTimeString()}][{type}] ");
+            string type = Enum.GetName(typeof(LogEventLevel), entry.Level);
+            writer.Write($"[{timeText}][{type}] ");
         }
 
         public static bool Split(string input, string pattern, out string upto, out string after)

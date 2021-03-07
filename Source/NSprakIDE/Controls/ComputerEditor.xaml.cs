@@ -5,9 +5,11 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
+using Microsoft.Extensions.Logging;
+
 using NSprak;
 using NSprak.Execution;
-using NSprak.Tokens;
+
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.General;
 using NSprakIDE.Controls.Output;
@@ -240,7 +242,13 @@ namespace NSprakIDE.Controls
         public void Compile()
         {
             Computer.Source = _sourceEditor.Text;
-            Computer.Compile();
+
+            Logs.Core.LogDebug("Compiling...");
+            
+            if (Computer.Compile())
+                Logs.Core.LogDebug("Compilation successful.");
+            else
+                Logs.Core.LogDebug("Compilation failed.");
 
             _sourceEditor.Update(Computer.Compiler);
             _sourceEditor.Redraw();

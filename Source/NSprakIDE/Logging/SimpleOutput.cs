@@ -5,57 +5,40 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
+
 namespace NSprakIDE.Logging
 {
     public interface IWriter
     {
-        public void Begin();
-
-        public void End();
-
         public void Write(string text);
 
         public void WriteLine(string text = "");
     }
 
-    public class DirectOutput : ILogOutput
+    public class SimpleOutput :ILogEventSink
     {
         private IWriter _writer;
+        private IFormatProvider _provider;
         private string _lastDate;
-        private LogEntry _entry;
 
-        public DirectOutput(IWriter writer)
+        public SimpleOutput(IWriter writer, IFormatProvider provider = null)
         {
             _writer = writer;
+            _provider = provider;
         }
 
-        public void Begin()
+        public void Emit(LogEvent entry)
         {
-            _writer.Begin();
-        }
+            string message = entry.RenderMessage(_provider);
 
-        public void End()
-        {
-            _writer.End();
-        }
-
-        private void ApplyIndent()
-        {
-            LogFormatUtility.ApplyIndent(_writer, _entry.Indent);
-        }
-
-        public void Send(LogEntry entry)
-        {
-            _entry = entry;
-
-            LogFormatUtility.ApplyIndent(_writer, entry.Indent);
             LogFormatUtility.WritePrefix(_writer, entry, ref _lastDate);
-            _writer.WriteLine(entry.Message);
+            _writer.WriteLine(message);
 
             if (entry.Exception != null)
                 WriteException(entry.Exception);
-
-            _entry = null;
         }
 
         private void WriteException(Exception e)
@@ -66,7 +49,6 @@ namespace NSprakIDE.Logging
             string name = e.GetType().Name;
             string message = e.Message;
 
-            ApplyIndent();
             _writer.WriteLine($"[{name}] {message}");
 
             IEnumerable<StackFrame> trace = new StackTrace(e, true).GetFrames();
@@ -74,7 +56,6 @@ namespace NSprakIDE.Logging
 
             if (e.InnerException != null)
             {
-                ApplyIndent();
                 _writer.WriteLine("Caused by Inner Exception:");
                 WriteException(e.InnerException);
             }
@@ -85,7 +66,6 @@ namespace NSprakIDE.Logging
         {
             if (trace == null)
             {
-                ApplyIndent();
                 _writer.WriteLine("(Stacktrace is null)");
                 return;
             }
@@ -94,8 +74,8 @@ namespace NSprakIDE.Logging
 
             foreach (var frame in trace)
             {
-                LogFormatUtility.ApplyIndent(_writer, _entry.Indent + 1);
-                LogFormatUtility.GetSignatureElements(frame.GetMethod(), out string methodName, out string arguments);
+                LogFormatUtility.GetSignatureElements(
+                    frame.GetMethod(), out string methodName, out string arguments);
 
                 string fileName = frame.GetFileName();
                 bool missingFilename = string.IsNullOrWhiteSpace(fileName);
