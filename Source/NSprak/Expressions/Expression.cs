@@ -36,26 +36,6 @@ namespace NSprak.Expressions
             }
         }
 
-        /*
-        public abstract IEnumerable<Token> GetTokens();
-
-        public IEnumerable<Token> GetTokensDeep()
-        {
-            return GetTokens()
-                .Concat(GetSubExpressions().SelectMany(x => x.GetTokensDeep()));
-        }
-        */
-
-        public void RaiseError(MessageCollection messenger, string message)
-        {
-            messenger.AddError(StartToken, EndToken, message);
-        }
-
-        public void RaiseError(Token token, MessageCollection messenger, string message)
-        {
-            messenger.AddError(token, message);
-        }
-
         public virtual string GetTraceString()
         {
             Block ancestor = ParentHint;

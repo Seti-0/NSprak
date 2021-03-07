@@ -7,6 +7,7 @@ using System.Transactions;
 
 using NSprak.Expressions.Types;
 using NSprak.Tokens;
+using NSprak.Messaging;
 
 namespace NSprak.Expressions.Structure
 {
@@ -44,12 +45,12 @@ namespace NSprak.Expressions.Structure
                 if ((!allowFunctions) && header is FunctionHeader functionHeader)
                 {
                     // A function inside a function is no problem in theory, though it is not a specified possibility in Sprak
-                    functionHeader.RaiseError(env.Messages, "A function inside a block is not allowed. (Have you forgotten to close the previous block?)");
+                    env.Messages.AtExpression(functionHeader, Messages.NestedFunction);
                     error = true;
                 }
                 else if (!found)
                 {
-                    header.RaiseError(env.Messages, "No end found for this header");
+                    env.Messages.AtExpression(header, Messages.MissingEndStatement);
                     error = true;
                 }
                 else

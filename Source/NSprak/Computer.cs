@@ -13,13 +13,13 @@ namespace NSprak
         private SignatureResolver _signatureLookup;
         private AssignmentResolver _assignmentLookup;
 
-        public MessageCollection Messages { get; } = new MessageCollection();
-
         public Compiler Compiler { get; }
 
         public Executable Executable { get; private set; } = new Executable();
 
         public IConsole StandardOut { get; set; }
+
+        public IMessenger Messenger { get; set; }
 
         public string Source { get; set; }
 
@@ -41,7 +41,7 @@ namespace NSprak
         public bool Compile()
         {
             CompilationEnvironment environment = new CompilationEnvironment(
-                Messages, _signatureLookup, _assignmentLookup);
+                Messenger, _signatureLookup, _assignmentLookup);
 
             Executable exe = Compiler.Compile(Source, environment);
             

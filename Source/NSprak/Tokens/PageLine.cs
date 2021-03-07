@@ -45,7 +45,7 @@ namespace NSprak.Tokens
             LineNumber = lineNumber;
         }
 
-        public PageLine(TokenPage page, int lineStart, int lineEnd, IList<RawToken> tokens, MessageCollection messanger)
+        public PageLine(TokenPage page, int lineStart, int lineEnd, IList<RawToken> tokens, IMessenger messenger)
         {
             Page = page;
 
@@ -55,7 +55,7 @@ namespace NSprak.Tokens
                 Token token = new Token(this, raw);
                 
                 if (raw.Error)
-                    messanger.AddError(token, raw.ErrorMessage);
+                    messenger.AtToken(token, raw.ErrorMessage, raw.ErrorParams);
             }
 
             _tokens = tokens.Select(x => new Token(this, x)).ToArray();

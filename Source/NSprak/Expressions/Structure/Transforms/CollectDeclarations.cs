@@ -21,7 +21,8 @@ namespace NSprak.Expressions.Structure.Transforms
             environment.SignatureLookup.SpecifyUserFunctions(functions);
         }
 
-        private void UpdateBlock(Block block, ref int offset, MessageCollection messenger, Dictionary<FunctionSignature, FunctionInfo> functions)
+        private void UpdateBlock(Block block, ref int offset, 
+            IMessenger messenger, Dictionary<FunctionSignature, FunctionInfo> functions)
         {
             Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
 
@@ -65,7 +66,7 @@ namespace NSprak.Expressions.Structure.Transforms
                         if (assignment.IsDeclaration)
                         {
                             if (variables.ContainsKey(assignment.Name))
-                                assignment.RaiseError(messenger, "A variable with this name has already been declared in this scope");
+                                messenger.AtToken(assignment.NameToken, Messages.DuplicateVariable, assignment.Name);
 
                             else variables.Add(assignment.Name, new VariableInfo(assignment.DeclarationType, offset));
                         }
@@ -77,7 +78,7 @@ namespace NSprak.Expressions.Structure.Transforms
                         if (subBlock.Header is FunctionHeader function)
                         {
                             if (functions.ContainsKey(function.Signature))
-                                function.RaiseError(messenger, "A function with signature has already been declared in this scope");
+                                messenger.AtToken(function.NameToken, Messages.DuplicateFunction, function.Name);
 
                             else functions.Add(function.Signature, new FunctionInfo(function));
                         }

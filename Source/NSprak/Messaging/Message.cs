@@ -4,33 +4,18 @@ using System.Text;
 
 namespace NSprak.Messaging
 {
-    public enum MessageSeverity
+    public class Message
     {
-        Error, Warning, Message
-    }
-
-    public abstract class Message
-    {
-        public MessageSeverity Severity { get; protected set; }
+        public MessageSeverity Severity { get; set; }
 
         public bool IsError => Severity == MessageSeverity.Error;
 
-        public string UserText { get; protected set; }
-
-        public abstract int LineStart { get; }
-
-        public abstract int LineEnd { get; }
-
-        public abstract int Start { get; }
-
-        public abstract int End { get; }
-
-        public object DebugObject { get; set; }
+        public string Summary { get; set; }
 
         public override string ToString()
         {
-            string error = IsError ? "[Error]" : "";
-            string result = $"({LineStart}){error} {UserText}";
+            string severity = Enum.GetName(typeof(MessageSeverity), Severity);
+            string result = $"[{severity}] {Summary}";
 
             return result;
         }

@@ -35,7 +35,7 @@ namespace NSprak.Expressions.Patterns
             return EntryPoints.Any(x => x.IsMatch(state));
         }
 
-        public PatternMatchResult Apply(IEnumerable<Token> tokens, MessageCollection messenger)
+        public PatternMatchResult Apply(IEnumerable<Token> tokens, IMessenger messenger)
         {
             PatternState state = new PatternState(tokens, messenger);
             state.Enumerator.MoveNext();
@@ -52,7 +52,7 @@ namespace NSprak.Expressions.Patterns
             if (!tokens.HasCurrent)
             {
                 if (!AllowEmpty)
-                    state.RaiseError(null, "No tokens found");
+                    state.RaiseError(Messages.UnexpectedEnd);
             }
             else
             {
@@ -70,7 +70,8 @@ namespace NSprak.Expressions.Patterns
                     currentStep.Execute(state);
 
                     if (currentStep.RequireEnd && tokens.HasNext)
-                        state.RaiseError(tokens.Current, $"End of statement reached. Unexpected token: {tokens.Current}");
+                        state.RaiseError(tokens.Current, 
+                            Messages.UnexpectedTokenAtEnd, tokens.Current);
 
                     if (state.Error) break;
 
@@ -111,7 +112,7 @@ namespace NSprak.Expressions.Patterns
             int n = options.Count();
 
             if (n > 1)
-                state.RaiseError(state.Enumerator.Current, $"Internal error: ambiguous statement juncture");
+                throw new NotSupportedException("Ambiguous statement juncture");
 
             else if (n == 0)
             {
@@ -121,7 +122,7 @@ namespace NSprak.Expressions.Patterns
                 if (current == null ||!current.AllowEnd)
                 {
                     Token token = state.Enumerator.Current;
-                    state.RaiseError(token, $"Unexpected token: {token}");
+                    state.RaiseError(token, Messages.UnexpectedToken, token);
                 }
 
                 nextStep = null;

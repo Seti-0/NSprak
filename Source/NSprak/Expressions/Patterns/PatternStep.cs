@@ -42,7 +42,7 @@ namespace NSprak.Expressions.Patterns
             else
             {
                 Token token = state.Enumerator.Current;
-                state.RaiseError(token, $"Unexpected token: {token}");
+                state.RaiseError(token, Messages.UnexpectedToken, token);
             }
         }
 

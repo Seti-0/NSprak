@@ -8,17 +8,6 @@ using NSprak.Messaging;
 
 namespace NSprak.Tokens
 {
-    public class RawToken
-    {
-        public TokenType Type = TokenType.Unknown;
-        public string Content;
-
-        public int ColumnStart; // Inclusive
-        public int ColumnEnd;  // Exclusive
-
-        public bool Error;
-        public string ErrorMessage;
-    }
 
     public static class TokenHelper
     {
@@ -98,7 +87,7 @@ namespace NSprak.Tokens
                     // That would allow us to continue instead of break out of the line
 
                     currentToken.Error = true;
-                    currentToken.ErrorMessage = $"Unrecognized symbols";
+                    currentToken.ErrorMessage = Messages.UnrecognizedSymbols;
                     currentToken.Type = TokenType.Unknown;
                     currentToken.Content = "";
 
@@ -191,10 +180,8 @@ namespace NSprak.Tokens
 
                     default:
                         string prototypeName = Enum.GetName(typeof(TokenPrototype), prototype);
-                        currentToken.Error = true;
-                        currentToken.ErrorMessage = $"Token type not recognised: [{prototypeName}:{content}]";
-                        completedType = TokenType.Unknown;
-                        break;
+                        string message = $"Token type not recognised: [{prototypeName}:{content}]";
+                        throw new NotImplementedException(message);
                 }
 
 
@@ -212,7 +199,8 @@ namespace NSprak.Tokens
                 return;
 
             token.Error = true;
-            token.ErrorMessage = $"Unrecognized operator: {token.Content}";
+            token.ErrorMessage = Messages.UnrecognizedOperator;
+            token.ErrorParams = new object[] { token.Content };
         }
 
         private static void CheckNumber(RawToken token)
@@ -221,7 +209,8 @@ namespace NSprak.Tokens
                 return;
 
             token.Error = true;
-            token.ErrorMessage = $"Unable to parse number: {token.Content}";
+            token.ErrorMessage = Messages.UnrecognizedNumber;
+            token.ErrorParams = new object[] { token.Content };
         }
     }
 }

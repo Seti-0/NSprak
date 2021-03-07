@@ -22,7 +22,7 @@ namespace NSprak.Tokens
 
         public PageLine this[Index lineIndex] => _lines[lineIndex];
 
-        public void Update(string source, MessageCollection messenger)
+        public void Update(string source, IMessenger messenger)
         {
             _lines.Clear();
 
