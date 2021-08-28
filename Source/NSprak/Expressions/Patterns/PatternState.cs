@@ -13,7 +13,7 @@ namespace NSprak.Expressions.Patterns
     {
         private readonly Stack<List<object>> _collections = new Stack<List<object>>();
 
-        public IMessenger Messenger { get; }
+        public Messenger Messenger { get; }
 
         public bool Error { get; private set; }
 
@@ -21,20 +21,20 @@ namespace NSprak.Expressions.Patterns
 
         public List<PatternStep> Steps { get; } = new List<PatternStep>();
 
-        public PatternState(IEnumerable<Token> tokens, IMessenger messenger)
+        public PatternState(IEnumerable<Token> tokens, Messenger messenger)
         {
             Error = false;
             Enumerator = new PatternEnumerator(tokens);
             Messenger = messenger;
         }
 
-        public void RaiseError(Message message, params object[] parameters)
+        public void RaiseError(MessageTemplate message, params object[] parameters)
         {
             Error = true;
             Messenger.Add(message, parameters);
         }
 
-        public void RaiseError(Token token, Message message, params object[] parameters)
+        public void RaiseError(Token token, MessageTemplate message, params object[] parameters)
         {
             Error = true;
             Messenger.AtToken(token, message, parameters);

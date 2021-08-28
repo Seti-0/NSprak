@@ -19,7 +19,7 @@ namespace NSprak
 
         public IConsole StandardOut { get; set; }
 
-        public IMessenger Messenger { get; set; }
+        public Messenger Messenger { get; set; }
 
         public string Source { get; set; }
 

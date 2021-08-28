@@ -22,7 +22,7 @@ namespace NSprak.Expressions.Structure.Transforms
         }
 
         private void UpdateBlock(Block block, ref int offset, 
-            IMessenger messenger, Dictionary<FunctionSignature, FunctionInfo> functions)
+            Messenger messenger, Dictionary<FunctionSignature, FunctionInfo> functions)
         {
             Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
 

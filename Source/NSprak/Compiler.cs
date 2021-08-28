@@ -14,13 +14,13 @@ namespace NSprak
 {
     public class CompilationEnvironment
     {
-        public IMessenger Messages { get; }
+        public Messenger Messages { get; }
 
         public SignatureResolver SignatureLookup { get; }
 
         public AssignmentResolver AssignmentLookup { get; }
 
-        public CompilationEnvironment(IMessenger messages, SignatureResolver signatureLookup, AssignmentResolver assignmentLookup)
+        public CompilationEnvironment(Messenger messages, SignatureResolver signatureLookup, AssignmentResolver assignmentLookup)
         {
             Messages = messages;
             SignatureLookup = signatureLookup;

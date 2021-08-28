@@ -6,18 +6,23 @@ namespace NSprak.Messaging
 {
     public class Message
     {
-        public MessageSeverity Severity { get; set; }
+        public MessageTemplate Template { get; }
 
-        public bool IsError => Severity == MessageSeverity.Error;
+        public MessageLocation Location { get; }
 
-        public string Summary { get; set; }
+        public object[] Parameters { get; }
 
-        public override string ToString()
+        public string RenderedText
         {
-            string severity = Enum.GetName(typeof(MessageSeverity), Severity);
-            string result = $"[{severity}] {Summary}";
+            get => string.Format()
+        }
 
-            return result;
+        public Message(MessageTemplate template, 
+            MessageLocation location, params object[] parameters)
+        {
+            Template = template;
+            Location = location;
+            Parameters = parameters;
         }
     }
 }

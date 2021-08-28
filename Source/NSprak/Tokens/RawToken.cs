@@ -11,7 +11,7 @@ namespace NSprak.Tokens
         public int ColumnEnd;  // Exclusive
 
         public bool Error;
-        public Message ErrorMessage;
+        public MessageTemplate ErrorMessage;
         public object[] ErrorParams;
     }
 }

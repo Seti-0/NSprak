@@ -35,7 +35,7 @@ namespace NSprak.Expressions.Patterns
             return EntryPoints.Any(x => x.IsMatch(state));
         }
 
-        public PatternMatchResult Apply(IEnumerable<Token> tokens, IMessenger messenger)
+        public PatternMatchResult Apply(IEnumerable<Token> tokens, Messenger messenger)
         {
             PatternState state = new PatternState(tokens, messenger);
             state.Enumerator.MoveNext();

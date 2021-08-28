@@ -45,7 +45,7 @@ namespace NSprak.Tokens
             LineNumber = lineNumber;
         }
 
-        public PageLine(TokenPage page, int lineStart, int lineEnd, IList<RawToken> tokens, IMessenger messenger)
+        public PageLine(TokenPage page, int lineStart, int lineEnd, IList<RawToken> tokens, Messenger messenger)
         {
             Page = page;
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NSprak.Messaging
 {
-    public class DummyMessenger : IMessenger
+    public class DummyMessenger : Messenger
     {
         public static readonly DummyMessenger Instance = new DummyMessenger();
 
@@ -18,7 +18,7 @@ namespace NSprak.Messaging
         }
 
         public void Add(MessageLocation location,
-            Message message, params object[] parameters) 
+            MessageTemplate message, params object[] parameters) 
         {
             HasErrors |= message.Severity == MessageSeverity.Error;
         }
