@@ -102,7 +102,7 @@ namespace NSprak
             "   \n" +
             "   Print(X)\n" +
             "   Print('Mean: '+Mean(X))\n" +
-            "   Print('Standard Deviation: '+StdDev(X)\n" +
+            "   Print('Standard Deviation: '+StdDev(X))\n" +
             "   Print('Count Unique: '+CountUnique(X))\n" +
             "end\n" +
             "\n" +

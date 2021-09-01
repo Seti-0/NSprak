@@ -120,11 +120,18 @@ namespace NSprak.Execution
 
             else
             {
-                int startDepth = _context.Memory.Frames.Count;
-                StepInto();
+                void Action()
+                {
+                    int startDepth = _context.Memory.Frames.Count;
+                    StepSingle();
 
-                while (Instructions.HasCurrent && _context.Memory.Frames.Count > startDepth)
-                    StepInto();
+                    bool endCondition() => (!Instructions.HasCurrent)
+                        || _context.Memory.Frames.Count <= startDepth;
+
+                    StepUntil(endCondition);
+                }
+
+                Run(Action, Pause);
             }
         }
 
@@ -135,11 +142,17 @@ namespace NSprak.Execution
 
             else
             {
-                int startDepth = _context.Memory.Frames.Count;
-                StepInto();
+                void Action()
+                {
+                    int startDepth = _context.Memory.Frames.Count;
 
-                while (Instructions.HasCurrent && _context.Memory.Frames.Count >= startDepth)
-                    StepInto();
+                    bool endCondition() => (!Instructions.HasCurrent)
+                        || _context.Memory.Frames.Count < startDepth;
+
+                    StepUntil(endCondition);
+                }
+
+                Run(Action, Pause);
             }
         }
 
@@ -154,10 +167,17 @@ namespace NSprak.Execution
             }
             else
             {
-                Expression startSource = Instructions.CurrentInfo.SourceExpression;
-                bool newExpression() => Instructions.CurrentInfo.SourceExpression != startSource;
+                void Action()
+                {
+                    Expression startSource = Instructions
+                        .CurrentInfo.SourceExpression;
+                    bool endCondition() => Instructions
+                        .CurrentInfo.SourceExpression != startSource;
 
-                Run(() => StepUntil(newExpression), Pause);
+                    StepUntil(endCondition);
+                }
+                
+                Run(Action, Pause);
             }
         }
 
@@ -218,7 +238,7 @@ namespace NSprak.Execution
 
         private void StepIndefinitely()
         {
-            StepUntil(() => true);
+            StepUntil(() => false);
         }
 
         private void StepUntil(Func<bool> condition)
