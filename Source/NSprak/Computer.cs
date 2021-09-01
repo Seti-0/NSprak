@@ -19,7 +19,7 @@ namespace NSprak
 
         public IConsole StandardOut { get; set; }
 
-        public Messenger Messenger { get; set; }
+        public Messenger Messenger { get; set; } = new Messenger();
 
         public string Source { get; set; }
 
@@ -40,6 +40,8 @@ namespace NSprak
 
         public bool Compile()
         {
+            Messenger.Clear();
+
             CompilationEnvironment environment = new CompilationEnvironment(
                 Messenger, _signatureLookup, _assignmentLookup);
 

@@ -8,9 +8,10 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <!-- Choose which file to focus on, if any -->
+        <!--
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Background="{StaticResource NSprakIDE.Toolbar}">
             <TextBlock Text="Show output from: " Margin="5,8,5,5" Background="{x:Null}"/>
-            <ComboBox Name="OutputSelection" Margin="5,5,5,5" SelectionChanged="OutputSelection_SelectionChanged">
+            <ComboBox Name="OutputSelection" Margin="5,5,5,5">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <Border x:Name="Border" BorderThickness="0">
@@ -20,8 +21,9 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
+        -->
         <!-- Dispay messages as a table -->
-        <DataGrid x:Name="LocalsGrid"
+        <DataGrid x:Name="MessagesGrid"
         AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="{StaticResource NSprakIDE.Data.VerticalLines}">
             <DataGrid.Columns>
                 <!-- Column for Severity -->
@@ -36,7 +38,7 @@
                 <DataGridTemplateColumn Header="Message">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Message}" Margin="5,0,5,0"/>
+                            <TextBlock Text="{Binding UserMessage}" Margin="5,0,5,0"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -41,8 +41,17 @@ namespace NSprak.Expressions.Patterns
             }
             else
             {
-                Token token = state.Enumerator.Current;
-                state.RaiseError(token, Messages.UnexpectedToken, token);
+                if (state.Enumerator.HasCurrent)
+                {
+                    Token token = state.Enumerator.Current;
+                    state.RaiseError(token, Messages.UnexpectedToken, token);
+                }
+                else if (state.Enumerator.HasPrevious)
+                {
+                    Token token = state.Enumerator.Previous;
+                    state.RaiseError(token, Messages.UnexpectedEndOfLine);
+                }
+                else state.RaiseError(Messages.UnexpectedEndOfLine);
             }
         }
 

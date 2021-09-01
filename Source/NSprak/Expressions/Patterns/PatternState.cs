@@ -28,10 +28,21 @@ namespace NSprak.Expressions.Patterns
             Messenger = messenger;
         }
 
+        public void RaiseError()
+        {
+            Error = true;
+        }
+
         public void RaiseError(MessageTemplate message, params object[] parameters)
         {
             Error = true;
             Messenger.Add(message, parameters);
+        }
+
+        public void RaiseError(MessageLocation location, MessageTemplate message, params object[] parameters)
+        {
+            Error = true;
+            Messenger.Add(location, message, parameters);
         }
 
         public void RaiseError(Token token, MessageTemplate message, params object[] parameters)
@@ -68,7 +79,7 @@ namespace NSprak.Expressions.Patterns
                 result = $"[Error] " + result;
 
             if (_collections.Count > 0)
-                result = $"({_collections.Peek().Count})" + result;
+                result = $"({_collections.Peek().Count}) " + result;
 
             return result;
         }

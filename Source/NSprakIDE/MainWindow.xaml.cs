@@ -30,6 +30,7 @@ namespace NSprakIDE
         private OutputView _output;
         private LocalsView _locals;
         private FileView _files;
+        private MessageView _messageView;
 
         public MainWindow()
         {
@@ -57,6 +58,9 @@ namespace NSprakIDE
             _locals = new LocalsView();
             _locals.Name = "Locals";
 
+            _messageView = new MessageView();
+            _messageView.Name = "Messages";
+
             _files = new FileView();
             _files.Name = "Files";
 
@@ -79,6 +83,7 @@ namespace NSprakIDE
                 OutputView = _output,
                 FilePath = filePath,
                 LocalsView = _locals,
+                MessageView = _messageView
             };
 
             _documentHelper.OpenComputerEditor(enviroment);
@@ -93,6 +98,7 @@ namespace NSprakIDE
 
             _dockingHelper.AddConsoleAnchorable("Output", _output);
             _dockingHelper.AddDebugAnchorable("Locals", _locals);
+            _dockingHelper.AddDebugAnchorable("Messages", _messageView);
             _dockingHelper.AddDocument("Files", _files);
 
             _dockingHelper.SaveCurrentLayout(overwrite: false);

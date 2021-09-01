@@ -50,12 +50,12 @@ namespace NSprak.Messaging
             => obj is MessageLocation msg && Equals(msg);
 
         public static bool operator ==(MessageLocation a, MessageLocation b)
-            => ((a == null) && (b == null))
-            || ((a != null) && a.Equals(b));
+            => ((a is null) && (b is null))
+            || ((!(a is null)) && a.Equals(b));
 
         public static bool operator !=(MessageLocation a, MessageLocation b)
-            => ((a == null) && (b != null))
-            || ((a != null) && (!a.Equals(b)));
+            => (a is null && !(b is null))
+            || ((!(a is null)) && (!a.Equals(b)));
 
         public override int GetHashCode()
             => HashCode.Combine(Start, End, LineStart, LineEnd);

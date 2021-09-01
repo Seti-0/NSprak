@@ -25,15 +25,14 @@ namespace NSprak.Expressions.Patterns.Steps
         {
             PatternMatchResult result = Target.ApplyWithin(state);
 
+            // There is no point in logging a message here, the error message
+            // useful to the user will have been logged by the subpattern step.
             if (result.Error)
-            {
-                // TODO: we should be able to keep track of the token here somehow
-                state.RaiseError(null, "Failed to apply subpattern");
-            }
-            else
-            {
-                state.AddToCollection(result.Item);
-            }
+                // We do need to raise the error flag though, so that the parent
+                // pattern knows to exit.
+                state.RaiseError();
+
+            else state.AddToCollection(result.Item);
         }
     }
 }

@@ -14,9 +14,13 @@ namespace NSprak.Expressions.Patterns
 
         public int Index { get; set; } = -1;
 
+        public bool HasPrevious => Index >= 1 && Index < _elements.Count + 1;
+
         public bool HasCurrent => Index >= 0 && Index < _elements.Count;
 
         public bool HasNext => Index >= -1 && Index < _elements.Count - 1;
+
+        public Token Previous => _elements[Index - 1];
 
         public Token Current => _elements[Index];
 
@@ -27,7 +31,7 @@ namespace NSprak.Expressions.Patterns
 
         public bool MoveNext()
         {
-            if (HasNext)
+            if (Index < _elements.Count + 1)
             {
                 Index++;
 

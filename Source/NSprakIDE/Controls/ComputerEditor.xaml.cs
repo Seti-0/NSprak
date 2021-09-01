@@ -27,6 +27,8 @@ namespace NSprakIDE.Controls
         public LocalsView LocalsView;
 
         public CallStackView CallStackView;
+
+        public MessageView MessageView;
     }
 
     public enum ComputerEditorMode
@@ -53,15 +55,16 @@ namespace NSprakIDE.Controls
 
         private LocalsView _localsView;
         private OutputLog _outputLog;
+        private MessageView _messageView;
 
-        public ComputerEditor(ComputerEditorEnviroment enviroment)
+        public ComputerEditor(ComputerEditorEnviroment environment)
         {
             InitializeComponent();
 
-            Enviroment = enviroment;
+            Enviroment = environment;
 
-            string name = Path.GetFileNameWithoutExtension(enviroment.FilePath);
-            _outputLog = enviroment.OutputView.StartLog(MainWindow.ComputerLogCategory, name);
+            string name = Path.GetFileNameWithoutExtension(environment.FilePath);
+            _outputLog = environment.OutputView.StartLog(MainWindow.ComputerLogCategory, name);
             IConsole console = new ComputerOutput(_outputLog);
 
             Computer = new Computer()
@@ -75,14 +78,16 @@ namespace NSprakIDE.Controls
 
             _executor = Computer.CreateExecutor();
 
-            _localsView = enviroment.LocalsView;
+            _localsView = environment.LocalsView;
             _localsView.Target = _executor;
-
+            _messageView = environment.MessageView;
+            _messageView.Target = Computer.Messenger;
+            
             _expressionView.ShowDebug = true;
 
             MainContent.Content = _sourceEditor;
 
-            _sourceEditor.Text = File.ReadAllText(enviroment.FilePath);
+            _sourceEditor.Text = File.ReadAllText(environment.FilePath);
             Compile();
 
             SetupBindings();
@@ -252,6 +257,8 @@ namespace NSprakIDE.Controls
 
             _sourceEditor.Update(Computer.Compiler);
             _sourceEditor.Redraw();
+
+            _messageView.Update();
 
             _expressionView.Root = Computer
                 .Compiler

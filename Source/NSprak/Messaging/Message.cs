@@ -14,7 +14,7 @@ namespace NSprak.Messaging
 
         public string RenderedText
         {
-            get => string.Format()
+            get => Template.Render(Parameters);
         }
 
         public Message(MessageTemplate template, 

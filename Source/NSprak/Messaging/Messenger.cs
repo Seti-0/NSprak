@@ -7,7 +7,7 @@ namespace NSprak.Messaging
 {
     public class Messenger
     {
-        private List<MessageTemplate> _messages = new List<MessageTemplate>();
+        private List<Message> _messages = new List<Message>();
 
         public IReadOnlyList<Message> Messages => _messages;
 
@@ -22,8 +22,7 @@ namespace NSprak.Messaging
         public void Add(MessageLocation location,
             MessageTemplate message, params object[] parameters)
         {
-            _messages.Add(message);
-
+            _messages.Add(new Message(message, location, parameters));
             HasErrors |= message.IsError;
         }
     }

@@ -19,7 +19,7 @@ namespace NSprak.Expressions.Patterns.Steps
 
         public override bool IsMatch(PatternState state)
         {
-            return Predicate(state.Enumerator.Current);
+            return state.Enumerator.HasCurrent && Predicate(state.Enumerator.Current);
         }
     }
 }

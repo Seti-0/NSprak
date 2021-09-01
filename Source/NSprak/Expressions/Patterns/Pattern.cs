@@ -48,23 +48,27 @@ namespace NSprak.Expressions.Patterns
             state.StartCollection();
 
             PatternStep currentStep = null;
+            bool pass = false;
 
             if (!tokens.HasCurrent)
             {
                 if (!AllowEmpty)
-                    state.RaiseError(Messages.UnexpectedEnd);
+                {
+                    if (tokens.HasPrevious)
+                        state.RaiseError(tokens.Previous, Messages.UnexpectedEndOfLine);
+                    else
+                        state.RaiseError(Messages.UnexpectedEndOfLine);
+                }
+                else pass = true;
             }
             else
             {
-                while (tokens.HasCurrent)
+                while (true)
                 {
                     if (TryGetNextStep(currentStep, state, out PatternStep nextStep))
                         currentStep = nextStep;
 
                     else break;
-
-                    //if (currentStep.DebuggerBreak)
-                        //Debugger.Break();
 
                     state.Steps.Add(currentStep);
                     currentStep.Execute(state);
@@ -77,21 +81,29 @@ namespace NSprak.Expressions.Patterns
 
                     if (!currentStep.StayInPlace)
                         tokens.MoveNext();
+
+                    if (currentStep.AllowEnd && !state.Enumerator.HasCurrent)
+                        break;
                 }
             }
 
-            MatchIterator collection = new MatchIterator(state.EndCollection());
+            if (!pass && (currentStep == null || !currentStep.AllowEnd))
+            {
+                if (tokens.HasPrevious)
+                    state.RaiseError(tokens.Previous, Messages.UnexpectedEnd);
+                else
+                    state.RaiseError(Messages.UnexpectedEnd);
+            }
 
             PatternMatchResult result = new PatternMatchResult();
-
-            if (currentStep != null && !currentStep.AllowEnd)
-                state.RaiseError(null, "Unexpected end of line");
 
             if (state.Error)
                 result.Error = true;
 
             else if (currentStep != null)
             {
+                MatchIterator collection = new MatchIterator(state.EndCollection());
+
                 // The end step is currently not allowed to raise an error message, though it 
                 // may throw an exception if an internal error occurs
                 result.Item = currentStep.EndStep(collection);
@@ -118,12 +130,6 @@ namespace NSprak.Expressions.Patterns
             {
                 if (current != null && current.AllowLoopback)
                     return TryGetNextStep(null, state, out nextStep);
-
-                if (current == null ||!current.AllowEnd)
-                {
-                    Token token = state.Enumerator.Current;
-                    state.RaiseError(token, Messages.UnexpectedToken, token);
-                }
 
                 nextStep = null;
                 return false;

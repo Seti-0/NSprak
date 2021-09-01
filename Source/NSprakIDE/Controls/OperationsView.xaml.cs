@@ -279,10 +279,8 @@ namespace NSprakIDE.Controls
         private void NewDocument()
         {
             _document = new FlowDocument();
-            _paragraph = new Paragraph();
-            _currentLineLength = 0;
-
             _lines.Clear();
+            NewParagraph();
         }
 
         private void NewParagraph()
