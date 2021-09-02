@@ -42,6 +42,8 @@ namespace NSprakIDE.Controls.General
 
     public abstract class ViewSupplier<T>
     {
+        public const string MainCategory = "Main";
+
         private Dictionary<string, List<ViewItem<T>>> _categories 
             = new Dictionary<string, List<ViewItem<T>>>();
 
@@ -50,6 +52,7 @@ namespace NSprakIDE.Controls.General
         public ViewSupplier(ViewSelect view)
         {
             _view = view;
+            StartCategory(MainCategory);
         }
 
         public void StartCategory(string name)
@@ -64,7 +67,7 @@ namespace NSprakIDE.Controls.General
             _categories.Add(name, new List<ViewItem<T>>());
         }
 
-        public T CreateItem(string name, string categoryName)
+        public T Start(string name, string categoryName = MainCategory)
         {
             List<ViewItem<T>> category;
             if (!_categories.TryGetValue(categoryName, out category))
@@ -73,14 +76,14 @@ namespace NSprakIDE.Controls.General
                 throw new ArgumentException(message);
             }
 
-            T value = CreateItem();
+            T value = Create(name, categoryName);
             category.Add(new ViewItem<T>(name, false, value));
             UpdateView();
 
             return value;
         }
 
-        public void RemoveItem(T item)
+        public void End(T item)
         {
             foreach (List<ViewItem<T>> category in _categories.Values)
             {
@@ -106,7 +109,7 @@ namespace NSprakIDE.Controls.General
             _view.UpdateOptions(items);
         }
 
-        protected abstract T CreateItem();
+        protected abstract T Create(string name, string category);
     }
 
     public class ValueSelectedEventArgs : EventArgs
@@ -126,7 +129,7 @@ namespace NSprakIDE.Controls.General
     //That would save many of the hoops here.
     public partial class ViewSelect : UserControl
     {
-        private IEnumerable<IViewItem> _items = new IViewItem[0];
+        private IEnumerable<IViewItem> _items;
         private IViewItem _selectedItem;
 
         public event EventHandler<ValueSelectedEventArgs> Selected;
@@ -134,42 +137,46 @@ namespace NSprakIDE.Controls.General
         public ViewSelect()
         {
             InitializeComponent();
+            UpdateOptions(new IViewItem[0]);
         }
 
         public void UpdateOptions(IEnumerable<IViewItem> items)
         {
+            _items = items;
             Selection.ItemsSource = items;
-            UpdateSelection();
-        }
 
-        public void UpdateSelection(IViewItem newItem = null)
-        {
-            if (_selectedItem == newItem)
-                return;
-
-            IViewItem previousSelection = _selectedItem;
-
-            if (newItem is null)
+            // Check that the currently selected item is valid,
+            // otherwise, leave it alone.
+            if (_selectedItem == null || !_items.Contains(_selectedItem))
             {
-                // Check that the currently selected item is still valid,
-                // otherwise, leave it alone.
-                if (!_items.Contains(_selectedItem))
-                    _selectedItem = null;
+                IViewItem oldItem = _selectedItem;
+                IViewItem newItem = _items.FirstOrDefault();
+                
+                if (oldItem != newItem)
+                {
+                    _selectedItem = newItem;
+                    Selection.SelectedItem = newItem;
+                    OnSelectionChanged(oldItem, newItem);
+                }
             }
-            else _selectedItem = newItem;
-
-            if (previousSelection != _selectedItem)
-                OnSelectionChanged(previousSelection, _selectedItem);
         }
 
         private void Selection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UpdateSelection((IViewItem)Selection.SelectedItem);
+            IViewItem newItem = (IViewItem)Selection.SelectedItem;
+            IViewItem oldItem = _selectedItem;
+
+            if (oldItem != newItem)
+            {
+                _selectedItem = newItem;
+                OnSelectionChanged(oldItem, newItem);
+            }
         }
 
-        protected void OnSelectionChanged(IViewItem oldValue, IViewItem newValue)
+        protected void OnSelectionChanged(IViewItem oldItem, IViewItem newItem)
         {
-            Selected?.Invoke(this, new ValueSelectedEventArgs(oldValue, newValue));
+            Selected?.Invoke(this, new ValueSelectedEventArgs(
+                oldItem?.getValue(), newItem?.getValue()));
         }
     }
 }

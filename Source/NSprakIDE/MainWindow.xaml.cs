@@ -45,7 +45,7 @@ namespace NSprakIDE
             _output = new OutputView();
             _output.Name = "Output";
 
-            OutputLog debug = _output.StartLog(OutputView.MainCategory, "Debug");
+            OutputLog debug = _output.Supplier.Start("Debug");
             ILogEventSink output = new Output(new OutputLogWriter(debug));
 
             ILogger logger = new LoggerConfiguration()
@@ -66,7 +66,7 @@ namespace NSprakIDE
 
             InitDocking();
 
-            _output.CreateCategory(ComputerLogCategory);
+            _output.Supplier.StartCategory(ComputerLogCategory);
 
             _files.FileOpened += OnOpenFile;
         }

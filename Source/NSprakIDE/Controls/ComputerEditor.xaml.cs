@@ -64,7 +64,7 @@ namespace NSprakIDE.Controls
             Enviroment = environment;
 
             string name = Path.GetFileNameWithoutExtension(environment.FilePath);
-            _outputLog = environment.OutputView.StartLog(MainWindow.ComputerLogCategory, name);
+            _outputLog = environment.OutputView.Supplier.Start(name, MainWindow.ComputerLogCategory);
             IConsole console = new ComputerOutput(_outputLog);
 
             Computer = new Computer()

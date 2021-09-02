@@ -17,10 +17,10 @@ namespace NSprakIDE.Controls.Output
 
         public FlowDocument Document { get; } = new FlowDocument();
 
-        private OutputView _parent;
+        private OutputLogSupplier _parent;
         private Paragraph _paragraph;
 
-        public OutputLog(string name, string category, OutputView parent)
+        public OutputLog(string name, string category, OutputLogSupplier parent)
         {
             Name = name;
             Category = category;
@@ -32,7 +32,7 @@ namespace NSprakIDE.Controls.Output
 
         public void End()
         {
-            _parent.EndLog(Name);
+            _parent.End(this);
         }
 
         public void Write(string text)
@@ -46,7 +46,7 @@ namespace NSprakIDE.Controls.Output
             run.Foreground = new SolidColorBrush(Color);
 
             _paragraph.Inlines.Add(run);
-            _parent.UpdateSelection();
+            //_parent.UpdateSelection();
         }
 
         public void WriteLine(string text)

@@ -80,7 +80,7 @@ namespace NSprak.Operations.Creation
 
                 builder.AddOp(new VariableGet(indexName));
                 builder.AddOp(endOp);
-                builder.AddOp(new GreaterThanOrEqualTo());
+                builder.AddOp(new GreaterThan());
                 builder.AddOp(new JumpLabelConditional(endLabel));
             }
             else
