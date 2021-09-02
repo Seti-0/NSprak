@@ -42,6 +42,11 @@ namespace NSprakIDE.Docking
 
             _openDocuments.Add(id, document);
             document.Closing += CloseHandler(id, editor);
+            document.IsSelectedChanged += (sender, e) =>
+            {
+                if (document.IsSelected)
+                    Logs.Core.LogInformation($"Hello world from {title}!");
+            };
         }
 
         private EventHandler<CancelEventArgs> CloseHandler(string name, ComputerEditor editor)

@@ -17,13 +17,13 @@ namespace NSprakIDE.Controls
 
     public class OutputSelectionItem
     {
-        public string Value { get; set; }
+        public string Name { get; set; }
 
         public bool Underline { get; set; }
 
-        public OutputSelectionItem(string value, bool underline)
+        public OutputSelectionItem(string name, bool underline)
         {
-            Value = value;
+            Name = name;
             Underline = underline;
         }
     }
@@ -112,7 +112,7 @@ namespace NSprakIDE.Controls
             if (_selectedLog != null)
             {
                 foreach (OutputSelectionItem item in _options)
-                    if (item.Value == _selectedLog.Name)
+                    if (item.Name == _selectedLog.Name)
                         _selectedItem = item;
 
                 if (_selectedItem == null)
@@ -121,7 +121,7 @@ namespace NSprakIDE.Controls
             else
             {
                 _selectedItem = _options.First();
-                _selectedLog = _logs[_selectedItem.Value];
+                _selectedLog = _logs[_selectedItem.Name];
             }
 
             RichText.Document = _selectedLog.Document;
@@ -147,7 +147,7 @@ namespace NSprakIDE.Controls
 
         private void OutputSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Select(((OutputSelectionItem)OutputSelection.SelectedItem)?.Value);
+            Select(((OutputSelectionItem)OutputSelection.SelectedItem)?.Name);
         }
     }
 }
