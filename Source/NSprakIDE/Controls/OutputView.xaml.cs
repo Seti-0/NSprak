@@ -21,6 +21,8 @@ namespace NSprakIDE.Controls
 
     public partial class OutputView : UserControl
     {
+        private static readonly FlowDocument Empty = new FlowDocument();
+
         public OutputLogSupplier Supplier { get; }
 
         public OutputView()
@@ -32,7 +34,7 @@ namespace NSprakIDE.Controls
         private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
         {
             OutputLog selection = (OutputLog)e.NewValue;
-            RichText.Document = selection?.Document;
+            RichText.Document = selection?.Document ?? Empty;
             RichText.ScrollToEnd();
         }
     }

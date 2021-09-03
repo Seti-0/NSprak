@@ -12,14 +12,7 @@
                   SelectionChanged="Selection_SelectionChanged">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <Border x:Name="Border" BorderThickness="0">
-                        <TextBlock Text="{Binding Name}" />
-                    </Border>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Underline}">
-                            <Setter TargetName="Border" Property="BorderThickness" Value="0,0,5,0"/>
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
+                    <TextBlock Text="{Binding Name}"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>

@@ -107,6 +107,8 @@ namespace NSprakIDE.Controls.General
                 category.RemoveAll(
                     x => EqualityComparer<T>.Default.Equals(x.Value, item));
             }
+
+            UpdateView();
         }
 
         private void UpdateView()
@@ -114,6 +116,9 @@ namespace NSprakIDE.Controls.General
             List<ViewItem<T>> items = new List<ViewItem<T>>();
             foreach (List<ViewItem<T>> category in _categories.Values)
             {
+                if (category.Count == 0)
+                    continue;
+
                 foreach (ViewItem<T> item in category)
                 {
                     item.Underline = false;
