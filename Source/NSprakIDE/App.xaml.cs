@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using System.Windows;
 
-using ControlzEx.Theming;
-
 using Microsoft.Extensions.Logging;
 
 namespace NSprakIDE
@@ -21,8 +19,6 @@ namespace NSprakIDE
 
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-
-            ThemeManager.Current.DetectTheme();
         }
 
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)

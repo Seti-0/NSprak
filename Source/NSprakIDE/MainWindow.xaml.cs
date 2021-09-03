@@ -1,19 +1,14 @@
-﻿using AvalonDock.Layout;
-using AvalonDock.Layout.Serialization;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
 using Serilog;
 using Serilog.Core;
-using Serilog.Extensions.Logging;
 
 using Microsoft.Extensions.Logging;
 
 using NSprakIDE.Controls;
-using NSprakIDE.Docking;
 using NSprakIDE.Logging;
 using NSprakIDE.Controls.Output;
 

@@ -5,7 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:Cmd="clr-namespace:NSprakIDE.Commands"
     xmlns:General="clr-namespace:NSprakIDE.Controls.General"
-    xmlns:Icons="clr-namespace:NSprakIDE.Icons" x:Class="NSprakIDE.Controls.ComputerEditor"
+    xmlns:Icons="clr-namespace:NSprakIDE.Icons"
+    x:Class="NSprakIDE.Controls.ComputerEditor"
     mc:Ignorable="d" 
     d:DesignHeight="450" d:DesignWidth="800">
 
@@ -132,7 +133,7 @@
             <DockPanel Margin="4" LastChildFill="True">
                 <TextBlock Style="{StaticResource GroupTitle}">Breakpoints</TextBlock>
                 <StackPanel>
-                    <General:CommandButton IconName="Breakpoint" UICommand="{x:Static Cmd:EditorCommands.ToggleBreakpoint}"/>
+                    <General:CommandButton3 IconName="Breakpoint" UICommand="{x:Static Cmd:EditorCommands.ToggleBreakpoint}"/>
                 </StackPanel>
             </DockPanel>
             
