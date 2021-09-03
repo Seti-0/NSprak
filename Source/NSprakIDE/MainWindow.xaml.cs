@@ -2,6 +2,7 @@
 using AvalonDock.Layout.Serialization;
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -59,6 +60,20 @@ namespace NSprakIDE
 
         public void OpenComputerEditor(string filePath)
         {
+            // Start at index 1, the tab at index 0 is the FileView!
+            for (int i = 1; i < DocumentView.Items.Count; i++)
+            {
+                TabItem tab = (TabItem)DocumentView.Items[i];
+                ComputerEditor previousEditor = (ComputerEditor)tab.Content;
+                if (previousEditor.Enviroment.FilePath == filePath)
+                {
+                    // Don't open the same file twice, just switch to
+                    // the already open tab.
+                    DocumentView.SelectedIndex = i;
+                    return;
+                }
+            }
+
             string name = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
             ComputerEditorEnviroment enviroment = new ComputerEditorEnviroment
@@ -85,16 +100,6 @@ namespace NSprakIDE
             int index = DocumentView.Items.Add(newTab);
             DocumentView.SelectedIndex = index;
             OnTabSelected();
-        }
-
-        private void NewTab_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Logs.Core.LogInformation("Hello from MouseUp!");
-        }
-
-        private void CloseImage_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Logs.Core.LogInformation("Hello World from CLOSEMOUSEUP");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
