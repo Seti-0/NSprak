@@ -36,9 +36,6 @@ namespace NSprakIDE.Controls
         Source, Expressions, Operations
     }
 
-    /// <summary>
-    /// Interaction logic for ComputerEditor.xaml
-    /// </summary>
     public partial class ComputerEditor : UserControl, IDisposable
     {
         public ComputerEditorEnviroment Enviroment { get; }

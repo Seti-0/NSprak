@@ -16,6 +16,8 @@ using NSprak.Tokens;
 using NSprakIDE.Controls.Code;
 using NSprakIDE.Controls.General;
 
+using ICSharpCode.AvalonEdit.Editing;
+
 namespace NSprakIDE.Controls
 {
     /// <summary>
@@ -72,6 +74,17 @@ namespace NSprakIDE.Controls
 
             _editAwaitor.Complete += OnFinishedEditing;
             MainEditor.TextChanged += OnMainEditorTextChanged;
+
+            MainEditor.Options.ShowColumnRuler = true;
+
+            LineNumberMargin margin = new LineNumberMargin()
+            {
+                TextView = MainEditor.TextArea.TextView,
+                Margin = new Thickness(5, 0, 20, 0),
+            };
+            Brush marginBrush = (Brush)FindResource("NSprakIDE.Toolbar");
+            margin.SetValue(ForegroundProperty, marginBrush);
+            MainEditor.TextArea.LeftMargins.Add(margin);
         }
 
         private Brush TryFindBrush(string key)
