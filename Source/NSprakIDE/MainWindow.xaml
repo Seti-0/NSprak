@@ -158,7 +158,7 @@
                 />
 
                 <TabControl Grid.Column="2">
-                    <TabItem Header="Hello World">
+                    <TabItem Header="Output">
                         <editor:OutputView x:Name="OutputView"/>
                     </TabItem>
                 </TabControl>

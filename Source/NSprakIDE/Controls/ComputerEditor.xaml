@@ -1,47 +1,149 @@
-﻿<UserControl x:Class="NSprakIDE.Controls.ComputerEditor"
-             
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:Fluent="urn:fluent-ribbon"
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:Cmd="clr-namespace:NSprakIDE.Commands"
+    xmlns:General="clr-namespace:NSprakIDE.Controls.General"
+    xmlns:Icons="clr-namespace:NSprakIDE.Icons" x:Class="NSprakIDE.Controls.ComputerEditor"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800">
 
-             xmlns:cmd="clr-namespace:NSprakIDE.Commands"
-             xmlns:general="clr-namespace:NSprakIDE.Controls.General"
+    <!-- 
+        Styling
+    
+        Most of this is taken up by the command buttons, for
+        which a new template is defined from sratch. This includes icons, 
+        two sizes, hover & press styles, and a disabled greyed out effect.
+    -->
 
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-        <DockPanel LastChildFill="True">
-        <StackPanel Background="{DynamicResource NSprakIDE.Toolbar}" DockPanel.Dock="Top" Orientation="Horizontal">
-            <!-- Header buttons -->
-            <Fluent:Ribbon AreTabHeadersVisible="False" IsQuickAccessToolBarMenuDropDownVisible="False" CanMinimize="False">
-                <Fluent:RibbonTabItem>
-                    <!-- View (switch between editor views) -->
-                    <Fluent:RibbonGroupBox Header="View">
-                        <general:CommandButton IconName="Source" UICommand="{x:Static cmd:EditorCommands.ViewCode}"/>
-                        <general:CommandButton IconName="ExpressionTree" UICommand="{x:Static cmd:EditorCommands.ViewExpressionTree}"/>
-                        <general:CommandButton IconName="Operations" UICommand="{x:Static cmd:EditorCommands.ViewOperations}"/>
-                    </Fluent:RibbonGroupBox>
-                    <!-- Debug -->
-                    <Fluent:RibbonGroupBox Header="Debug">
-                        <general:CommandButton Size="Large" IconName="ContinueDebug" UICommand="{x:Static cmd:EditorCommands.StartDebug}"/>
-                        <general:CommandButton Size="Large" IconName="Pause" UICommand="{x:Static cmd:EditorCommands.Pause}"/>
-                        <general:CommandButton Size="Large" IconName="Stop" UICommand="{x:Static cmd:EditorCommands.Stop}"/>
-                        <general:CommandButton IconName="StepInto" UICommand="{x:Static cmd:EditorCommands.StepInto}"/>
-                        <general:CommandButton IconName="StepOut" UICommand="{x:Static cmd:EditorCommands.StepOut}"/>
-                        <general:CommandButton IconName="StepOver" UICommand="{x:Static cmd:EditorCommands.StepOver}"/>
-                    </Fluent:RibbonGroupBox>
-                    <!-- Breakpoints -->
-                    <Fluent:RibbonGroupBox Header="Breakpoints">
-                        <general:CommandButton Size="Middle" IconName="Breakpoint" UICommand="{x:Static cmd:EditorCommands.ToggleBreakpoint}"/>
-                    </Fluent:RibbonGroupBox>
-                </Fluent:RibbonTabItem>
-            </Fluent:Ribbon>
+    <UserControl.Resources>
+        <!-- Toolbar group title -->
+        <Style TargetType="TextBlock" x:Key="GroupTitle">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Foreground" Value="#777777"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="DockPanel.Dock" Value="Bottom"/>
+        </Style>
+        <!-- Group vertical separators -->
+        <Style TargetType="Rectangle" x:Key="VerticalSeperator">
+            <Setter Property="Width" Value="1"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="0,10,0,10"/>
+            <Setter Property="Stroke" Value="#aaa"/>
+        </Style>
+        <!-- Toolbar button (large & medium) -->
+        <Style TargetType="{x:Type General:CommandButton3}">
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type General:CommandButton3}">
+                        <Border x:Name="Root" BorderThickness="1" BorderBrush="{x:Null}">
+                            <StackPanel x:Name="Panel" Margin="4,1,4,1">
+                                <Image x:Name="Image" 
+                                       Source="{TemplateBinding ImageSource}"/>
+                                <TextBlock Name="Text" Text="{TemplateBinding Content}"
+                                            VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Size" Value="Medium">
+                                <Setter TargetName="Panel" Property="Orientation" Value="Horizontal"/>
+                                <Setter TargetName="Image" Property="Width" Value="16"/>
+                                <Setter TargetName="Image" Property="Height" Value="16"/>
+                                <Setter TargetName="Image" Property="Margin" Value="0,0,5,0"/>
+                            </Trigger>
+                            <Trigger Property="Size" Value="Large">
+                                <Setter TargetName="Panel" Property="Orientation" Value="Vertical"/>
+                                <Setter TargetName="Image" Property="Width" Value="30"/>
+                                <Setter TargetName="Image" Property="Height" Value="30"/>
+                                <Setter TargetName="Image" Property="Margin" Value="0"/>
+                            </Trigger>
+                            <Trigger Property="CommandEnabled" Value="False">
+                                <Setter TargetName="Image" Property="Effect">
+                                    <Setter.Value>
+                                        <Icons:GrayscaleEffect/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Text" Property="Foreground" Value="#777777"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#99C9EF"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#57A5E5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#57A5E5"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#57A5E5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- End of Toolbar button. -->
+    </UserControl.Resources>
+
+    <!--
+        Document Structure
+    
+        Most of this is the header toolbar. The actual editor used for writing
+        code is a third-party depedency and the set-up for it is in code-behind.
+    -->
+    
+    <DockPanel LastChildFill="True">
+
+        <!-- Header Toolbar -->
+        <StackPanel DockPanel.Dock="Top" 
+                    Orientation="Horizontal"
+                    Background="{DynamicResource NSprakIDE.Toolbar}">
+
+            <!-- Editor View -->
+            <DockPanel Margin="4" LastChildFill="True">
+                <TextBlock Style="{StaticResource GroupTitle}">View</TextBlock>
+                <StackPanel>
+                    <General:CommandButton3 IconName="Source" UICommand="{x:Static Cmd:EditorCommands.ViewCode}"/>
+                    <General:CommandButton3 IconName="ExpressionTree" UICommand="{x:Static Cmd:EditorCommands.ViewExpressionTree}"/>
+                    <General:CommandButton3 IconName="Operations" UICommand="{x:Static Cmd:EditorCommands.ViewOperations}"/>
+                </StackPanel>
+            </DockPanel>
+
+            <Rectangle Style="{StaticResource VerticalSeperator}"/>
+
+            <!-- Step-by-step Debugging -->
+            <DockPanel Margin="4" LastChildFill="True">
+                <TextBlock Style="{StaticResource GroupTitle}">Execution</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <General:CommandButton3 Size="Large" IconName="ContinueDebug" UICommand="{x:Static Cmd:EditorCommands.StartDebug}"/>
+                    <General:CommandButton3 Size="Large" IconName="Pause" UICommand="{x:Static Cmd:EditorCommands.Pause}"/>
+                    <General:CommandButton3 Size="Large" IconName="Stop" UICommand="{x:Static Cmd:EditorCommands.Stop}"/>
+                    <StackPanel>
+                        <General:CommandButton3 IconName="StepInto" UICommand="{x:Static Cmd:EditorCommands.StepInto}"/>
+                        <General:CommandButton3 IconName="StepOut" UICommand="{x:Static Cmd:EditorCommands.StepOut}"/>
+                        <General:CommandButton3 IconName="StepOver" UICommand="{x:Static Cmd:EditorCommands.StepOver}"/>
+                    </StackPanel>
+                </StackPanel>
+            </DockPanel>
+
+            <Rectangle Style="{StaticResource VerticalSeperator}"/>
+            
+            <!-- Breakpoints -->
+            <DockPanel Margin="4" LastChildFill="True">
+                <TextBlock Style="{StaticResource GroupTitle}">Breakpoints</TextBlock>
+                <StackPanel>
+                    <General:CommandButton IconName="Breakpoint" UICommand="{x:Static Cmd:EditorCommands.ToggleBreakpoint}"/>
+                </StackPanel>
+            </DockPanel>
+            
         </StackPanel>
+        <!-- End of Header Toolbar -->
+        
         <!-- Border -->
-        <Rectangle HorizontalAlignment="Stretch" Height="1" Stroke="{DynamicResource AvalonDock_Expression_BaseColor10}" DockPanel.Dock="Top"/>
-        <Rectangle HorizontalAlignment="Stretch" Height="2" Stroke="{DynamicResource AvalonDock_Expression_BaseColor4}" DockPanel.Dock="Top"/>
+        <Rectangle HorizontalAlignment="Stretch" Height="1" Stroke="{DynamicResource NSprakIDE.Accent}" DockPanel.Dock="Top"/>
+        
         <!-- Main content (set in code behind to an editor view) -->
-        <ContentControl Name="MainContent"/>
+        <ContentControl x:Name="MainContent"/>
+        
     </DockPanel>
 </UserControl>
