@@ -15,6 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="icons8-cancel-16.png" />
+    <None Remove="icons8-stop-16.png" />
     <None Remove="Icons\binary_dark.png" />
     <None Remove="Icons\diagram.png" />
     <None Remove="Icons\diagram2.png" />
@@ -92,8 +94,14 @@
     <None Remove="Icons\Images\icons8-tree-structure-30.png" />
     <None Remove="Icons\Images\icons8-upward-arrow-30.png" />
     <None Remove="Icons\Images\icons8-variable-30.png" />
+    <None Remove="Icons\Images\local-close-accent.png" />
+    <None Remove="Icons\Images\local-close-dark.png" />
+    <None Remove="Icons\Images\local-close-toolbar.png" />
+    <None Remove="Icons\Images\local-close-white.png" />
     <None Remove="Icons\order.png" />
     <None Remove="Icons\writing.png" />
+    <None Remove="local-close-dark.png" />
+    <None Remove="local-close-toolbar.png" />
     <None Remove="Themes\MyExpression\PinClose.png" />
   </ItemGroup>
 
@@ -129,6 +137,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="icons8-cancel-16.png" />
+    <Resource Include="icons8-stop-16.png" />
     <Resource Include="Icons\Images\icons8-add-folder-30.png" />
     <Resource Include="Icons\Images\icons8-arrow-16.png" />
     <Resource Include="Icons\Images\icons8-arrow-30.png" />
@@ -199,6 +209,12 @@
     <Resource Include="Icons\Images\icons8-tree-structure-30.png" />
     <Resource Include="Icons\Images\icons8-upward-arrow-30.png" />
     <Resource Include="Icons\Images\icons8-variable-30.png" />
+    <Resource Include="Icons\Images\local-close-accent.png" />
+    <Resource Include="Icons\Images\local-close-dark.png" />
+    <Resource Include="Icons\Images\local-close-toolbar.png" />
+    <Resource Include="Icons\Images\local-close-white.png" />
+    <Resource Include="local-close-dark.png" />
+    <Resource Include="local-close-toolbar.png" />
     <Resource Include="Themes\MyExpression\PinClose.png" />
   </ItemGroup>
 

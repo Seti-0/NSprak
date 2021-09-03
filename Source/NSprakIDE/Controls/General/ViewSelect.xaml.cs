@@ -83,6 +83,23 @@ namespace NSprakIDE.Controls.General
             return value;
         }
 
+        public void Select(T value)
+        {
+            // I should really make a lookup instead of having this
+            // search each time a tab is clicked. Not that there are ever 
+            // many items, but it would be neater.
+            IViewItem item = null;
+            foreach (List<ViewItem<T>> category in _categories.Values)
+                foreach (ViewItem<T> option in category)
+                    if (EqualityComparer<T>.Default.Equals(option.Value, value))
+                    {
+                        item = option;
+                        break;
+                    }
+
+            _view.Select(item);
+        }
+
         public void End(T item)
         {
             foreach (List<ViewItem<T>> category in _categories.Values)
@@ -148,16 +165,18 @@ namespace NSprakIDE.Controls.General
             // Check that the currently selected item is valid,
             // otherwise, leave it alone.
             if (_selectedItem == null || !_items.Contains(_selectedItem))
+                Select(_items.FirstOrDefault());
+        }
+
+        public void Select(IViewItem newItem)
+        {
+            IViewItem oldItem = _selectedItem;
+
+            if (oldItem != newItem)
             {
-                IViewItem oldItem = _selectedItem;
-                IViewItem newItem = _items.FirstOrDefault();
-                
-                if (oldItem != newItem)
-                {
-                    _selectedItem = newItem;
-                    Selection.SelectedItem = newItem;
-                    OnSelectionChanged(oldItem, newItem);
-                }
+                _selectedItem = newItem;
+                Selection.SelectedItem = newItem;
+                OnSelectionChanged(oldItem, newItem);
             }
         }
 

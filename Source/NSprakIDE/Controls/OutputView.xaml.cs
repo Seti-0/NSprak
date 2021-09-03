@@ -32,7 +32,7 @@ namespace NSprakIDE.Controls
         private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
         {
             OutputLog selection = (OutputLog)e.NewValue;
-            RichText.Document = selection.Document;
+            RichText.Document = selection?.Document;
             RichText.ScrollToEnd();
         }
     }

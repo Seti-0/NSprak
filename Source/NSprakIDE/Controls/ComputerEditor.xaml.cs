@@ -22,7 +22,7 @@ namespace NSprakIDE.Controls
     {
         public string FilePath;
 
-        public OutputView OutputView;
+        public OutputLog Output;
 
         public LocalsView LocalsView;
 
@@ -54,7 +54,6 @@ namespace NSprakIDE.Controls
         private OperationsView _operationsView;
 
         private LocalsView _localsView;
-        private OutputLog _outputLog;
         private MessageView _messageView;
 
         public ComputerEditor(ComputerEditorEnviroment environment)
@@ -64,8 +63,7 @@ namespace NSprakIDE.Controls
             Enviroment = environment;
 
             string name = Path.GetFileNameWithoutExtension(environment.FilePath);
-            _outputLog = environment.OutputView.Supplier.Start(name, MainWindow.ComputerLogCategory);
-            IConsole console = new ComputerOutput(_outputLog);
+            IConsole console = new ComputerOutput(environment.Output);
 
             Computer = new Computer()
             {
@@ -103,7 +101,7 @@ namespace NSprakIDE.Controls
 
         public void Dispose()
         {
-            _outputLog.End();
+            Enviroment.Output.End();
         }
 
         private void SetupBindings()

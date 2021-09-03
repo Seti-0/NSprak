@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Orientation="Horizontal" Background="{StaticResource NSprakIDE.Toolbar}">
-        <TextBlock Text="Show output from: " Margin="5,8,5,5" Background="{x:Null}"/>
+        <TextBlock Text="Show output from: " Margin="5,8,5,5" Background="{x:Null}" Foreground="Black"/>
         <ComboBox Name="Selection" Margin="5,5,5,5"
                   SelectionChanged="Selection_SelectionChanged">
             <ComboBox.ItemTemplate>

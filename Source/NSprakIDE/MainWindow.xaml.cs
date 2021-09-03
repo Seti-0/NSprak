@@ -3,10 +3,13 @@ using AvalonDock.Layout.Serialization;
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 using Serilog;
 using Serilog.Core;
 using Serilog.Extensions.Logging;
+
+using Microsoft.Extensions.Logging;
 
 using NSprakIDE.Controls;
 using NSprakIDE.Docking;
@@ -24,14 +27,6 @@ namespace NSprakIDE
 
         public const string ComputerLogCategory = "Computers";
 
-        private NSprakSaveManager _dockingHelper;
-        private ComputerDocumentManager _documentHelper;
-
-        private OutputView _output;
-        private LocalsView _locals;
-        private FileView _files;
-        private MessageView _messageView;
-
         public MainWindow()
         {
             if (Instance != null)
@@ -42,33 +37,19 @@ namespace NSprakIDE
 
             InitializeComponent();
 
-            _output = new OutputView();
-            _output.Name = "Output";
-
-            OutputLog debug = _output.Supplier.Start("Debug");
+            OutputLog debug = OutputView.Supplier.Start("Debug");
             ILogEventSink output = new Output(new OutputLogWriter(debug));
 
-            ILogger logger = new LoggerConfiguration()
+            Serilog.ILogger logger = new LoggerConfiguration()
                 .WriteTo.Sink(output)
                 .MinimumLevel.Debug()
                 .CreateLogger();
 
             Logs.Factory.AddSerilog(logger);
 
-            _locals = new LocalsView();
-            _locals.Name = "Locals";
+            OutputView.Supplier.StartCategory(ComputerLogCategory);
 
-            _messageView = new MessageView();
-            _messageView.Name = "Messages";
-
-            _files = new FileView();
-            _files.Name = "Files";
-
-            InitDocking();
-
-            _output.Supplier.StartCategory(ComputerLogCategory);
-
-            _files.FileOpened += OnOpenFile;
+            FileView.FileOpened += OnOpenFile;
         }
 
         private void OnOpenFile(object sender, FileOpenedEventArgs e)
@@ -78,36 +59,60 @@ namespace NSprakIDE
 
         public void OpenComputerEditor(string filePath)
         {
+            string name = System.IO.Path.GetFileNameWithoutExtension(filePath);
+
             ComputerEditorEnviroment enviroment = new ComputerEditorEnviroment
             {
-                OutputView = _output,
+                Output = OutputView.Supplier.Start(name, ComputerLogCategory),
                 FilePath = filePath,
-                LocalsView = _locals,
-                MessageView = _messageView
+                LocalsView = LocalsView,
+                MessageView = MessageView
             };
 
-            _documentHelper.OpenComputerEditor(enviroment);
+            ComputerEditor editor = new ComputerEditor(enviroment);
+
+            TabItem newTab = new TabItem();
+            newTab.Header = name;
+            newTab.Content = editor;
+            newTab.Style = (Style)FindResource("DocumentTabItem");
+
+            void OnTabSelected()
+            {
+                OutputView.Supplier.Select(enviroment.Output);
+            }
+            newTab.MouseUp += (s, e) => OnTabSelected();
+            
+            int index = DocumentView.Items.Add(newTab);
+            DocumentView.SelectedIndex = index;
+            OnTabSelected();
         }
 
-        private void InitDocking()
+        private void NewTab_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _dockingHelper = new NSprakSaveManager(DockingManager);
-            _dockingHelper.Init();
-
-            _documentHelper = new ComputerDocumentManager(_dockingHelper);
-
-            _dockingHelper.AddConsoleAnchorable("Output", _output);
-            _dockingHelper.AddDebugAnchorable("Locals", _locals);
-            _dockingHelper.AddDebugAnchorable("Messages", _messageView);
-            _dockingHelper.AddDocument("Files", _files);
-
-            _dockingHelper.SaveCurrentLayout(overwrite: false);
-            _dockingHelper.SwitchToLayout(LayoutNames.Main);
+            Logs.Core.LogInformation("Hello from MouseUp!");
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void CloseImage_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _dockingHelper?.SaveCurrentLayout();
+            Logs.Core.LogInformation("Hello World from CLOSEMOUSEUP");
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // I don't know of a way of extracting the button's parent
+            // tab item directly, silly as that seems. (Is it possible to
+            // do so when a control template is the source of the event?)
+            for (int i = 0; i < DocumentView.Items.Count; i++)
+            {
+                TabItem item = (TabItem)DocumentView.Items[i];
+                if (item.IsMouseOver)
+                {
+                    ComputerEditor editor = (ComputerEditor)item.Content;
+                    DocumentView.Items.RemoveAt(i);
+                    editor.Dispose();
+                    break;
+                }
+            }
         }
     }
 }

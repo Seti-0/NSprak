@@ -10,64 +10,160 @@
              xmlns:theme="clr-namespace:NSprakIDE.Themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Closing="Window_Closing" WindowState="Maximized">
-    <DockPanel Background="#343434">
-        <DockingManager
-        x:Name="DockingManager"
-        AllowMixedOrientation="True"
-        Margin="5,5,5,5"
-        >
+             WindowState="Maximized">
 
-            <DockingManager.DocumentHeaderTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Title}" Margin="5,0,5,0"/>
-                </DataTemplate>
-            </DockingManager.DocumentHeaderTemplate>
+    <Window.Resources>
+        <Style TargetType="TabControl">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderBrush" Value="{StaticResource NSprakIDE.Accent}"/>
+            <Setter Property="BorderThickness" Value="0,3,0,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource NSprakIDE.Accent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- Style for tab headers - red if selected, rounded corner, etc. -->
+        <Style TargetType="TabItem" x:Key="MainTabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border" 
+                                CornerRadius="0,10,0,0"
+                                Margin="0,0,5,0"
+                                >
+                            <ContentPresenter 
+                                    x:Name="ContentSite"
+                                    ContentSource="Header"
+                                    Margin="5,5,5,5"
+                                    >
+                            </ContentPresenter>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource NSprakIDE.Accent}"></Setter>
+                                <Setter Property="Foreground" Value="White"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource NSprakIDE.Toolbar}"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Style for the close button on document tab headers -->
+        <Style TargetType="Button" x:Key="DocumentHeaderButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Image Name="CloseImage" 
+                            Width="10" 
+                            Margin="6,6,6,3" 
+                            Source="/Icons/Images/local-close-dark.png"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CloseImage" Property="Source" Value="/Icons/Images/local-close-white.png"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <!-- 
+            Style for document tab headers - indentical to the previous style, except for one button!!! 
+            I'd much prefer a way to do this without duplicating all this XAML.
+        -->
+        <Style TargetType="TabItem" x:Key="DocumentTabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border" 
+                                CornerRadius="0,10,0,0"
+                                Margin="0,0,5,0"
+                                >
+                            <StackPanel Margin="5,5,5,5" Orientation="Horizontal">
+                                <TextBlock Margin="0,0,5,0" Text="{TemplateBinding Header}"/>
+                                <Button Style="{StaticResource DocumentHeaderButton}" 
+                                        Click="Button_Click"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource NSprakIDE.Accent}"></Setter>
+                                <Setter Property="Foreground" Value="White"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource NSprakIDE.Toolbar}"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--
+            A Style with a target but no key acts as the default for the target
+            type. So this sets the default to one that inherits from
+            MainTabItem.
+        -->
+        <Style TargetType="TabItem" BasedOn="{StaticResource MainTabItem}"/>
+    </Window.Resources>
 
-            <DockingManager.Theme>
-                <!--<theme:Vs2013RedTheme/>-->
-                <!--<foreign:ExpressionLightTheme/>-->
-                <theme:MyExpressionLightTheme/>
-            </DockingManager.Theme>
+    <Grid Background="#777777">
+        <Grid Margin="2,2,2,2" Background="{StaticResource NSprakIDE.Background}">
+            <Grid Margin="2,2,2,2">
 
-            <LayoutRoot>
-                <LayoutPanel/>
-            </LayoutRoot>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <!--
-            <LayoutRoot>
-                <LayoutPanel Orientation="Horizontal">
+                <Grid>
 
-                    <LayoutDocumentPane>
-                        <LayoutDocument x:Name="Doc1" Title="Hello World">
-                            <editor:ComputerEditor Source="HelloWorld"/>
-                        </LayoutDocument>
-                        <LayoutDocument Title="Fibonnacci">
-                            <editor:ComputerEditor Source="Fibonnacci"/>
-                        </LayoutDocument>
-                        <LayoutDocument Title="Stats">
-                            <editor:ComputerEditor x:Name="Stats" Source="Stats"/>
-                        </LayoutDocument>
-                    </LayoutDocumentPane>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
 
-                    <LayoutAnchorablePane DockWidth="600">
-                        <LayoutAnchorable Title="Output">
-                            <RichTextBox x:Name="ConsoleOutput" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="0" 
-                                         IsReadOnly="True" Background="Black" VerticalScrollBarVisibility="Auto" Foreground="White">
-                                <FlowDocument>
-                                    <Paragraph/>
-                                </FlowDocument>
-                            </RichTextBox>
-                        </LayoutAnchorable>
-                    </LayoutAnchorablePane>
+                    <TabControl Name="DocumentView" Grid.Row="0">
+                        <TabItem Header="File View">
+                            <editor:FileView x:Name="FileView"/>
+                        </TabItem>
+                    </TabControl>
 
-                    <LayoutDocumentPaneGroup>
-                    </LayoutDocumentPaneGroup>
+                    <GridSplitter 
+                        Grid.Row="1"
+                        HorizontalAlignment="Stretch" 
+                        Background="{StaticResource NSprakIDE.Background}"/>
 
-                </LayoutPanel>
-            </LayoutRoot>
-            -->
+                    <TabControl Grid.Row="2">
+                        <TabItem Header="Messages">
+                            <editor:MessageView x:Name="MessageView"/>
+                        </TabItem>
+                        <TabItem Header="Locals">
+                            <editor:LocalsView x:Name="LocalsView"/>
+                        </TabItem>
+                    </TabControl>
 
-        </DockingManager>
-    </DockPanel>
+                </Grid>
+
+                <GridSplitter 
+                Grid.Column="1"
+                HorizontalAlignment="Stretch" 
+                Background="{StaticResource NSprakIDE.Background}"
+                />
+
+                <TabControl Grid.Column="2">
+                    <TabItem Header="Hello World">
+                        <editor:OutputView x:Name="OutputView"/>
+                    </TabItem>
+                </TabControl>
+
+            </Grid>
+        </Grid>
+    </Grid>
 </Window>
