@@ -21,7 +21,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <!-- Column for the Sprak Value -->
-                <DataGridTemplateColumn Header="Type">
+                <DataGridTemplateColumn Header="Value">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value}" Margin="5,0,5,0" Foreground="#FF3242DE"/>
@@ -51,7 +51,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <!-- Column for the Sprak Value -->
-                <DataGridTemplateColumn Header="Type">
+                <DataGridTemplateColumn Header="Value">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value}" Margin="5,0,5,0" Foreground="#FF3242DE"/>
