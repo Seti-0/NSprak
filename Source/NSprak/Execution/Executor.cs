@@ -25,7 +25,7 @@ namespace NSprak.Execution
     public enum ExecutorStepMode
     {
         Operation,
-        Expression
+        Source
     }
 
     public class Executor
@@ -113,6 +113,14 @@ namespace NSprak.Execution
             Run(StepIndefinitely, Stop);
         }
 
+        public void StepInto()
+        {
+            if (State != ExecutorState.Paused && State != ExecutorState.Idle)
+                return;
+
+            Run(StepSingle, Pause);
+        }
+
         public void StepOver()
         {
             if (!Instructions.HasCurrent)
@@ -156,40 +164,18 @@ namespace NSprak.Execution
             }
         }
 
-        public void StepInto()
-        {
-            if (State != ExecutorState.Paused && State != ExecutorState.Idle)
-                return;
-
-            if (StepMode == ExecutorStepMode.Operation || !Instructions.HasCurrent)
-            {
-                Run(StepSingle, Pause);
-            }
-            else
-            {
-                void Action()
-                {
-                    Expression startSource = Instructions
-                        .CurrentInfo.SourceExpression;
-                    bool endCondition() => Instructions
-                        .CurrentInfo.SourceExpression != startSource;
-
-                    StepUntil(endCondition);
-                }
-                
-                Run(Action, Pause);
-            }
-        }
-
         private void Run(Action action, Action end, bool stepInto = true)
         {
             State = ExecutorState.Running;
 
+            Expression startExpression = GetExpression();
+
             if (stepInto && Instructions.Index == -1)
                 Instructions.Step();
 
-            else
-                action();
+            else action();
+
+            ApplyStepThrough(startExpression);
 
             if (_stopRequested || _context.ExitRequested) Stop();
             else if (_pauseRequested || _breakRequested) Pause();
@@ -234,6 +220,41 @@ namespace NSprak.Execution
 
             if (Instructions.HasCurrent && !_context.ExitRequested)
                 ExecuteCurrent();
+        }
+
+        private Expression GetExpression()
+        {
+            if (!Instructions.HasCurrent)
+                return null;
+
+            return Instructions.CurrentInfo.SourceExpression;
+        }
+
+        private void ApplyStepThrough(Expression startExpression)
+        {
+            if (StepMode == ExecutorStepMode.Operation)
+                return;
+
+            bool EndCondition()
+            {
+                Expression expression = GetExpression();
+                if (expression == null)
+                    return true;
+
+                if (startExpression != null)
+                    if (expression == startExpression)
+                        return false;
+
+                if (expression is Block)
+                    return false;
+
+                if (expression is FunctionCall)
+                    return true;
+
+                return expression.ParentBlockHint == expression.ParentHint;
+            }
+
+            StepUntil(EndCondition);
         }
 
         private void StepIndefinitely()

@@ -27,6 +27,21 @@ namespace NSprak.Expressions
 
         public abstract IEnumerable<Expression> GetSubExpressions();
 
+        public bool IsDescendantOf(Expression other)
+        {
+            Expression ancestor = ParentHint;
+            while (ancestor != null)
+            {
+                if (ancestor == other)
+                    return true;
+
+                ancestor = ancestor.ParentHint;
+            }
+
+            return false;
+
+        }
+
         public Expression GetNextSibling()
         {
             if (ParentHint == null) 

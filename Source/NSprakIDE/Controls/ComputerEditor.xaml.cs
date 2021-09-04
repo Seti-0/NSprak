@@ -97,6 +97,8 @@ namespace NSprakIDE.Controls
             {
                 Dispatcher.Invoke(Compile);
             };
+
+            UpdateMode(ComputerEditorMode.Source);
         }
 
         public void Dispose()
@@ -177,12 +179,12 @@ namespace NSprakIDE.Controls
             {
                 case ComputerEditorMode.Source:
                     MainContent.Content = _sourceEditor;
-                    _executor.StepMode = ExecutorStepMode.Expression;
+                    _executor.StepMode = ExecutorStepMode.Source;
                     break;
 
                 case ComputerEditorMode.Expressions:
                     MainContent.Content = _expressionView;
-                    _executor.StepMode = ExecutorStepMode.Expression;
+                    _executor.StepMode = ExecutorStepMode.Source;
                     break;
 
                 case ComputerEditorMode.Operations:
@@ -217,15 +219,6 @@ namespace NSprakIDE.Controls
 
         private void PerformExecutorAction(Action action)
         {
-            _executor.StepMode = Mode switch
-            {
-                ComputerEditorMode.Operations => ExecutorStepMode.Operation,
-                _ => ExecutorStepMode.Operation
-            };
-
-            if (Mode == ComputerEditorMode.Expressions)
-                return;
-
             Task.Run(action);
         }
 

@@ -105,6 +105,11 @@ namespace NSprakIDE.Controls
             MainEditor.TextArea.LeftMargins.Add(margin);
         }
 
+        public void EnsureLineIsVisible(int lineNumber, int columnNumber)
+        {
+            MainEditor.ScrollTo(lineNumber, columnNumber);
+        }
+
         public void Update(Compiler compiler)
         {
             _tokenColorizer.Tokens = compiler.Tokens;
