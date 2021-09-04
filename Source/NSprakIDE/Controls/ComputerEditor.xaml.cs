@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 
 using NSprak;
+using NSprak.Tokens;
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
 using NSprak.Execution;
@@ -228,6 +229,11 @@ namespace NSprakIDE.Controls
             {
                 _operationsView.Highlight(_executor.Instructions.Index);
                 _localsView.Update();
+
+                Token token = _executor.Instructions.CurrentInfo.FocusToken;
+                int lineNumber = token.LineNumber;
+                int columnNumber = token.ColumnStart;
+                _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
                 _sourceEditor.Redraw();
             }
 

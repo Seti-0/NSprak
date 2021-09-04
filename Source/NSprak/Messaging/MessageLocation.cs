@@ -5,60 +5,33 @@ using NSprak.Tokens;
 
 namespace NSprak.Messaging
 {
-    public class MessageLocation : IEquatable<MessageLocation>
+    public class MessageLocation
     {
-        public int LineStart { get; }
+        private Token _startToken, _endToken;
 
-        public int LineEnd { get; }
+        public int Start => _startToken.Start;
 
-        public int Start { get; }
+        public int End => _endToken.End;
 
-        public int End { get; }
+        public int LineStart => _startToken.LineNumber;
+
+        public int LineEnd => _endToken.LineNumber + 1;
+
+        public int ColumnStart => _startToken.ColumnStart;
+
+        public int ColumnEnd => _endToken.ColumnEnd;
 
         public MessageLocation(Token token)
         {
-            Start = token.Start;
-            End = token.End;
-            LineStart = token.LineNumber;
-            LineEnd = token.LineNumber + 1;
+            _startToken = token;
+            _endToken = token;
         }
 
         public MessageLocation(Token start, Token end)
         {
-            Start = start.Start;
-            End = end.End;
-            LineStart = start.LineNumber;
-            LineEnd = end.LineNumber + 1;
+            _startToken = start;
+            _endToken = end;
         }
-
-        public MessageLocation(int start, int end, int lineStart, int lineEnd)
-        {
-            Start = start;
-            End = end;
-            LineStart = lineStart;
-            LineEnd = lineEnd;
-        }
-
-        public bool Equals([AllowNull] MessageLocation other)
-            => other != null
-            && other.Start == Start
-            && other.End == End
-            && other.LineStart == LineStart
-            && other.LineEnd == LineEnd;
-
-        public override bool Equals(object obj)
-            => obj is MessageLocation msg && Equals(msg);
-
-        public static bool operator ==(MessageLocation a, MessageLocation b)
-            => ((a is null) && (b is null))
-            || ((!(a is null)) && a.Equals(b));
-
-        public static bool operator !=(MessageLocation a, MessageLocation b)
-            => (a is null && !(b is null))
-            || ((!(a is null)) && (!a.Equals(b)));
-
-        public override int GetHashCode()
-            => HashCode.Combine(Start, End, LineStart, LineEnd);
 
         public override string ToString()
         {
@@ -66,10 +39,12 @@ namespace NSprak.Messaging
             if (LineEnd - LineStart > 1)
                 line += ":" + LineEnd;
 
-            string column = Start.ToString();
-            if (End - Start > 1)
-                line += ":" + End;
+            string column = ColumnStart.ToString();
+            if (ColumnStart != ColumnEnd)
+                line += ":" + ColumnEnd;
 
+            // Confusingly, the column end can come before the column
+            // start here, if the location spans multiple lines.
             return $"(line: {line}, col: {column})";
         }
     }

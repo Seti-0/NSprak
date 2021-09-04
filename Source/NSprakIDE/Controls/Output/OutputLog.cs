@@ -47,6 +47,9 @@ namespace NSprakIDE.Controls.Output
 
             _paragraph.Inlines.Add(run);
             //_parent.UpdateSelection();
+
+            if (_paragraph.Inlines.Count > 100)
+                _paragraph.Inlines.Remove(_paragraph.Inlines.FirstInline);
         }
 
         public void WriteLine(string text)

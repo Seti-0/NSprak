@@ -27,7 +27,7 @@ namespace NSprakIDE.Controls
             if (message.Location != null)
             {
                 Line = (message.Location.LineStart + 1).ToString();
-                Column = (message.Location.Start + 1).ToString();
+                Column = (message.Location.ColumnStart + 1).ToString();
             }
             else
             {

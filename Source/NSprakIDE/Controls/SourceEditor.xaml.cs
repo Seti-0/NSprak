@@ -20,7 +20,6 @@ using NSprakIDE.Controls.Code;
 using NSprakIDE.Controls.General;
 
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Rendering;
 
 namespace NSprakIDE.Controls
 {
