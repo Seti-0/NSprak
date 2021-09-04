@@ -199,6 +199,12 @@ namespace NSprak.Execution
 
         private void Pause()
         {
+            if (!Instructions.HasCurrent)
+            {
+                Stop();
+                return;
+            }
+
             State = ExecutorState.Paused;
 
             _breakRequested = false;
