@@ -16,7 +16,7 @@ namespace NSprak.Expressions.Types
         {
             get
             {
-                bool? hint = ParentHint?.VariableDeclarationsHint?.Count > 0;
+                bool? hint = ParentBlockHint?.VariableDeclarationsHint?.Count > 0;
 
                 if (hint.HasValue)
                     return hint.Value;
@@ -46,7 +46,7 @@ namespace NSprak.Expressions.Types
             Token startToken = null, Token endToken = null)
         {
             Header = header;
-            header.ParentHint = this;
+            header.ParentBlockHint = this;
             _startToken = startToken;
             _endToken = endToken;
 
@@ -76,7 +76,7 @@ namespace NSprak.Expressions.Types
             if (VariableDeclarationsHint.TryGetValue(name, out result))
                 return true;
 
-            if (ParentHint != null && ParentHint.TryGetVariableInfo(name, out result))
+            if (ParentBlockHint != null && ParentBlockHint.TryGetVariableInfo(name, out result))
                 return true;
 
             return false;

@@ -11,9 +11,10 @@ namespace NSprakIDE.Controls.Code
 {
     public class TestExpressions : IColorizerElement<Expression>
     {
+        public bool CanApply(Expression item) => true;
+
         public void Apply(VisualLineElement element, Expression item)
-        {
-            
+        {            
             element.BackgroundBrush = new SolidColorBrush(GetColor(item));
         }
 

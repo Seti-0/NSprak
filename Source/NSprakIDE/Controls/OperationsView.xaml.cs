@@ -1,29 +1,20 @@
-﻿using NSprak.Execution;
-using NSprak.Operations.Types;
-using NSprak.Language;
-using NSprakIDE.Controls.Operations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Transactions;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using NSprak.Operations;
-using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+
+using NSprak.Operations;
+using NSprak.Execution;
+using NSprak.Operations.Types;
+using NSprak.Language;
+
+using NSprakIDE.Themes;
 
 namespace NSprakIDE.Controls
 {
-    using static Operations.OpBrushNames;
-
     /// <summary>
     /// Interaction logic for OperationsView.xaml
     /// </summary>
@@ -92,8 +83,8 @@ namespace NSprakIDE.Controls
         {
             InitializeComponent();
 
-            InstructionLine.ActiveBackground = (Brush)FindResource(Next);
-            InstructionLine.BreakpointBackground = (Brush)FindResource(Breakpoint);
+            InstructionLine.ActiveBackground = Theme.Get(Theme.Operations.Next);
+            InstructionLine.BreakpointBackground = Theme.Get(Theme.Operations.Breakpoint);
         }
 
         private void RefreshVisual()
@@ -110,7 +101,6 @@ namespace NSprakIDE.Controls
                 _currentHighlighted.UpdateBackground();
 
                 _currentHighlighted = null;
-                _previousFocus = 0;
 
                 RefreshVisual();
             }
@@ -118,10 +108,6 @@ namespace NSprakIDE.Controls
 
         public void Highlight(int index)
         {
-            // The field is cleared by "ClearHighlight", but we will need it in
-            // this function
-            double previousFocus = _previousFocus;
-
             ClearHighlight();
 
             if (_lines.Count == 0)
@@ -130,13 +116,12 @@ namespace NSprakIDE.Controls
             if (index >= _lines.Count)
                 index = _lines.Count - 1;
 
-            Brush brush = (Brush)FindResource(Next);
             _lines[index].Active = true;
             _lines[index].UpdateBackground();
 
             _currentHighlighted = _lines[index];
 
-            EnsureLineInView(_lines[index], previousFocus);
+            EnsureLineInView(_lines[index]);
 
             RefreshVisual();
         }
@@ -157,7 +142,7 @@ namespace NSprakIDE.Controls
             line.UpdateBackground();
         }
 
-        private void EnsureLineInView(InstructionLine line, double previousFocus)
+        private void EnsureLineInView(InstructionLine line)
         {
             // The coordinates here confused me greatly. I suspect it's
             // because all three of "pointer.GetRect", "CaretPosition.GetRect"
@@ -181,13 +166,11 @@ namespace NSprakIDE.Controls
                     .FirstOrDefault()
                     ?.ContentStart;
 
-            double target = pointer.GetCharacterRect(LogicalDirection.Forward).Bottom;
-            double current = MainText.CaretPosition.GetCharacterRect(LogicalDirection.Forward).Top;
+            double origin = MainText.Document.ContentStart.GetCharacterRect(LogicalDirection.Forward).Bottom;
+            double target = pointer.GetCharacterRect(LogicalDirection.Forward).Top;
+            target -= origin;
 
-            // This coordinate transform makes little sense to me, but it seems to work 
-            target = target - current;
-            
-            double previousTarget = previousFocus;
+            double previousTarget = _previousFocus;
 
             // This is the height of the scroll window, not the entire document!
             double viewHeight = MainText.ActualHeight;
@@ -212,7 +195,7 @@ namespace NSprakIDE.Controls
                     // This is the minimum new height
                     newHeight = target + targetMargin - viewHeight;
 
-                    jump = current + newHeight;
+                    jump = origin + newHeight;
                     // But don't move unless we need to move forwards to get there
                     move = jump > 0;
                 }
@@ -222,7 +205,7 @@ namespace NSprakIDE.Controls
                     newHeight = target - targetMargin;
 
                     // But don't move unless we need to move backwards to get there
-                    jump = current + newHeight;
+                    jump = origin + newHeight;
                     move = jump < 0;
                 }
             }
@@ -270,8 +253,8 @@ namespace NSprakIDE.Controls
         private void SaveInstructionLine()
         {
             bool alternate = _alternateLineColors && (_lines.Count % 2) == 1;
-            string key = alternate ? OpBackgroundAlternate : OpBackground;
-            Brush background = (Brush)FindResource(key);
+            string key = alternate ? Theme.Operations.BackgroundAlternate : Theme.Operations.Background;
+            Brush background = Theme.Get(key);
 
             _lines.Add(new InstructionLine(_currentLine, background));
         }
@@ -298,7 +281,7 @@ namespace NSprakIDE.Controls
 
         private void Space()
         {
-            Write(Main, " ");
+            Write(Theme.Operations.Default, " ");
             _currentLineLength += 1;
         }
 
@@ -316,7 +299,7 @@ namespace NSprakIDE.Controls
 
             if (foregroundKey != null)
             {
-                Brush foreground = (Brush)FindResource(foregroundKey);
+                Brush foreground = Theme.Get(foregroundKey);
                 run.Foreground = foreground;
             }
 
@@ -327,16 +310,12 @@ namespace NSprakIDE.Controls
                 _currentLine.Add(run);
         }
 
-        private void WriteIndex(int index, bool hide)
+        private void WriteIndex(int index)
         {
             string text = index.ToString().PadLeft(_indexWidth);
             text = text.PadRight(_indexWidth + 3);
 
-            // If hide is true, draw the text, but as the same color as the background
-            // See GetIndex for the horrible reason for this silliness
-            string coloKey = hide ? OpBackground : IndexForeground;
-
-            Write(IndexForeground, text, save: false);
+            Write(Theme.Operations.LineNumberText, text, save: false);
         }
 
         private int GetIndex(TextPointer pointer)
@@ -373,8 +352,8 @@ namespace NSprakIDE.Controls
 
                 StartInstructionLine();
 
-                WriteIndex(index, hide: true);
-                Write(Comment, " # "+ info.Comment + " ");
+                WriteIndex(index);
+                Write(Theme.Operations.Comment, " # "+ info.Comment + " ");
                 
                 SaveInstructionLine();
 
@@ -387,8 +366,8 @@ namespace NSprakIDE.Controls
 
             StartInstructionLine();
 
-            WriteIndex(index, hide: false);
-            Write(Main, " " + op.Name);
+            WriteIndex(index);
+            Write(Theme.Operations.Default, " " + op.Name);
 
             object rawParam = op.RawParam;
 
@@ -396,14 +375,14 @@ namespace NSprakIDE.Controls
             {
                 Space();
 
-                PadLeft(Comment, "", 42);
+                PadLeft(Theme.Operations.Comment, "", 42);
 
                 string colorKey = op.RawParam switch
                 {
-                    Value _ => ValueParam,
-                    int _ => NumberParam,
-                    string _ => NameParam,
-                    _ => Param
+                    Value _ => Theme.Operations.ValueParam,
+                    int _ => Theme.Operations.NumberParam,
+                    string _ => Theme.Operations.NameParam,
+                    _ => Theme.Operations.Param
                 };
 
                 Write(colorKey, op.RawParam.ToString());
@@ -412,9 +391,9 @@ namespace NSprakIDE.Controls
             //PadLeft(Comment, "", 70);
 
             if (info.Comment != null)
-                Write(Comment, info.Comment);
+                Write(Theme.Operations.Comment, info.Comment);
 
-            Write(Main, " ");
+            Write(Theme.Operations.Default, " ");
 
             SaveInstructionLine();
 

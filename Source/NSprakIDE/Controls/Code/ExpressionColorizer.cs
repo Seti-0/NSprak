@@ -55,13 +55,17 @@ namespace NSprakIDE.Controls.Code
             overlapStart = visualLine.GetVisualColumn(overlapStart - offset);
             overlapEnd = visualLine.GetVisualColumn(overlapEnd - offset);
 
+            IEnumerable<IColorizerElement<Expression>> elements = Elements
+                .Where(x => x.CanApply(expression));
+
             void ApplyColorizerElements(VisualLineElement lineElement)
             {
-                foreach (IColorizerElement<Expression> colorizerElement in Elements)
+                foreach (IColorizerElement<Expression> colorizerElement in elements)
                     colorizerElement.Apply(lineElement, expression);
             }
 
-            ChangeVisualElements(overlapStart, overlapEnd, ApplyColorizerElements);
+            if (elements.Count() > 0)
+                ChangeVisualElements(overlapStart, overlapEnd, ApplyColorizerElements);
 
             return true;
         }

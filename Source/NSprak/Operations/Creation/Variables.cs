@@ -15,7 +15,7 @@ namespace NSprak.Operations.Creation
     {
         public static void GenerateCode(VariableReference reference, GeneratorContext builder)
         {
-            builder.AddOp(new VariableGet(reference.Name));
+            builder.AddOp(new VariableGet(reference.Name), reference.Token);
         }
 
         public static void GenerateCode(VariableAssignment assignment, GeneratorContext builder)
@@ -25,9 +25,9 @@ namespace NSprak.Operations.Creation
                 if (assignment.HasValue)
                     builder.AddCode(assignment.Value);
 
-                else builder.AddOp(new LiteralValue(assignment.DeclarationType.Default()));
+                else builder.AddOp(new LiteralValue(assignment.DeclarationType.Default()), assignment.TypeToken);
 
-                builder.AddOp(new VariableCreate(assignment.Name));
+                builder.AddOp(new VariableCreate(assignment.Name), assignment.NameToken);
             }
             else
             {
@@ -37,11 +37,11 @@ namespace NSprak.Operations.Creation
                     {
                         case OperatorSide.Both:
                             if (assignment.Value != null) builder.AddCode(assignment.Value);
-                            builder.AddOp(new VariableGet(assignment.Name));
+                            builder.AddOp(new VariableGet(assignment.Name), assignment.NameToken);
                             break;
 
                         case OperatorSide.Left:
-                            builder.AddOp(new VariableGet(assignment.Name));
+                            builder.AddOp(new VariableGet(assignment.Name), assignment.NameToken);
                             break;
 
                         case OperatorSide.Right:
@@ -49,9 +49,9 @@ namespace NSprak.Operations.Creation
                             break;
                     }
 
-                    builder.AddOp(new CallBuiltIn(assignment.BuiltInFunctionHint));
+                    builder.AddOp(new CallBuiltIn(assignment.BuiltInFunctionHint), assignment.OperatorToken);
 
-                    builder.AddOp(new VariableSet(assignment.Name));
+                    builder.AddOp(new VariableSet(assignment.Name), assignment.NameToken);
                 }
             }
         }

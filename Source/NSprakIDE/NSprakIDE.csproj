@@ -14,10 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controls\Code\Elements\ErrorHighlighter.cs" />
     <Compile Remove="Controls\Code\ExpressionSeekerOld.cs" />
     <Compile Remove="Controls\Code\ISeekerCollector.cs" />
-    <Compile Remove="Controls\Code\Old\ISeekerCollector.cs" />
     <Compile Remove="Controls\Output\TextBoxConsole.cs" />
   </ItemGroup>
 
@@ -109,9 +107,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Controls\Code\Elements\ErrorHighlighter.cs" />
-    <None Include="Controls\Code\Old\ExpressionSeekerOld.cs" />
-    <None Include="Controls\Code\Old\ISeekerCollector.cs" />
     <None Include="Controls\Output\TextBoxConsole.cs" />
   </ItemGroup>
 
@@ -206,16 +201,6 @@
     <Resource Include="Icons\Images\local-close-dark.png" />
     <Resource Include="Icons\Images\local-close-toolbar.png" />
     <Resource Include="Icons\Images\local-close-white.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Controls\Code\Brushes.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Controls\Operations\Brushes.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 
 </Project>

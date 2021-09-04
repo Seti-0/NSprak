@@ -6,9 +6,6 @@
              xmlns:local="clr-namespace:NSprakIDE.Controls.Expressions"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary Source="Expressions/Brushes.xaml"/>
-    </UserControl.Resources>
     <DockPanel Name="MainDockPanel">
         <Button 
             Content="Show Debug" 

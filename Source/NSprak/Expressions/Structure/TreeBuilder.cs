@@ -44,7 +44,7 @@ namespace NSprak.Expressions.Structure
 
                 if ((!allowFunctions) && header is FunctionHeader functionHeader)
                 {
-                    // A function inside a function is no problem in theory, though it is not a specified possibility in Sprak
+                    // A function inside a function is no problem in theory, but it is not a specified possibility in Sprak
                     env.Messages.AtExpression(functionHeader, Messages.NestedFunction);
                     error = true;
                 }

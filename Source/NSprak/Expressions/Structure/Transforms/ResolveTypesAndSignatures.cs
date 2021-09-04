@@ -59,7 +59,7 @@ namespace NSprak.Expressions.Structure.Transforms
 
                 case VariableReference variable:
 
-                    if (variable.ParentHint.TryGetVariableInfo(variable.Name, out VariableInfo result))
+                    if (variable.ParentBlockHint.TryGetVariableInfo(variable.Name, out VariableInfo result))
                         variable.TypeHint = result.DeclaredType;
 
                     else
@@ -92,10 +92,15 @@ namespace NSprak.Expressions.Structure.Transforms
             if (lookupResult.Success)
             {
                 if (lookupResult.BuiltInFunction != null)
+                {
                     call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
-
-                else 
+                    call.NameToken.Hints |= Tokens.TokenHints.BuiltInFunction;
+                }
+                else
+                {
                     call.UserFunctionHint = lookupResult.FunctionInfo.Signature;
+                    call.NameToken.Hints |= Tokens.TokenHints.UserFunction;
+                }
 
                 call.TypeHint = lookupResult.FunctionInfo?.ReturnType;
             }
@@ -141,7 +146,7 @@ namespace NSprak.Expressions.Structure.Transforms
             else if (call.IsDeclaration)
                 left = call.DeclarationType;
 
-            else if (call.ParentHint.TryGetVariableInfo(call.Name, out VariableInfo info))
+            else if (call.ParentBlockHint.TryGetVariableInfo(call.Name, out VariableInfo info))
                 left = info.DeclaredType;
 
             else return;

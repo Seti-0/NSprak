@@ -10,6 +10,8 @@ namespace NSprakIDE.Controls.Code
 {
     public class ExecutionHighlighting : IColorizerElement<Expression>
     {
+        public bool CanApply(Expression item) => false;
+
         public void Apply(VisualLineElement element, Expression item)
         {
         }

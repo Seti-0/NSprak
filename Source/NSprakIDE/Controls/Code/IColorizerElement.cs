@@ -10,6 +10,8 @@ namespace NSprakIDE.Controls.Code
 {
     public interface IColorizerElement<T>
     {
-        public void Apply(VisualLineElement element, T item);
+        bool CanApply(T item);
+
+        void Apply(VisualLineElement element, T item);
     }
 }

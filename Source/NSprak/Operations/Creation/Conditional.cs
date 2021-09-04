@@ -16,21 +16,21 @@ namespace NSprak.Operations.Creation
         public static void GenerateCode(IfHeader header, GeneratorContext builder)
         {
             if (header.RequiresScopeHint)
-                builder.AddOp(new ScopeBegin());
+                builder.AddOp(new ScopeBegin(), header.IfToken);
 
             string endLabel = builder.DeclareLabel("endIf");
 
             builder.AddCode(header.Condition);
 
-            builder.AddOp(new JumpLabelConditionalNegated(endLabel));
+            builder.AddOp(new JumpLabelConditionalNegated(endLabel), header.IfToken);
 
-            foreach (Expression statement in header.ParentHint.Statements)
+            foreach (Expression statement in header.ParentBlockHint.Statements)
                 builder.AddCode(statement);
 
             builder.SetLabelToNext(endLabel);
 
             if (header.RequiresScopeHint)
-                builder.AddOp(new ScopeEnd());
+                builder.AddOp(new ScopeEnd(), header.EndToken);
         }
 
         public static void GenerateCode(LoopHeader header, GeneratorContext builder)
@@ -38,7 +38,7 @@ namespace NSprak.Operations.Creation
             bool requiresScopes = header.RequiresScopeHint;
 
             if (requiresScopes)
-                builder.AddOp(new ScopeBegin());
+                builder.AddOp(new ScopeBegin(), header.LoopToken);
 
             string endLabel = builder.DeclareLabel("LoopEnd");
             builder.BreakLabels.Push(endLabel);
@@ -68,20 +68,20 @@ namespace NSprak.Operations.Creation
                 {
                     string endName = builder.GetIndexedName("end");
                     builder.AddCode(header.RangeEnd);
-                    builder.AddOp(new VariableCreate(endName));
+                    builder.AddOp(new VariableCreate(endName), header.LoopToken);
 
                     endOp = new VariableGet(endName);
                 }
 
                 builder.AddCode(header.RangeStart);
-                builder.AddOp(new VariableCreate(indexName));
+                builder.AddOp(new VariableCreate(indexName), header.NameToken);
 
                 builder.SetLabelToNext(continueLabel);
 
-                builder.AddOp(new VariableGet(indexName));
+                builder.AddOp(new VariableGet(indexName), header.NameToken);
                 builder.AddOp(endOp);
-                builder.AddOp(new GreaterThan());
-                builder.AddOp(new JumpLabelConditional(endLabel));
+                builder.AddOp(new GreaterThan(), header.FromToken);
+                builder.AddOp(new JumpLabelConditional(endLabel), header.FromToken);
             }
             else
             {
@@ -92,52 +92,52 @@ namespace NSprak.Operations.Creation
                 string currentName = header.Name ?? "@";
 
                 builder.AddCode(header.Array);
-                builder.AddOp(new VariableCreate(arrayName));
+                builder.AddOp(new VariableCreate(arrayName), header.LoopToken);
 
-                builder.AddOp(new ArrayCount(arrayName));
-                builder.AddOp(new VariableCreate(countName));
+                builder.AddOp(new ArrayCount(arrayName), header.LoopToken);
+                builder.AddOp(new VariableCreate(countName), header.LoopToken);
 
-                builder.AddOp(new LiteralValue(new SprakNumber(0)));
-                builder.AddOp(new VariableCreate(indexName));
+                builder.AddOp(new LiteralValue(new SprakNumber(0)), header.LoopToken);
+                builder.AddOp(new VariableCreate(indexName), header.LoopToken);
 
-                builder.AddOp(new LiteralValue(SprakUnit.Value));
-                builder.AddOp(new VariableCreate(currentName));
+                builder.AddOp(new LiteralValue(SprakUnit.Value), header.LoopToken);
+                builder.AddOp(new VariableCreate(currentName), header.LoopToken);
 
                 builder.SetLabelToNext(continueLabel);
 
-                builder.AddOp(new VariableGet(indexName));
-                builder.AddOp(new VariableGet(countName));
-                builder.AddOp(new GreaterThanOrEqualTo());
-                builder.AddOp(new JumpLabelConditional(endLabel));
+                builder.AddOp(new VariableGet(indexName), header.LoopToken);
+                builder.AddOp(new VariableGet(countName), header.LoopToken);
+                builder.AddOp(new GreaterThanOrEqualTo(), header.LoopToken);
+                builder.AddOp(new JumpLabelConditional(endLabel), header.LoopToken);
 
-                builder.AddOp(new VariableGet(arrayName));
-                builder.AddOp(new VariableGet(indexName));
-                builder.AddOp(new ArrayElementGet());
-                builder.AddOp(new VariableSet(currentName));
+                builder.AddOp(new VariableGet(arrayName), header.InToken);
+                builder.AddOp(new VariableGet(indexName), header.InToken);
+                builder.AddOp(new ArrayElementGet(), header.InToken);
+                builder.AddOp(new VariableSet(currentName), header.InToken);
 
-                builder.AddOp(new Increment(indexName));
+                builder.AddOp(new Increment(indexName), header.InToken);
             };
 
             if (requiresScopes)
-                builder.AddOp(new ScopeBegin());
+                builder.AddOp(new ScopeBegin(), header.LoopToken);
 
-            foreach (Expression statement in header.ParentHint.Statements)
+            foreach (Expression statement in header.ParentBlockHint.Statements)
                 builder.AddCode(statement);
 
             if (requiresScopes)
-                builder.AddOp(new ScopeEnd());
+                builder.AddOp(new ScopeEnd(), header.EndToken);
 
             if (header.IsRange)
-                builder.AddOp(new Increment(indexName));
+                builder.AddOp(new Increment(indexName), header.EndToken);
 
-            builder.AddOp(new JumpLabel(continueLabel));
+            builder.AddOp(new JumpLabel(continueLabel), header.EndToken);
             builder.SetLabelToNext(endLabel);
 
             if (!header.IsInfinite)
                 builder.PopIndex();
 
             if (requiresScopes)
-                builder.AddOp(new ScopeEnd());
+                builder.AddOp(new ScopeEnd(), header.EndToken);
         }
     }
 }

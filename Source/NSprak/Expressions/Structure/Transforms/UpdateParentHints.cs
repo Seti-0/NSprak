@@ -9,18 +9,20 @@ namespace NSprak.Expressions.Structure.Transforms
     {
         public void Apply(Block root, CompilationEnvironment environment)
         {
-            ApplyParent(root, null);
+            ApplyParent(root, null, null);
         }
 
-        private void ApplyParent(Expression expression, Block parent)
+        private void ApplyParent(Expression expression, Expression parent, Block parentBlock)
         {
+            expression.ParentBlockHint = parentBlock;
             expression.ParentHint = parent;
 
+            parent = expression;
             if (expression is Block block)
-                parent = block;
+                parentBlock = block;
 
             foreach (Expression subExpr in expression.GetSubExpressions())
-                ApplyParent(subExpr, parent);
+                ApplyParent(subExpr, parent, parentBlock);
         }
     }
 }

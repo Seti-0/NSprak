@@ -13,10 +13,14 @@ using System.Windows.Shapes;
 
 using NSprak;
 using NSprak.Tokens;
+using NSprak.Messaging;
+using NSprak.Execution;
+
 using NSprakIDE.Controls.Code;
 using NSprakIDE.Controls.General;
 
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Rendering;
 
 namespace NSprakIDE.Controls
 {
@@ -29,6 +33,8 @@ namespace NSprakIDE.Controls
 
         private TokenColorizer _tokenColorizer;
         private ExpressionColorizer _expressionColorizer;
+
+        private RuntimeHighlighter _runtimeHighlighter;
 
         public event EventHandler<EventArgs> FinishedEditing;
 
@@ -47,7 +53,13 @@ namespace NSprakIDE.Controls
             get => MainEditor.CaretOffset;
         }
 
-        public SourceEditor()
+        public Executor Executor
+        {
+            get => _runtimeHighlighter.Executor;
+            set => _runtimeHighlighter.Executor = value;
+        }
+
+        public SourceEditor(Messenger messenger)
         {
             InitializeComponent();
 
@@ -55,22 +67,28 @@ namespace NSprakIDE.Controls
             {
                 Elements = new List<IColorizerElement<Token>>
                 {
-                    new SyntaxHighlighting(new SyntaxHighlighterTheme(TryFindBrush)),
-                    //new ErrorHighlighter()
+                    new SyntaxHighlighting(),
+                    new ErrorHighlighter(messenger)
                 }
             };
 
+            _runtimeHighlighter = new RuntimeHighlighter();
             _expressionColorizer = new ExpressionColorizer()
             {
                 Elements = new List<IColorizerElement<NSprak.Expressions.Expression>>
                 {
                     //new TestExpressions(),
-                    new RuntimeHighlighter(TryFindBrush)
+                    _runtimeHighlighter
                 }
             };
 
             MainEditor.TextArea.TextView.LineTransformers.Add(_tokenColorizer);
             MainEditor.TextArea.TextView.LineTransformers.Add(_expressionColorizer);
+
+            MainEditor.TextArea.SelectionBrush = new SolidColorBrush(Color.FromRgb(160, 200, 241));
+            MainEditor.TextArea.SelectionBorder = null;
+            MainEditor.TextArea.SelectionCornerRadius = 0;
+            MainEditor.TextArea.SelectionForeground = null;
 
             _editAwaitor.Complete += OnFinishedEditing;
             MainEditor.TextChanged += OnMainEditorTextChanged;
@@ -85,11 +103,6 @@ namespace NSprakIDE.Controls
             Brush marginBrush = (Brush)FindResource("NSprakIDE.Toolbar");
             margin.SetValue(ForegroundProperty, marginBrush);
             MainEditor.TextArea.LeftMargins.Add(margin);
-        }
-
-        private Brush TryFindBrush(string key)
-        {
-            return TryFindResource(key) as Brush;
         }
 
         public void Update(Compiler compiler)

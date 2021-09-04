@@ -17,13 +17,35 @@ namespace NSprak.Expressions
 
         public abstract Token EndToken { get; }
 
-        public Block ParentHint { get; set; } = null;
+        public Expression ParentHint { get; set; } = null;
+
+        public Block ParentBlockHint { get; set; } = null;
 
         public SprakType TypeHint { get; set; } = SprakType.Unit;
 
         public List<OpDebugInfo> OperatorsHint { get; } = new List<OpDebugInfo>();
 
         public abstract IEnumerable<Expression> GetSubExpressions();
+
+        public Expression GetNextSibling()
+        {
+            if (ParentHint == null) 
+                return null;
+
+            IEnumerator<Expression> siblings = ParentHint
+                .GetSubExpressions()
+                .GetEnumerator();
+
+            while (siblings.MoveNext())
+                if (siblings.Current == this)
+                {
+                    if (siblings.MoveNext())
+                        return siblings.Current;
+                    break;
+                }
+
+            return null;
+        }
 
         public IEnumerable<Expression> GetSubExpressionDeep()
         {
@@ -38,13 +60,13 @@ namespace NSprak.Expressions
 
         public virtual string GetTraceString()
         {
-            Block ancestor = ParentHint;
+            Block ancestor = ParentBlockHint;
             FunctionHeader function = null;
 
             while (ancestor != null && function == null)
             {
                 function = ancestor.Header as FunctionHeader;
-                ancestor = ancestor.ParentHint;
+                ancestor = ancestor.ParentBlockHint;
             }
 
             string result = ToString();

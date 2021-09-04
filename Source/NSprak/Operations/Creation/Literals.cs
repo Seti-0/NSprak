@@ -16,12 +16,12 @@ namespace NSprak.Operations.Creation
             foreach (Expression element in literal.Elements)
                 builder.AddCode(element);
 
-            builder.AddOp(new ArrayValue(literal.Elements.Count));
+            builder.AddOp(new ArrayValue(literal.Elements.Count), literal.StartToken);
         }
 
         public static void GenerateCode(LiteralGet literal, GeneratorContext builder)
         {
-            builder.AddOp(new LiteralValue(literal.Value));
+            builder.AddOp(new LiteralValue(literal.Value), literal.Token);
         }
     }
 }

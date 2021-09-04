@@ -33,6 +33,8 @@ namespace NSprak.Tokens
     {
         None = 0,
         Function = 1,
+        UserFunction = 2,
+        BuiltInFunction = 4,
     }
 
     public class Token

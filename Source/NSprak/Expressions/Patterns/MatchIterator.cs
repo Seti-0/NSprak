@@ -105,8 +105,13 @@ namespace NSprak.Expressions.Patterns
 
         public void AssertKeyword(string keyword)
         {
-            Assert(out Token current);
-            current.AssertKeyword(keyword);
+            AssertKeyword(keyword, out _);
+        }
+
+        public void AssertKeyword(string keyword, out Token token)
+        {
+            Assert(out token);
+            token.AssertKeyword(keyword);
         }
 
         public void AssertKeySymbol(char symbol)
@@ -167,7 +172,12 @@ namespace NSprak.Expressions.Patterns
 
         public bool NextIsKeyword(string keyword)
         {
-            if (Next(out Token token) && token.IsKeyWord(keyword))
+            return NextIsKeyword(keyword, out _);
+        }
+
+        public bool NextIsKeyword(string keyword, out Token token)
+        {
+            if (Next(out token) && token.IsKeyWord(keyword))
             {
                 MoveNext();
                 return true;

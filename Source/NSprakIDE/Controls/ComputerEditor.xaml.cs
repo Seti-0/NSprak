@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
 using NSprak;
+using NSprak.Expressions;
+using NSprak.Expressions.Types;
 using NSprak.Execution;
+using NSprak.Operations;
 
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.General;
@@ -67,7 +69,7 @@ namespace NSprakIDE.Controls
                 StandardOut = console
             };
 
-            _sourceEditor = new SourceEditor();
+            _sourceEditor = new SourceEditor(Computer.Messenger);
             _expressionView = new ExpressionView();
             _operationsView = new OperationsView();
 
@@ -77,6 +79,7 @@ namespace NSprakIDE.Controls
             _localsView.Target = _executor;
             _messageView = environment.MessageView;
             _messageView.Target = Computer.Messenger;
+            _sourceEditor.Executor = _executor;
             
             _expressionView.ShowDebug = true;
 
@@ -101,6 +104,33 @@ namespace NSprakIDE.Controls
             Enviroment.Output.End();
         }
 
+        public void Compile()
+        {
+            Computer.Source = _sourceEditor.Text;
+
+            Logs.Core.LogDebug("Compiling...");
+
+            if (Computer.Compile())
+                Logs.Core.LogDebug("Compilation successful.");
+            else
+                Logs.Core.LogDebug("Compilation failed.");
+
+            _sourceEditor.Update(Computer.Compiler);
+            _sourceEditor.Redraw();
+
+            _messageView.Update();
+
+            _expressionView.Root = Computer
+                .Compiler
+                .ExpressionTree
+                .Root;
+
+            _operationsView.Target = Computer
+                .Executable;
+
+            _executor.Reset();
+        }
+
         private void SetupBindings()
         {
             bool Running() => _executor.State == ExecutorState.Running;
@@ -121,26 +151,22 @@ namespace NSprakIDE.Controls
             Bind(this, EditorCommands.StepInto, StepInto, IdleOrPaused);
             Bind(this, EditorCommands.StepOut, StepOut, Paused);
 
-            Bind(this, EditorCommands.ToggleBreakpoint, _operationsView.ToggleBreakpoint);
+            Bind(this, EditorCommands.ToggleBreakpoint, ToggleBreakpoint);
         }
 
-        private void ToggleBreakpoint()
+        public void ShowSource()
         {
-            if (Mode == ComputerEditorMode.Operations)
-                _operationsView.ToggleBreakpoint();
+            UpdateMode(ComputerEditorMode.Source);
+        }
 
-            switch (Mode)
-            {
-                case ComputerEditorMode.Operations:
-                    _operationsView.ToggleBreakpoint();
-                    break;
+        public void ShowExpressionTree()
+        {
+            UpdateMode(ComputerEditorMode.Expressions);
+        }
 
-                case ComputerEditorMode.Expressions:
-                    break;
-
-                case ComputerEditorMode.Source:
-                    break;
-            }
+        public void ShowExecutable()
+        {
+            UpdateMode(ComputerEditorMode.Operations);
         }
 
         private void UpdateMode(ComputerEditorMode mode)
@@ -156,6 +182,7 @@ namespace NSprakIDE.Controls
 
                 case ComputerEditorMode.Expressions:
                     MainContent.Content = _expressionView;
+                    _executor.StepMode = ExecutorStepMode.Expression;
                     break;
 
                 case ComputerEditorMode.Operations:
@@ -208,6 +235,7 @@ namespace NSprakIDE.Controls
             {
                 _operationsView.Highlight(_executor.Instructions.Index);
                 _localsView.Update();
+                _sourceEditor.Redraw();
             }
 
             Dispatcher.Invoke(Action);
@@ -219,51 +247,76 @@ namespace NSprakIDE.Controls
             {
                 _operationsView.ClearHighlight();
                 _localsView.Clear();
+                _sourceEditor.Redraw();
             }
 
             Dispatcher.Invoke(Action);
         }
 
-        public void ShowSource()
+        private void ToggleBreakpoint()
         {
-            UpdateMode(ComputerEditorMode.Source);
-        }
+            switch (Mode)
+            {
+                case ComputerEditorMode.Operations:
+                    _operationsView.ToggleBreakpoint();
+                    break;
 
-        public void ShowExpressionTree()
-        {
-            UpdateMode(ComputerEditorMode.Expressions);
-        }
+                case ComputerEditorMode.Expressions:
+                    break;
 
-        public void ShowExecutable()
-        {
-            UpdateMode(ComputerEditorMode.Operations);
-        }
-
-        public void Compile()
-        {
-            Computer.Source = _sourceEditor.Text;
-
-            Logs.Core.LogDebug("Compiling...");
-            
-            if (Computer.Compile())
-                Logs.Core.LogDebug("Compilation successful.");
-            else
-                Logs.Core.LogDebug("Compilation failed.");
+                case ComputerEditorMode.Source:
+                    Expression current = GetStatementAtCursor();
+                    ToggleBreakpoint(current);
+                    break;
+            }
 
             _sourceEditor.Update(Computer.Compiler);
             _sourceEditor.Redraw();
+        }
 
-            _messageView.Update();
+        private void ToggleBreakpoint(Expression expression)
+        {
+            OpDebugInfo opInfo = expression.OperatorsHint.FirstOrDefault();
+            if (opInfo != null)
+            {
+                opInfo.Breakpoint = !opInfo.Breakpoint;
+                _sourceEditor.Redraw();
+                _operationsView.Update();
+            }
+        }
 
-            _expressionView.Root = Computer
-                .Compiler
-                .ExpressionTree
-                .Root;
+        private Expression GetStatementAtCursor()
+        {
+            int location = _sourceEditor.CaretOffset;
 
-            _operationsView.Target = Computer
-                .Executable;
+            // Is there a better way of doing this?
+            // Definitely. But it'll do.
 
-            _executor.Reset();
+            // It's kinda like a binary search in disguise anyways because
+            // of the tree structure of expressions.
+
+            Expression FindExpression(Expression current)
+            {
+                if (!(current is Block))
+                    return current;
+
+                foreach (Expression child in current.GetSubExpressions())
+                {
+                    if (child.StartToken == null || child.EndToken == null)
+                        continue;
+
+                    if (location > child.EndToken.End)
+                        continue;
+
+                    current = FindExpression(child);
+                    break;
+                }
+
+                return current;
+            }
+
+            Expression root = Computer.Compiler.ExpressionTree.Root;
+            return FindExpression(root);
         }
     }
 }

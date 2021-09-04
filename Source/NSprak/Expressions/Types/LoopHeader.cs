@@ -26,6 +26,12 @@ namespace NSprak.Expressions.Types
 
         public Token NameToken { get; }
 
+        public Token FromToken { get; }
+
+        public Token ToToken { get; }
+
+        public Token InToken { get; }
+
         public bool HasName => NameToken != null;
 
         public string Name => NameToken?.Content;
@@ -59,29 +65,41 @@ namespace NSprak.Expressions.Types
             LoopType = LoopType.Infinite;
         }
 
-        public LoopHeader(Token loop, Token nameToken,
-            Expression start, Expression end)
+        public LoopHeader(Token loop, Token name, Token from, 
+            Expression start, Token to, Expression end)
         {
-            nameToken.AssertName();
+            name.AssertName();
             loop.AssertKeyword(Keywords.Loop);
             
             LoopToken = loop;
-            NameToken = nameToken;
-
+            NameToken = name;
+            FromToken = from;
             RangeStart = start;
+            ToToken = to;
             RangeEnd = end;
 
             LoopType = LoopType.Range;
         }
 
-        public LoopHeader(Token loop, Expression array, Token nameToken = null)
+        public LoopHeader(Token loop, Expression array)
         {
             loop.AssertKeyword(Keywords.Loop);
-            nameToken.AssertName();
 
             LoopToken = loop;
-            NameToken = nameToken;
+            Array = array;
 
+            LoopType = LoopType.Foreach;
+        }
+
+        public LoopHeader(Token loop, Token name, 
+            Token inToken, Expression array)
+        {
+            loop.AssertKeyword(Keywords.Loop);
+            name.AssertName();
+
+            LoopToken = loop;
+            NameToken = name;
+            InToken = inToken;
             Array = array;
 
             LoopType = LoopType.Foreach;

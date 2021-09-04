@@ -12,15 +12,22 @@ namespace NSprakIDE.Controls.Code
 {
     public class ErrorHighlighter : IColorizerElement<Token>
     {
-        public MessageCollection Messages { get; set; }
+        public Messenger Messenger { get; set; }
+
+        public ErrorHighlighter(Messenger messenger)
+        {
+            Messenger = messenger;
+        }
+
+        public bool CanApply(Token item) => true;
 
         public void Apply(VisualLineElement element, Token item)
         {
-            if (Messages == null)
+            if (Messenger == null)
                 return;
 
-            SolidColorBrush brush = new SolidColorBrush(Color.FromRgb(100, 10, 10));
-            var pen = new Pen(brush, 2);
+            SolidColorBrush brush = new SolidColorBrush(Color.FromRgb(255, 100, 100));
+            var pen = new Pen(brush, 1);
 
             var decoration = new TextDecoration()
             {
@@ -29,9 +36,14 @@ namespace NSprakIDE.Controls.Code
                 PenThicknessUnit = TextDecorationUnit.FontRecommended
             };
 
-            foreach (Message message in Messages.Messages) 
-                if (message.Start < item.End && message.End > item.Start)
+            foreach (Message message in Messenger.Messages) 
+                if (message.Location != null 
+                    && message.Location.Start < item.End 
+                    && message.Location.End > item.Start)
+                {
+                    element.TextRunProperties.SetTextDecorations(new TextDecorationCollection());
                     element.TextRunProperties.TextDecorations.Add(decoration);
+                }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace NSprak.Operations.Creation
             if (statement.HasValue)
                 builder.AddCode(statement.Value);
 
-            builder.AddOp(new Types.Return());
+            builder.AddOp(new Types.Return(), statement.ReturnToken);
         }
 
         public static void GenerateCode(Command command, GeneratorContext builder)
@@ -49,7 +49,7 @@ namespace NSprak.Operations.Creation
             }
 
             if (label != null)
-                builder.AddOp(new JumpLabel(label));
+                builder.AddOp(new JumpLabel(label), command.Token);
         }
     }
 }

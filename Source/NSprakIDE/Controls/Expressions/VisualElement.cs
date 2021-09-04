@@ -16,23 +16,12 @@ using NSprak.Language.Builtins;
 using NSprak.Language.Values;
 using NSprak.Operations;
 
+using NSprakIDE.Themes;
+
 namespace NSprakIDE.Controls.Expressions
 {
     using NSprakExpression = NSprak.Expressions.Expression;
     using NSprakBlock = NSprak.Expressions.Types.Block;
-
-    public static class TreeColorNames
-    {
-        public const string
-            KeySymbol = "ExpressionTree_KeySymbol",
-            Keyword = "ExpressionTree_Keyword",
-            Type = "ExpressionTree_Type",
-            Name = "ExpressionTree_Name",
-            Operator = "ExpressionTree_Operator",
-            Literal = "ExpressionTree_Literal",
-            Comment = "ExpressionTree_Comment",
-            Debug = "ExpressionTree_Debug";
-    }
 
     public class BlockReferenceElement
     {
@@ -85,8 +74,10 @@ namespace NSprakIDE.Controls.Expressions
             Value = value;
             ShowDebug = showDebug;
 
-            if (Value is NSprakExpression expression)
-                AddChildren(expression);
+            //if (Value is NSprakExpression expression)
+            //    AddChildren(expression);
+
+            AddChildren(Value);
         }
 
         public VisualElement(string name, object value, bool showDebug)
@@ -137,8 +128,8 @@ namespace NSprakIDE.Controls.Expressions
                 return;
 
             VisualElement element = new VisualElement(name, obj, ShowDebug);
-            element.NameColorKey = TreeColorNames.Debug;
-            element.ValueColorKey = TreeColorNames.Comment;
+            element.NameColorKey = Theme.Expressions.Debug;
+            element.ValueColorKey = Theme.Expressions.Comment;
             element.MonocolorValue = true;
             Items.Add(element);
         }
@@ -182,6 +173,17 @@ namespace NSprakIDE.Controls.Expressions
                 case NSprakExpression expression:
                     AddChildren(expression);
                     break;
+
+                case OpDebugInfo op:
+                    AddParameter("Code", op.Op.ShortName);
+                    AddParameter("Param", op.Op.RawParam);
+                    AddParameter("Breakpoint", op.Breakpoint);
+                    AddDebugParameter("Step", op.Op.StepAfterwards);
+                    AddDebugParameter("Token", op.FocusToken);
+                    // We can't have the full expression here because the tree 
+                    // is not lazy.
+                    AddDebugParameter("Expression", op.SourceExpression.ToString());
+                    break;
             }
         }
 
@@ -193,7 +195,7 @@ namespace NSprakIDE.Controls.Expressions
                 AddDebugParameter("Type Hint", parent.TypeHint);
 
             if (!(parent is NSprakBlock mainBlock && mainBlock.Header is MainHeader))
-                AddDebugParameter("Parent Hint", new BlockReferenceElement(parent.ParentHint));
+                AddDebugParameter("Parent Hint", new BlockReferenceElement(parent.ParentBlockHint));
 
             if (parent.OperatorsHint != null)
             {
@@ -345,10 +347,10 @@ namespace NSprakIDE.Controls.Expressions
             _target = textBox;
 
             if (NameColorKey == null)
-                NameColorKey = TreeColorNames.Comment;
+                NameColorKey = Theme.Expressions.Comment;
 
             if (ValueColorKey == null)
-                ValueColorKey = TreeColorNames.Name;
+                ValueColorKey = Theme.Expressions.Name;
 
             if (Name != null)
                 Write($"{Name}: ", NameColorKey);
@@ -376,48 +378,48 @@ namespace NSprakIDE.Controls.Expressions
             if (_monocolor)
                 colorKey = ValueColorKey;
 
-            Brush brush = (Brush)_target.FindResource(colorKey);
+            Brush brush = Theme.Get(colorKey);
             Write(text, brush);
         }
 
         private void RenderKeyword(string text)
         {
-            Write(" " + text, TreeColorNames.Keyword);
+            Write(" " + text, Theme.Expressions.Keyword);
         }
 
         private void RenderType(SprakType type)
         {
-            Write(type?.InternalName, TreeColorNames.Type);
+            Write(type?.InternalName, Theme.Expressions.Type);
         }
 
         private void RenderName(string name)
         {
-            Write(" " + name, TreeColorNames.Name);
+            Write(" " + name, Theme.Expressions.Name);
         }
 
         private void RenderOperator(Operator op)
         {
-            Write(op.Name, TreeColorNames.Operator);
+            Write(op.Name, Theme.Expressions.Operator);
         }
 
         private void RenderBoolean(bool boolean)
         {
-            Write(" " + boolean, TreeColorNames.Literal);
+            Write(" " + boolean, Theme.Expressions.Literal);
         }
 
         private void RenderNumber(double number)
         {
-            Write(" " + number.ToString(), TreeColorNames.Literal);
+            Write(" " + number.ToString(), Theme.Expressions.Literal);
         }
 
         private void RenderString(string text)
         {
-            Write($" \"{text}\"", TreeColorNames.Literal);
+            Write($" \"{text}\"", Theme.Expressions.Literal);
         }
 
         private void RenderComment(string comment)
         {
-            Write(comment, TreeColorNames.Comment);
+            Write(comment, Theme.Expressions.Comment);
         }
 
         private void RenderFunctionParameter(FunctionParameter parameter)
