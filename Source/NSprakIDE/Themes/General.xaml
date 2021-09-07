@@ -6,7 +6,6 @@
     <SolidColorBrush x:Key="NSprakIDE.Accent" Color="#FFEC6C6C"/>
     <SolidColorBrush x:Key="NSprakIDE.Background" Color="#FF564EAE"/>
     <SolidColorBrush x:Key="NSprakIDE.Background2" Color="#343434"/>
-    <SolidColorBrush x:Key="NSprakIDE.Srollbars" Color="#FFD6D6D6"/>
     <SolidColorBrush x:Key="NSprakIDE.Toolbar" Color="#FFD6D6D6"/>
 
     <SolidColorBrush x:Key="NSprakIDE.Docking.Active" Color="#FFEC6C6C"/>
@@ -23,6 +22,9 @@
     <SolidColorBrush x:Key="NSprakIDE.Source.Boolean" Color="#FFF94949"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.Comment" Color="#FF0F8F20"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.CommentBackground" Color="White"/>
+    <SolidColorBrush x:Key="NSprakIDE.Source.DiffChange" Color="#87bcf7"/>
+    <SolidColorBrush x:Key="NSprakIDE.Source.DiffInsert" Color="#87f798"/>
+    <SolidColorBrush x:Key="NSprakIDE.Source.DiffRemove" Color="#f78787"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.Error" Color="Black"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.Keyword" Color="#FF2A84F1"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.KeySymbol" Color="Black"/>

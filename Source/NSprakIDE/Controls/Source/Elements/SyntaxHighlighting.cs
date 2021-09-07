@@ -10,7 +10,7 @@ using NSprak.Tokens;
 
 using NSprakIDE.Themes;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class SyntaxHighlighting : IColorizerElement<Token>
     {
@@ -39,12 +39,12 @@ namespace NSprakIDE.Controls.Code
                 _ => Theme.Source.Error
             };
 
-            Brush brush = Theme.Get(key);
+            Brush brush = Theme.GetBrush(key);
             element.TextRunProperties.SetForegroundBrush(brush);
 
             if (token.Type == TokenType.Comment)
             {
-                Brush background = Theme.Get(Theme.Source.CommentBackground);
+                Brush background = Theme.GetBrush(Theme.Source.CommentBackground);
                 element.BackgroundBrush = background;
             }
         }

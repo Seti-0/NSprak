@@ -83,8 +83,8 @@ namespace NSprakIDE.Controls
         {
             InitializeComponent();
 
-            InstructionLine.ActiveBackground = Theme.Get(Theme.Operations.Next);
-            InstructionLine.BreakpointBackground = Theme.Get(Theme.Operations.Breakpoint);
+            InstructionLine.ActiveBackground = Theme.GetBrush(Theme.Operations.Next);
+            InstructionLine.BreakpointBackground = Theme.GetBrush(Theme.Operations.Breakpoint);
         }
 
         private void RefreshVisual()
@@ -254,7 +254,7 @@ namespace NSprakIDE.Controls
         {
             bool alternate = _alternateLineColors && (_lines.Count % 2) == 1;
             string key = alternate ? Theme.Operations.BackgroundAlternate : Theme.Operations.Background;
-            Brush background = Theme.Get(key);
+            Brush background = Theme.GetBrush(key);
 
             _lines.Add(new InstructionLine(_currentLine, background));
         }
@@ -299,7 +299,7 @@ namespace NSprakIDE.Controls
 
             if (foregroundKey != null)
             {
-                Brush foreground = Theme.Get(foregroundKey);
+                Brush foreground = Theme.GetBrush(foregroundKey);
                 run.Foreground = foreground;
             }
 

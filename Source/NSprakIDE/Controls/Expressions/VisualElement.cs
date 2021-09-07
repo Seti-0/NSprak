@@ -378,7 +378,7 @@ namespace NSprakIDE.Controls.Expressions
             if (_monocolor)
                 colorKey = ValueColorKey;
 
-            Brush brush = Theme.Get(colorKey);
+            Brush brush = Theme.GetBrush(colorKey);
             Write(text, brush);
         }
 

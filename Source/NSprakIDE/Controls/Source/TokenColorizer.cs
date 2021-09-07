@@ -13,7 +13,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using NSprak.Tokens;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class TokenColorizer : ColorizingTransformer
     {

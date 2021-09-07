@@ -12,7 +12,7 @@ using NSprakIDE.Themes;
 
 using ICSharpCode.AvalonEdit.Rendering;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class RuntimeHighlighter : IColorizerElement<Expression>
     {
@@ -58,8 +58,8 @@ namespace NSprakIDE.Controls.Code
             if (!TryGetKeys(item, out string backgroundKey, out string textKey))
                 return;
 
-            element.BackgroundBrush = Theme.Get(backgroundKey);
-            element.TextRunProperties.SetForegroundBrush(Theme.Get(textKey));
+            element.BackgroundBrush = Theme.GetBrush(backgroundKey);
+            element.TextRunProperties.SetForegroundBrush(Theme.GetBrush(textKey));
         }
     }
 }

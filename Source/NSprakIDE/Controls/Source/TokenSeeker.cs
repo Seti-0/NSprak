@@ -6,7 +6,7 @@ using System.Windows.Shapes;
 
 using NSprak.Tokens;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class TokenSeeker
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public enum EnumerationState
     {

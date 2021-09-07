@@ -8,7 +8,7 @@ using ICSharpCode.AvalonEdit.Rendering;
 using NSprak.Messaging;
 using NSprak.Tokens;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class ErrorHighlighter : IColorizerElement<Token>
     {

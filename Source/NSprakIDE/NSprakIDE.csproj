@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controls\Code\ExpressionSeekerOld.cs" />
-    <Compile Remove="Controls\Code\ISeekerCollector.cs" />
+    <Compile Remove="Controls\Source\ExpressionSeekerOld.cs" />
+    <Compile Remove="Controls\Source\ISeekerCollector.cs" />
     <Compile Remove="Controls\Output\TextBoxConsole.cs" />
   </ItemGroup>
 

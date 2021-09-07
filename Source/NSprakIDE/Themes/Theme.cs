@@ -8,11 +8,23 @@ namespace NSprakIDE.Themes
 {
     public static class Theme
     {
+        public static class General
+        {
+            public const string
+                Accent = "NSprakIDE.Accent",
+                Background = "NSprakIDE.Background",
+                Background2 = "NSprakIDE.Background2",
+                Toolbar = "NSprakIDE.Toolbar";
+        }
+
         public static class Source
         {
             public const string
                 Boolean = "NSprakIDE.Source.Boolean",
                 Comment = "NSprakIDE.Source.Comment",
+                DiffChange = "NSprakIDE.Source.DiffChange",
+                DiffInsert = "NSprakIDE.Source.DiffInsert",
+                DiffRemove = "NSprakIDE.Source.DiffRemove",
                 Error = "NSprakIDE.Source.Error",
                 Keyword = "NSprakIDE.Source.Keyword",
                 KeySymbol = "NSprakIDE.Source.KeySymbol",
@@ -73,7 +85,7 @@ namespace NSprakIDE.Themes
 
         private static Dictionary<string, Brush> _brushes = new Dictionary<string, Brush>();
 
-        public static Brush Get(string name)
+        public static Brush GetBrush(string name)
         {
             // This cache might be needed, depending on how FindResource works.
             // But this method is called many times during syntax highlighting,

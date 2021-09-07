@@ -16,7 +16,7 @@ using NSprak.Tokens;
 using NSprak.Messaging;
 using NSprak.Execution;
 
-using NSprakIDE.Controls.Code;
+using NSprakIDE.Controls.Source;
 using NSprakIDE.Controls.General;
 
 using ICSharpCode.AvalonEdit.Editing;
@@ -32,6 +32,8 @@ namespace NSprakIDE.Controls
 
         private TokenColorizer _tokenColorizer;
         private ExpressionColorizer _expressionColorizer;
+        private DiffMargin _diffMargin;
+        private string _originalSource;
 
         private RuntimeHighlighter _runtimeHighlighter;
 
@@ -44,6 +46,7 @@ namespace NSprakIDE.Controls
             set
             {
                 MainEditor.Text = value;
+                _originalSource = value;
             }
         }
 
@@ -94,6 +97,9 @@ namespace NSprakIDE.Controls
 
             MainEditor.Options.ShowColumnRuler = true;
 
+            _diffMargin = new DiffMargin();
+            MainEditor.TextArea.LeftMargins.Add(_diffMargin);
+
             LineNumberMargin margin = new LineNumberMargin()
             {
                 TextView = MainEditor.TextArea.TextView,
@@ -128,6 +134,8 @@ namespace NSprakIDE.Controls
         private void OnFinishedEditing(object sender, EventArgs e)
         {
             FinishedEditing?.Invoke(this, e);
+            _diffMargin.Dispatcher.Invoke(() => 
+                _diffMargin.Update(Text, _originalSource));
         }
     }
 }

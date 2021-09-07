@@ -7,7 +7,7 @@ using System.Text;
 
 using System.Windows.Media;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class TestExpressions : IColorizerElement<Expression>
     {

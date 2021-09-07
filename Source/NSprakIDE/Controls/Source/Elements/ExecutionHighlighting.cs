@@ -6,7 +6,7 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 using NSprak.Expressions;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class ExecutionHighlighting : IColorizerElement<Expression>
     {

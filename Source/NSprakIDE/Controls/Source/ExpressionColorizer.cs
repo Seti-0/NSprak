@@ -17,7 +17,7 @@ using NSprak.Expressions;
 using NSprak.Tokens;
 using Expression = NSprak.Expressions.Expression;
 
-namespace NSprakIDE.Controls.Code
+namespace NSprakIDE.Controls.Source
 {
     public class ExpressionColorizer : ColorizingTransformer
     {
