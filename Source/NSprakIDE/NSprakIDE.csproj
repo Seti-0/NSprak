@@ -88,6 +88,8 @@
     <None Remove="Icons\Images\icons8-refresh-16.png" />
     <None Remove="Icons\Images\icons8-restart-16.png" />
     <None Remove="Icons\Images\icons8-restart-30.png" />
+    <None Remove="Icons\Images\icons8-save-16.png" />
+    <None Remove="Icons\Images\icons8-save-30.png" />
     <None Remove="Icons\Images\icons8-stop-16.png" />
     <None Remove="Icons\Images\icons8-stop-30.png" />
     <None Remove="Icons\Images\icons8-switch-off-30.png" />
@@ -187,6 +189,8 @@
     <Resource Include="Icons\Images\icons8-refresh-16.png" />
     <Resource Include="Icons\Images\icons8-restart-16.png" />
     <Resource Include="Icons\Images\icons8-restart-30.png" />
+    <Resource Include="Icons\Images\icons8-save-16.png" />
+    <Resource Include="Icons\Images\icons8-save-30.png" />
     <Resource Include="Icons\Images\icons8-stop-16.png" />
     <Resource Include="Icons\Images\icons8-stop-30.png" />
     <Resource Include="Icons\Images\icons8-switch-off-30.png" />

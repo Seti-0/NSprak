@@ -100,6 +100,15 @@
                     Orientation="Horizontal"
                     Background="{DynamicResource NSprakIDE.Toolbar}">
 
+            <!-- File -->
+
+            <DockPanel Margin="4" LastChildFill="True">
+                <TextBlock Style="{StaticResource GroupTitle}">File</TextBlock>
+                <General:CommandButton3 Size="Large" IconName="Save" UICommand="{x:Static Cmd:EditorCommands.Save}"/>
+            </DockPanel>
+
+            <Rectangle Style="{StaticResource VerticalSeperator}"/>
+
             <!-- Editor View -->
             <DockPanel Margin="4" LastChildFill="True">
                 <TextBlock Style="{StaticResource GroupTitle}">View</TextBlock>

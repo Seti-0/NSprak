@@ -13,6 +13,9 @@
 
     <!-- Code Editor View -->
 
+    <local:Icon x:Key="Icon_Save" IconName="save"/>
+    <local:Icon x:Key="LargeIcon_Save" IconName="save" Large="true"/>
+
     <local:Icon x:Key="Icon_Source" IconName="code"/>
     <local:Icon x:Key="LargeIcon_Source" IconName="code" Large="true"/>
 

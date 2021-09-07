@@ -12,6 +12,10 @@ namespace NSprakIDE.Commands
     {
         public readonly static ICommand
 
+           // File
+
+            Save = CreateCommand("Save", Key.S, ModifierKeys.Control),
+
             // View
 
             ViewCode = CreateCommand("ViewCode", "Code"),

@@ -10,6 +10,8 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 using NSprakIDE.Themes;
 
+using Microsoft.Extensions.Logging;
+
 namespace NSprakIDE.Controls.Source
 {
     public enum DiffPathAction
@@ -36,9 +38,19 @@ namespace NSprakIDE.Controls.Source
 
     public class DiffMargin : AbstractMargin
     {
+
         public const double DefaultWidth = 4;
 
         public List<DiffMarginElement> _margin = new List<DiffMarginElement>();
+
+        public bool HasChanges { get; private set; }
+
+        public event EventHandler<EventArgs> HasChangesChanged;
+
+        protected virtual void OnHasChangesChanged()
+        {
+            HasChangesChanged?.Invoke(this, EventArgs.Empty);
+        }
 
         protected override void OnTextViewChanged(TextView oldTextView, TextView newTextView)
         {
@@ -56,8 +68,26 @@ namespace NSprakIDE.Controls.Source
 
         public void Update(string current, string original)
         {
-            _margin = GetMargin(current, original);
-            InvalidateVisual();
+            List<DiffPathAction> diffPath = Diff(
+                current.Split("\n"),
+                original.Split("\n"),
+                out bool hasChanges
+            );
+
+            List<DiffMarginElement> margin = GetMargin(diffPath);
+
+            Dispatcher.Invoke(() =>
+            {
+                _margin = margin;
+
+                if (hasChanges != HasChanges)
+                {
+                    HasChanges = hasChanges;
+                    OnHasChangesChanged();
+                }
+
+                InvalidateVisual();
+            });
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -84,7 +114,7 @@ namespace NSprakIDE.Controls.Source
             foreach (VisualLine line in TextView.VisualLines)
             {
                 int number = line.FirstDocumentLine.LineNumber;
-                if (number > _margin.Count)
+                if (number >= _margin.Count)
                     continue;
 
                 double y = line.GetTextLineVisualYPosition(
@@ -142,13 +172,8 @@ namespace NSprakIDE.Controls.Source
             }
         }
 
-        private List<DiffMarginElement> GetMargin(string after, string before)
+        private List<DiffMarginElement> GetMargin(List<DiffPathAction> diffPath)
         {
-            List<DiffPathAction> diffPath = Diff(
-                after.Split("\n"),
-                before.Split("\n")
-            );
-
             List<DiffMarginElement> margin = new List<DiffMarginElement>();
             margin.Add(new DiffMarginElement(DiffMarginKind.Start));
 
@@ -179,7 +204,8 @@ namespace NSprakIDE.Controls.Source
             return margin;
         }
 
-        private List<DiffPathAction> Diff<T>(IList<T> after, IList<T> before)
+        private List<DiffPathAction> Diff<T>(IList<T> after, IList<T> before, 
+            out bool changes)
         {
 
             /*
@@ -280,6 +306,8 @@ namespace NSprakIDE.Controls.Source
             }
 
             // Backtrace
+
+            changes = D > 0;
 
             List<IEnumerable<DiffPathAction>> elements 
                 = new List<IEnumerable<DiffPathAction>>();

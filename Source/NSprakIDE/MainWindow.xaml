@@ -9,6 +9,8 @@
              d:DesignHeight="450" d:DesignWidth="800"
              WindowState="Maximized">
 
+    <!-- Styling -->
+    
     <Window.Resources>
         <Style TargetType="TabControl">
             <Setter Property="Padding" Value="0"/>
@@ -108,6 +110,8 @@
         <Style TargetType="TabItem" BasedOn="{StaticResource MainTabItem}"/>
     </Window.Resources>
 
+    <!-- Structure -->
+    
     <Grid Background="#777777">
         <Grid Margin="2,2,2,2" Background="{StaticResource NSprakIDE.Background}">
             <Grid Margin="2,2,2,2">
@@ -118,6 +122,8 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
+                <!-- Documents, Locals and Messages -->
+                
                 <Grid>
 
                     <Grid.RowDefinitions>
@@ -126,6 +132,8 @@
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
+                    <!-- Documents -->
+                    
                     <TabControl Name="DocumentView" Grid.Row="0">
                         <TabItem Header="File View">
                             <editor:FileView x:Name="FileView"/>
@@ -137,6 +145,8 @@
                         HorizontalAlignment="Stretch" 
                         Background="{StaticResource NSprakIDE.Background}"/>
 
+                    <!-- Locals and Messages -->
+                    
                     <TabControl Grid.Row="2">
                         <TabItem Header="Messages">
                             <editor:MessageView x:Name="MessageView"/>
@@ -154,6 +164,8 @@
                 Background="{StaticResource NSprakIDE.Background}"
                 />
 
+                <!-- Ouput -->
+                
                 <TabControl Grid.Column="2">
                     <TabItem Header="Output">
                         <editor:OutputView x:Name="OutputView"/>

@@ -49,12 +49,21 @@ namespace NSprakIDE.Controls
 
         private Executor _executor;
 
+        private string _filePath;
+
         private SourceEditor _sourceEditor;
         private ExpressionView _expressionView;
         private OperationsView _operationsView;
 
         private LocalsView _localsView;
         private MessageView _messageView;
+
+        public bool HasChanges
+        {
+            get => _sourceEditor.HasChanges;
+        }
+
+        public event EventHandler<EventArgs> HasChangesChanged;
 
         public ComputerEditor(ComputerEditorEnviroment environment)
         {
@@ -86,6 +95,7 @@ namespace NSprakIDE.Controls
 
             MainContent.Content = _sourceEditor;
 
+            _filePath = environment.FilePath;
             _sourceEditor.Text = File.ReadAllText(environment.FilePath);
             Compile();
 
@@ -99,7 +109,17 @@ namespace NSprakIDE.Controls
                 Dispatcher.Invoke(Compile);
             };
 
+            _sourceEditor.HasChangesChanged += (obj, e) =>
+            {
+                OnHasChangesChanged();
+            };
+
             UpdateMode(ComputerEditorMode.Source);
+        }
+
+        protected virtual void OnHasChangesChanged()
+        {
+            HasChangesChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Dispose()
@@ -143,6 +163,8 @@ namespace NSprakIDE.Controls
             bool IdleOrPaused() => Paused() || Idle();
             bool RunningOrPaused() => Running() || Paused();
 
+            Bind(this, EditorCommands.Save, Save);
+
             Bind(this, EditorCommands.ViewCode, ShowSource);
             Bind(this, EditorCommands.ViewExpressionTree, ShowExpressionTree);
             Bind(this, EditorCommands.ViewOperations, ShowExecutable);
@@ -155,6 +177,13 @@ namespace NSprakIDE.Controls
             Bind(this, EditorCommands.StepOut, StepOut, Paused);
 
             Bind(this, EditorCommands.ToggleBreakpoint, ToggleBreakpoint);
+        }
+
+        public void Save()
+        {
+            Logs.Core.LogInformation("Saving " + _filePath);
+            File.WriteAllText(_filePath, _sourceEditor.Text);
+            _sourceEditor.ResetDiff();
         }
 
         public void ShowSource()

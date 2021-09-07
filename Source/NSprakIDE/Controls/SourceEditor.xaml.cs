@@ -50,6 +50,8 @@ namespace NSprakIDE.Controls
             }
         }
 
+        public bool HasChanges => _diffMargin.HasChanges;
+
         public int CaretOffset
         {
             get => MainEditor.CaretOffset;
@@ -60,6 +62,8 @@ namespace NSprakIDE.Controls
             get => _runtimeHighlighter.Executor;
             set => _runtimeHighlighter.Executor = value;
         }
+
+        public event EventHandler<EventArgs> HasChangesChanged;
 
         public SourceEditor(Messenger messenger)
         {
@@ -98,6 +102,7 @@ namespace NSprakIDE.Controls
             MainEditor.Options.ShowColumnRuler = true;
 
             _diffMargin = new DiffMargin();
+            _diffMargin.HasChangesChanged += _diffMargin_HasChangesChanged;
             MainEditor.TextArea.LeftMargins.Add(_diffMargin);
 
             LineNumberMargin margin = new LineNumberMargin()
@@ -110,6 +115,18 @@ namespace NSprakIDE.Controls
             MainEditor.TextArea.LeftMargins.Add(margin);
         }
 
+        private void _diffMargin_HasChangesChanged(object sender, EventArgs e)
+        {
+            // This is silly, and the diff/change tracker itself should really 
+            // be made separate from the margin.
+            OnHasChangesChanged();
+        }
+
+        protected virtual void OnHasChangesChanged()
+        {
+            HasChangesChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         public void EnsureLineIsVisible(int lineNumber, int columnNumber)
         {
             MainEditor.ScrollTo(lineNumber, columnNumber);
@@ -119,6 +136,12 @@ namespace NSprakIDE.Controls
         {
             _tokenColorizer.Tokens = compiler.Tokens;
             _expressionColorizer.Tree = compiler.ExpressionTree;
+        }
+
+        public void ResetDiff()
+        {
+            _originalSource = Text;
+            _diffMargin.Update(Text, Text);
         }
 
         public void Redraw()

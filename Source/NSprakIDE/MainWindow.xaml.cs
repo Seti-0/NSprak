@@ -86,6 +86,14 @@ namespace NSprakIDE
             newTab.Content = editor;
             newTab.Style = (Style)FindResource("DocumentTabItem");
 
+            editor.HasChangesChanged += (obj, e) =>
+            {
+                string header = name;
+                if (editor.HasChanges)
+                    header += "*";
+                newTab.Header = header;
+            };
+
             void OnTabSelected()
             {
                 OutputView.Supplier.Select(enviroment.Output);
