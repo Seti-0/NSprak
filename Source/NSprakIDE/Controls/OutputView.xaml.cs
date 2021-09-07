@@ -13,9 +13,12 @@ namespace NSprakIDE.Controls
     {
         public OutputLogSupplier(ViewSelect view) : base(view) {}
 
-        protected override OutputLog Create(string name, string category)
+        public OutputLog Start(string id, string name, string category)
         {
-            return new OutputLog(name, category, this);
+            OutputLog log = new OutputLog(name, category);
+
+            Start(log, id, name, category);
+            return log;
         }
     }
 

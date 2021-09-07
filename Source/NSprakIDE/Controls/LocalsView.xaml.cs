@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using NSprak.Execution;
 using NSprak.Language;
 using NSprak.Language.Values;
+using NSprakIDE.Controls.General;
 
 namespace NSprakIDE.Controls
 {
@@ -45,11 +46,15 @@ namespace NSprakIDE.Controls
     /// </summary>
     public partial class LocalsView : UserControl
     {
-        public Executor Target { get; set; }
+        public ViewSupplier<Executor> Supplier;
 
         public LocalsView()
         {
             InitializeComponent();
+            Supplier = new ViewSupplier<Executor>(ViewSelect)
+            {
+                AllowNoSelection = false
+            };
         }
 
         public void Clear()
@@ -61,26 +66,36 @@ namespace NSprakIDE.Controls
             ValuesGrid.Items.Clear();
         }
 
+        private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
+        {
+            Update();
+        }
+
         public void Update()
         {
-            if (Target == null)
+            ViewItem<Executor> item = (ViewItem<Executor>)ViewSelect
+                .SelectedItem;
+
+            if (item == null)
             {
                 Clear();
                 return;
             }
             else
             {
+                Executor executor = item.Value;
+
                 List<LocalWrapper> locals;
                 List<ValueWrapper> stack;
 
-                locals = Target
+                locals = executor
                     .Memory
                     .CurrentScope
                     .ListVariables()
                     .Select(x => new LocalWrapper(x.Key, x.Value))
                     .ToList();
 
-                stack = Target
+                stack = executor
                     .Memory
                     .Values
                     .Select(x => new ValueWrapper(x))

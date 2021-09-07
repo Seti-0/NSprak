@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using NSprakIDE.Controls;
 using NSprakIDE.Logging;
 using NSprakIDE.Controls.Output;
+using NSprakIDE.Controls.General;
 
 namespace NSprakIDE
 {
@@ -33,7 +34,9 @@ namespace NSprakIDE
 
             InitializeComponent();
 
-            OutputLog debug = OutputView.Supplier.Start("Debug");
+            OutputLog debug = OutputView.Supplier.Start(
+                "MainWindow_Output", "Debug", ViewSupplier.Category_Main);
+
             ILogEventSink output = new Output(new OutputLogWriter(debug));
 
             Serilog.ILogger logger = new LoggerConfiguration()
@@ -42,8 +45,6 @@ namespace NSprakIDE
                 .CreateLogger();
 
             Logs.Factory.AddSerilog(logger);
-
-            OutputView.Supplier.StartCategory(ComputerLogCategory);
 
             FileView.FileOpened += OnOpenFile;
         }
@@ -60,7 +61,7 @@ namespace NSprakIDE
             {
                 TabItem tab = (TabItem)DocumentView.Items[i];
                 ComputerEditor previousEditor = (ComputerEditor)tab.Content;
-                if (previousEditor.Enviroment.FilePath == filePath)
+                if (previousEditor.Environment.FilePath == filePath)
                 {
                     // Don't open the same file twice, just switch to
                     // the already open tab.
@@ -69,11 +70,17 @@ namespace NSprakIDE
                 }
             }
 
+            string id = "ComputerEditor -- " + filePath;
             string name = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
+            // The need for all this could be removed by passing the computer
+            // parameter to the aux. components, rather than the other way
+            // round.
             ComputerEditorEnviroment enviroment = new ComputerEditorEnviroment
             {
-                Output = OutputView.Supplier.Start(name, ComputerLogCategory),
+                Name = name,
+                GivenID = id,
+                Output = OutputView.Supplier,
                 FilePath = filePath,
                 LocalsView = LocalsView,
                 MessageView = MessageView
@@ -81,10 +88,12 @@ namespace NSprakIDE
 
             ComputerEditor editor = new ComputerEditor(enviroment);
 
-            TabItem newTab = new TabItem();
-            newTab.Header = name;
-            newTab.Content = editor;
-            newTab.Style = (Style)FindResource("DocumentTabItem");
+            TabItem newTab = new TabItem
+            {
+                Header = name,
+                Content = editor,
+                Style = (Style)FindResource("DocumentTabItem")
+            };
 
             editor.HasChangesChanged += (obj, e) =>
             {
@@ -96,7 +105,9 @@ namespace NSprakIDE
 
             void OnTabSelected()
             {
-                OutputView.Supplier.Select(enviroment.Output);
+                MessageView.Supplier.Select(id);
+                OutputView.Supplier.Select(id);
+                LocalsView.Supplier.Select(id);
             }
             newTab.MouseUp += (s, e) => OnTabSelected();
             

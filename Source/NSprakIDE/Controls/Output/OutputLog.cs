@@ -17,22 +17,15 @@ namespace NSprakIDE.Controls.Output
 
         public FlowDocument Document { get; } = new FlowDocument();
 
-        private OutputLogSupplier _parent;
         private Paragraph _paragraph;
 
-        public OutputLog(string name, string category, OutputLogSupplier parent)
+        public OutputLog(string name, string category)
         {
             Name = name;
             Category = category;
-            _parent = parent;
 
             _paragraph = new Paragraph();
             Document.Blocks.Add(_paragraph);
-        }
-
-        public void End()
-        {
-            _parent.End(this);
         }
 
         public void Write(string text)

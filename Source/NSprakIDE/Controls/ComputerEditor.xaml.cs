@@ -16,6 +16,7 @@ using NSprak.Operations;
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.General;
 using NSprakIDE.Controls.Output;
+using NSprak.Messaging;
 
 namespace NSprakIDE.Controls
 {
@@ -23,9 +24,13 @@ namespace NSprakIDE.Controls
 
     public class ComputerEditorEnviroment
     {
+        public string Name;
+
+        public string GivenID;
+
         public string FilePath;
 
-        public OutputLog Output;
+        public OutputLogSupplier Output;
 
         public LocalsView LocalsView;
 
@@ -41,22 +46,19 @@ namespace NSprakIDE.Controls
 
     public partial class ComputerEditor : UserControl, IDisposable
     {
-        public ComputerEditorEnviroment Enviroment { get; }
+        public ComputerEditorEnviroment Environment { get; }
 
         public ComputerEditorMode Mode { get; private set; }
 
         public Computer Computer { get; }
 
-        private Executor _executor;
+        private readonly Executor _executor;
 
-        private string _filePath;
+        private readonly string _filePath;
 
-        private SourceEditor _sourceEditor;
-        private ExpressionView _expressionView;
-        private OperationsView _operationsView;
-
-        private LocalsView _localsView;
-        private MessageView _messageView;
+        private readonly SourceEditor _sourceEditor;
+        private readonly ExpressionView _expressionView;
+        private readonly OperationsView _operationsView;
 
         public bool HasChanges
         {
@@ -69,28 +71,40 @@ namespace NSprakIDE.Controls
         {
             InitializeComponent();
 
-            Enviroment = environment;
+            Environment = environment;
 
-            string name = Path.GetFileNameWithoutExtension(environment.FilePath);
-            IConsole console = new ComputerOutput(environment.Output);
+            IConsole console = new ComputerOutput(environment.Output.Start(
+                environment.GivenID, 
+                environment.Name, 
+                MainWindow.ComputerLogCategory)
+            );
 
             Computer = new Computer()
             {
                 StandardOut = console
             };
 
+            _executor = Computer.CreateExecutor();
+
+            Environment.MessageView.Supplier.Start(
+                Computer.Messenger,
+                environment.GivenID,
+                environment.Name,
+                MainWindow.ComputerLogCategory
+            );
+
+            environment.LocalsView.Supplier.Start(
+                _executor,
+                environment.GivenID,
+                environment.Name,
+                MainWindow.ComputerLogCategory
+            );
+
             _sourceEditor = new SourceEditor(Computer.Messenger);
             _expressionView = new ExpressionView();
             _operationsView = new OperationsView();
 
-            _executor = Computer.CreateExecutor();
-
-            _localsView = environment.LocalsView;
-            _localsView.Target = _executor;
-            _messageView = environment.MessageView;
-            _messageView.Target = Computer.Messenger;
             _sourceEditor.Executor = _executor;
-            
             _expressionView.ShowDebug = true;
 
             MainContent.Content = _sourceEditor;
@@ -124,7 +138,9 @@ namespace NSprakIDE.Controls
 
         public void Dispose()
         {
-            Enviroment.Output.End();
+            Environment.Output.End(Environment.GivenID);
+            Environment.MessageView.Supplier.End(Environment.GivenID);
+            Environment.LocalsView.Supplier.End(Environment.GivenID);
         }
 
         public void Compile()
@@ -141,7 +157,7 @@ namespace NSprakIDE.Controls
             _sourceEditor.Update(Computer.Compiler);
             _sourceEditor.Redraw();
 
-            _messageView.Update();
+            Environment.MessageView.Update();
 
             _expressionView.Root = Computer
                 .Compiler
@@ -257,13 +273,15 @@ namespace NSprakIDE.Controls
             void Action()
             {
                 _operationsView.Highlight(_executor.Instructions.Index);
-                _localsView.Update();
+                Environment.LocalsView.Update();
 
                 Token token = _executor.Instructions.CurrentInfo.FocusToken;
                 int lineNumber = token.LineNumber;
                 int columnNumber = token.ColumnStart;
                 _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
                 _sourceEditor.Redraw();
+
+                InvalidateVisual();
             }
 
             Dispatcher.Invoke(Action);
@@ -273,9 +291,10 @@ namespace NSprakIDE.Controls
         {
             void Action()
             {
+                Environment.LocalsView.Update();
                 _operationsView.ClearHighlight();
-                _localsView.Clear();
                 _sourceEditor.Redraw();
+                InvalidateVisual();
             }
 
             Dispatcher.Invoke(Action);

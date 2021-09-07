@@ -7,6 +7,8 @@ using System.Windows.Controls;
 
 using NSprak.Messaging;
 
+using NSprakIDE.Controls.General;
+
 namespace NSprakIDE.Controls
 {
     public class MessageWrapper
@@ -19,7 +21,9 @@ namespace NSprakIDE.Controls
 
         public string Column { get; }
 
-        public MessageWrapper(Message message)
+        public string Source { get; }
+
+        public MessageWrapper(Message message, string source)
         {
             Severity = message.Template.Severity.ToString();
             UserMessage = message.RenderedText;
@@ -34,6 +38,8 @@ namespace NSprakIDE.Controls
                 Line = "";
                 Column = "";
             }
+
+            Source = source;
         }
     }
 
@@ -44,9 +50,14 @@ namespace NSprakIDE.Controls
     {
         public Messenger Target { get; set; }
 
+        public ViewSupplier<Messenger> Supplier { get; }
+
         public MessageView()
         {
             InitializeComponent();
+
+            Supplier = new ViewSupplier<Messenger>(ViewSelect);
+            Supplier.AllowNoSelection = true;
         }
 
         public void Clear()
@@ -57,19 +68,27 @@ namespace NSprakIDE.Controls
 
         public void Update()
         {
-            if (Target == null)
+            IViewItem selectedItem = ViewSelect.SelectedItem;
+            Messenger selectedMessenger = (Messenger)selectedItem.GetValue();
+
+            List<MessageWrapper> messages = new List<MessageWrapper>();
+            if (selectedMessenger == null)
             {
-                Clear();
-                return;
+                foreach (ViewItem<Messenger> supplierItem in Supplier.ViewItems)
+                    if (supplierItem.Value != null)
+                        messages.AddRange(supplierItem.Value.Messages.Select(
+                            x => new MessageWrapper(x, supplierItem.Name)));
             }
             else
-            {
-                List<MessageWrapper> messages = Target.Messages
-                    .Select(x => new MessageWrapper(x))
-                    .ToList();
+                messages.AddRange(selectedMessenger.Messages.Select(
+                    x => new MessageWrapper(x, selectedItem.Name)));
 
-                MessagesGrid.ItemsSource = messages;
-            }
+            MessagesGrid.ItemsSource = messages;
+        }
+
+        private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
+        {
+            Update();
         }
     }
 }

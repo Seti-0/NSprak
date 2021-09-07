@@ -5,9 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NSprakIDE.Controls.General"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="Root">
     <StackPanel Orientation="Horizontal" Background="{StaticResource NSprakIDE.Toolbar}">
-        <TextBlock Text="Show output from: " Margin="5,8,5,5" Background="{x:Null}" Foreground="Black"/>
+        <TextBlock Text="{Binding Description, ElementName=Root}" Margin="5,8,5,5" Background="{x:Null}" Foreground="Black"/>
         <ComboBox Name="Selection" Margin="5,5,5,5"
                   SelectionChanged="Selection_SelectionChanged">
             <ComboBox.ItemTemplate>

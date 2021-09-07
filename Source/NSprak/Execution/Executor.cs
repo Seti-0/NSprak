@@ -192,9 +192,9 @@ namespace NSprak.Execution
             _stopRequested = false;
             _pauseRequested = false;
 
-            OnStop(new EventArgs());
-
             Reset();
+
+            OnStop(new EventArgs());
         }
 
         private void Pause()

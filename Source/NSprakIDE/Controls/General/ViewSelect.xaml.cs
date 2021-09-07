@@ -19,119 +19,97 @@ namespace NSprakIDE.Controls.General
         string Name { get; }
         bool Underline { get; }
 
-        object getValue();
+        object GetValue();
     }
 
     public class ViewItem<T> : IViewItem
     {
         public string Name { get; set; }
 
+        public string Category { get; set; }
+
         public bool Underline { get; set; }
 
         public T Value { get; set; }
 
-        public ViewItem(string name, bool underline, T value)
+        public ViewItem(string name, string category, bool underline, T value)
         {
             Name = name;
             Underline = underline;
             Value = value;
+            Category = category;
         }
 
-        public object getValue() => Value;
+        public object GetValue() => Value;
     }
 
-    public abstract class ViewSupplier<T>
+    public class ViewSupplier
     {
-        public const string MainCategory = "Main";
+        public const string Category_Main = "Main";
+        public const string ID_All = "All";
+    }
 
-        private Dictionary<string, List<ViewItem<T>>> _categories 
-            = new Dictionary<string, List<ViewItem<T>>>();
+    public class ViewSupplier<T> : ViewSupplier
+    {
+        private readonly Dictionary<string, ViewItem<T>> _items 
+            = new Dictionary<string, ViewItem<T>>();
 
-        private ViewSelect _view;
+        private readonly ViewSelect _view;
+        private bool _allowNoSelection;
+
+        public bool AllowNoSelection
+        {
+            get => _allowNoSelection;
+
+            set
+            {
+                _allowNoSelection = value;
+                UpdateView();
+            }
+        }
+
+        public IEnumerable<ViewItem<T>> ViewItems => _items.Values;
+
+        public IEnumerable<T> Values => _items
+            .Values
+            .Select(x => x.Value)
+            .Where(x => x != null);
 
         public ViewSupplier(ViewSelect view)
         {
             _view = view;
-            StartCategory(MainCategory);
+            _items.Add(ID_All, new ViewItem<T>("All", Category_Main, true, default)); ;
         }
 
-        public void StartCategory(string name)
+        public void Start(T value, string id, string name, string category)
         {
-            if (_categories.ContainsKey(name))
-            {
-                string message = $"Category \"{name}\" already exists";
-                throw new ArgumentException(message);
-
-            }
-
-            _categories.Add(name, new List<ViewItem<T>>());
-        }
-
-        public T Start(string name, string categoryName = MainCategory)
-        {
-            List<ViewItem<T>> category;
-            if (!_categories.TryGetValue(categoryName, out category))
-            {
-                string message = $"Unknown category \"{categoryName}\"";
-                throw new ArgumentException(message);
-            }
-
-            T value = Create(name, categoryName);
-            category.Add(new ViewItem<T>(name, false, value));
+            _items.Add(id, new ViewItem<T>(name, category, false, value));
             UpdateView();
-
-            return value;
         }
 
-        public void Select(T value)
+        public void Select(string id)
         {
-            // I should really make a lookup instead of having this
-            // search each time a tab is clicked. Not that there are ever 
-            // many items, but it would be neater.
-            IViewItem item = null;
-            foreach (List<ViewItem<T>> category in _categories.Values)
-                foreach (ViewItem<T> option in category)
-                    if (EqualityComparer<T>.Default.Equals(option.Value, value))
-                    {
-                        item = option;
-                        break;
-                    }
-
-            _view.Select(item);
+            if (id == null)
+                _view.Select(_items[ID_All]);
+            else
+                _view.Select(_items[id]);
         }
 
-        public void End(T item)
+        public void End(string id)
         {
-            foreach (List<ViewItem<T>> category in _categories.Values)
-            {
-                category.RemoveAll(
-                    x => EqualityComparer<T>.Default.Equals(x.Value, item));
-            }
-
+            _items.Remove(id);
             UpdateView();
         }
 
         private void UpdateView()
         {
-            List<ViewItem<T>> items = new List<ViewItem<T>>();
-            foreach (List<ViewItem<T>> category in _categories.Values)
-            {
-                if (category.Count == 0)
-                    continue;
+            IEnumerable<ViewItem<T>> items = _items.Values;
 
-                foreach (ViewItem<T> item in category)
-                {
-                    item.Underline = false;
-                    items.Add(item);
-                }
-
-                items[^1].Underline = true;
-            }
+            if (!AllowNoSelection)
+                items = items.Skip(1);
 
             _view.UpdateOptions(items);
         }
-
-        protected abstract T Create(string name, string category);
     }
 
     public class ValueSelectedEventArgs : EventArgs
@@ -151,8 +129,22 @@ namespace NSprakIDE.Controls.General
     //That would save many of the hoops here.
     public partial class ViewSelect : UserControl
     {
+        public static DependencyProperty DescriptionProperty = DependencyProperty
+            .Register(nameof(Description), typeof(string), typeof(ViewSelect));
+
         private IEnumerable<IViewItem> _items;
         private IViewItem _selectedItem;
+
+        public string Description
+        {
+            get => (string)GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
+        }
+
+        public IViewItem SelectedItem
+        {
+            get => (IViewItem)Selection.SelectedItem;
+        }
 
         public event EventHandler<ValueSelectedEventArgs> Selected;
 
@@ -200,7 +192,7 @@ namespace NSprakIDE.Controls.General
         protected void OnSelectionChanged(IViewItem oldItem, IViewItem newItem)
         {
             Selected?.Invoke(this, new ValueSelectedEventArgs(
-                oldItem?.getValue(), newItem?.getValue()));
+                oldItem?.GetValue(), newItem?.GetValue()));
         }
     }
 }

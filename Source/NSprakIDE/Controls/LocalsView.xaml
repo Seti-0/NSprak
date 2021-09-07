@@ -4,10 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NSprakIDE.Controls.Execution"
+             xmlns:general="clr-namespace:NSprakIDE.Controls.General"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel LastChildFill="True">
-        <!-- This view is composed of two grids -->
+        <!-- Choose which file to focus on, if any -->
+        <general:ViewSelect x:Name="ViewSelect" DockPanel.Dock="Top"
+                            Description="Show locals from: "
+                            Selected="ViewSelect_Selected"/>
+        <!-- There are two grids -->
         <!-- First: the "values" grid. This is usually hidden -->
         <DataGrid x:Name="ValuesGrid" DockPanel.Dock="Left" Width="200" 
                 AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="{StaticResource NSprakIDE.Data.VerticalLines}">
