@@ -278,16 +278,8 @@ namespace NSprakIDE.Controls
                 int columnNumber = token.ColumnStart;
                 _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
                 _sourceEditor.Redraw();
+                CommandContextChanged?.Invoke(this, EventArgs.Empty);
                 InvalidateVisual();
-
-                Task.Run(() =>
-                {
-                    Thread.Sleep(2000);
-                    Dispatcher.BeginInvoke(new Action(() => InvalidateVisual()));
-                    Logs.Core.LogInformation("INVOKING");
-                });
-
-                Dispatcher.BeginInvoke(new Action(() => InvalidateVisual()));
             }
 
             Dispatcher.Invoke(Action);

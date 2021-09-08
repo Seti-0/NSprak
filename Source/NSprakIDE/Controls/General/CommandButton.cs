@@ -45,13 +45,6 @@ namespace NSprakIDE.Controls.General
                 typeof(CommandButton)
                 );
 
-        public static DependencyProperty CommandEnabledProperty =
-            DependencyProperty.Register(
-                nameof(CommandEnabled),
-                typeof(bool),
-                typeof(CommandButton)
-                );
-
         private static void OnSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             CommandButton button = (CommandButton)sender;
@@ -85,11 +78,11 @@ namespace NSprakIDE.Controls.General
                 button.Command.CanExecuteChanged -= button._enabledHandler;
 
             button.Content = button?.UICommand?.Text;
-            button.CheckCommand();
+            button.CheckEnabled();
 
             void EnabledHandler(object sender, EventArgs e)
             {
-                button.CheckCommand();
+                button.CheckEnabled();
             }
 
             button._enabledHandler = EnabledHandler;
@@ -122,12 +115,6 @@ namespace NSprakIDE.Controls.General
             set => SetValue(ImageSourceProperty, value);
         }
 
-        public bool CommandEnabled
-        {
-            get => (bool)GetValue(CommandEnabledProperty);
-            set => SetValue(CommandEnabledProperty, value);
-        }
-
         public CommandButton()
         {
             Size = CommandButtonSize.Medium;
@@ -156,21 +143,12 @@ namespace NSprakIDE.Controls.General
 
         private void Host_CommandContextChanged(object sender, EventArgs e)
         {
-            CheckCommand();
+            CheckEnabled();
         }
 
-        private void CheckCommand()
+        private void CheckEnabled()
         {
-            // Passing the button as the target element for CanExecute here
-            // is important - it means that CanExecute will not consider 
-            // the element that is actually focused. This is good, because
-            // the button should not be greyed out just because the parent
-            // element is out of focus, that's only relevant to keyboard 
-            // shortcuts. Which makes me think that there might be another
-            // method I'm missing.
-            CommandEnabled = UICommand.CanExecute(null, this);
-            
-            IsEnabled = CommandEnabled;
+            IsEnabled = UICommand.CanExecute(null, this);
         }
     }
 }

@@ -54,7 +54,7 @@
                             <Setter TargetName="Image" Property="Height" Value="30"/>
                             <Setter TargetName="Image" Property="Margin" Value="0"/>
                         </Trigger>
-                        <Trigger Property="CommandEnabled" Value="False">
+                        <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Image" Property="Effect">
                                 <Setter.Value>
                                     <Icons:GrayscaleEffect/>

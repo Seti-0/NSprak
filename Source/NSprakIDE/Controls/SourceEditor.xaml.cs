@@ -20,6 +20,8 @@ using NSprakIDE.Controls.Source;
 using NSprakIDE.Controls.General;
 
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace NSprakIDE.Controls
 {
@@ -113,7 +115,70 @@ namespace NSprakIDE.Controls
             Brush marginBrush = (Brush)FindResource("NSprakIDE.Toolbar");
             margin.SetValue(ForegroundProperty, marginBrush);
             MainEditor.TextArea.LeftMargins.Add(margin);
+
+            //MainEditor.TextArea.TextEntering += TextArea_TextEntering;
+            //MainEditor.TextArea.TextEntered += TextArea_TextEntered;
         }
+
+        /*
+        CompletionWindow _window;
+
+        public class Data : ICompletionData
+        {
+            public ImageSource Image => null;
+
+            public string Text { get; }
+
+            public object Content => Text + " (Content)";
+
+            public object Description => new TextBlock(new Run("Hello World\nHello!"));
+
+            public double Priority => 32.4;
+
+            public Data(string text)
+            {
+                Text = text;
+            }
+
+            public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
+            {
+                Logs.Core.LogInformation("Complete: " + Text);
+            }
+        }
+
+        private void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text == ".")
+            {
+                _window = new CompletionWindow(MainEditor.TextArea);
+                _window.WindowStyle = WindowStyle.None;
+                _window.ResizeMode = ResizeMode.NoResize;
+                IList<ICompletionData> data = _window
+                    .CompletionList.CompletionData;
+
+                data.Add(new Data("Item 1"));
+                data.Add(new Data("Item 2"));
+                data.Add(new Data("Item 3"));
+
+                _window.Show();
+                _window.Closed += (obj, e) =>
+                {
+                    _window = null;
+                };
+            }
+        }
+
+        private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length > 0 && _window != null)
+            {
+                if (!char.IsLetterOrDigit(e.Text[0]))
+                {
+                    _window.CompletionList.RequestInsertion(e);
+                };
+            }
+        }
+        */
 
         private void _diffMargin_HasChangesChanged(object sender, EventArgs e)
         {
