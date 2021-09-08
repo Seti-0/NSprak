@@ -9,7 +9,7 @@ namespace NSprakIDE.Logging
 {
     public static class LogFormatUtility
     {
-        public static void WritePrefix(IWriter writer, LogEvent entry, ref string _lastDate)
+        public static void WritePrefix(ISimpleWriter writer, LogEvent entry, ref string _lastDate)
         {
             string dateText = entry.Timestamp.ToLocalTime().ToShortDateString();
             
@@ -38,7 +38,7 @@ namespace NSprakIDE.Logging
             else
             {
                 upto = null;
-                after = null;
+                after = input;
                 return false;
             }
         }

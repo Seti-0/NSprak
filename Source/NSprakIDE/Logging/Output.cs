@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace NSprakIDE.Logging
 {
     using static ConsoleColor;
-
-    public interface IColoredWriter : IWriter
-    {
-        public ConsoleColor Color { set; get; }
-    }
 
     public class Output : ILogEventSink
     {
@@ -37,55 +33,101 @@ namespace NSprakIDE.Logging
 
         private static readonly ColorScheme traceColors = new ColorScheme(DarkRed, DarkGray);
 
-        private IColoredWriter _writer;
+        private readonly IWriter _writer;
         private LogEvent _entry;
         private string _lastDate;
-        private string _previousText;
         private ColorScheme _currentColors;
 
-        public Output(IColoredWriter writer, IFormatProvider formatProvider = null)
+        private class RecentMemory
+        {
+            public string Text;
+            public Exception Exception;
+            public object MarkID;
+            public int Count;
+        }
+
+        private Queue<RecentMemory> _recentMemories = new Queue<RecentMemory>();
+
+        public Output(IWriter writer)
         {
             _writer = writer;
         }
 
         public void Emit(LogEvent entry)
         {
+            foreach (RecentMemory memory in _recentMemories)
+            {
+                if (entry.Text == memory.Text && entry.Exception == memory.Exception)
+                {
+                    memory.Count += 1;
+                    _writer.Edit(memory.MarkID, $" (x{memory.Count})");
+                    return;
+                }
+            }
+
             _entry = entry;
             _currentColors = colorLookup[entry.Level];
 
             _writer.Color = DarkGray;
             LogFormatUtility.WritePrefix(_writer, _entry, ref _lastDate);
 
-            // The idea is to apply a little bit of shading - words that 
-            // appeared in the previous message will be darkened.
-
             if (!colorLookup.TryGetValue(_entry.Level, out ColorScheme colors))
                 colors = new ColorScheme(Magenta, Gray);
 
-            string message = entry.Text;
+            WriteHighlightedText(entry.Text, colors);
 
-            const string pattern = @"[^\w]+";
-            string remainingText = message;
-            bool isRepeat;
+            _writer.Color = colors.Dark;
+            _writer.Write("");
+            object lineEndMark = _writer.Mark();
 
-            _previousText ??= "";
-
-            while (LogFormatUtility.Split(remainingText, pattern, out string upto, out string after))
-            {
-                isRepeat = _previousText.Contains(upto);
-                _writer.Color = isRepeat ? colors.Dark : colors.Light;
-                _writer.Write(upto);
-                remainingText = after;
-            }
-
-            isRepeat = _previousText.Contains(remainingText);
-            _writer.Color = isRepeat ? colors.Dark : colors.Light;
-            _writer.WriteLine(remainingText);
-
-            _previousText = message;
+            _writer.WriteLine();
 
             if (_entry.Exception != null)
                 WriteException(_entry.Exception);
+
+            _recentMemories.Enqueue(new RecentMemory {
+                Text = _entry.Text,
+                Exception = _entry.Exception,
+                MarkID = lineEndMark,
+                Count = 1
+            });
+
+            if (_recentMemories.Count > 3)
+            {
+                RecentMemory old = _recentMemories.Dequeue();
+                _writer.ClearMark(old.MarkID);
+            }
+        }
+
+        private void WriteHighlightedText(string text, ColorScheme colors)
+        {
+            // Darken text in brackets a bit - a minimal level
+            // of highlighting.
+
+            _currentColors = colors;
+
+            const string start = @"\(";
+            const string end = @"\)";
+            int currentIndex = 0;
+
+            while (true)
+            {
+                Match match = Regex.Match(text[currentIndex..], start);
+                if (!match.Success)
+                    break;
+
+                WriteLight(text[currentIndex..match.Index]);
+                currentIndex = match.Index;
+
+                match = Regex.Match(text[currentIndex..], end);
+                if (!match.Success)
+                    break;
+
+                WriteDark(text[currentIndex..(match.Index + 1)]);
+                currentIndex = match.Index + 1;
+            }
+
+            WriteLight(text[currentIndex..]);
         }
 
         private void WriteLight(string text)

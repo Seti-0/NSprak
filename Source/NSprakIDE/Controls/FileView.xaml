@@ -79,6 +79,7 @@
                     <MenuItem Command="{x:Static Cmd:FileCommands.OpenSelected}"/>
                     <MenuItem Command="{x:Static Cmd:GeneralCommands.Rename}"/>
                     <MenuItem Command="ApplicationCommands.Delete"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.OpenInFileExplorer}"/>
                     <Separator/>
                     <MenuItem Command="{x:Static Cmd:GeneralCommands.RefreshView}"/>
                 </ContextMenu>

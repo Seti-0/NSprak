@@ -35,7 +35,7 @@ namespace NSprakIDE.Controls.Output
         }
     }
 
-    public class OutputLogWriter : IColoredWriter
+    public class OutputLogWriter : IWriter
     {
         private ConsoleColor _color;
         
@@ -78,6 +78,21 @@ namespace NSprakIDE.Controls.Output
         public void WriteLine(string text = "")
         {
             Log.WriteLine(text);
+        }
+
+        public object Mark()
+        {
+            return Log.Mark();
+        }
+
+        public bool ClearMark(object id)
+        {
+            return Log.ClearMark(id);
+        }
+
+        public bool Edit(object id, string newText)
+        {
+            return Log.Edit(id, newText);
         }
     }
 }

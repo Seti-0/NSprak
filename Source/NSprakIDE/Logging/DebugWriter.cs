@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NSprakIDE.Logging
 {
-    public class DebugWriter : IWriter
+    public class DebugWriter : ISimpleWriter
     {
         public void Write(string text)
         {

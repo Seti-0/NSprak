@@ -175,25 +175,41 @@ namespace NSprakIDE.Controls.Source
             List<DiffMarginElement> margin = new List<DiffMarginElement>();
             margin.Add(new DiffMarginElement(DiffMarginKind.Start));
 
+            // The most recent element with removals is being tracked
+            // for the sake of converting insertions to changes.
+            DiffMarginElement latestWithRemove = null;
+
             foreach (DiffPathAction action in diffPath)
             {
                 if (action == DiffPathAction.Pass)
+                {
                     margin.Add(new DiffMarginElement(DiffMarginKind.Pass));
+                    latestWithRemove = null;
+                }
 
                 else if (action == DiffPathAction.Remove)
+                {
                     margin.Last().RemoveCount += 1;
+                    latestWithRemove = margin.Last();
+                }
 
                 else
                 {
                     DiffMarginKind kind;
 
-                    DiffMarginElement previous = margin.Last();
-                    if (previous.RemoveCount > 0)
+                    if (latestWithRemove != null)
                     {
-                        previous.RemoveCount -= 1;
+                        latestWithRemove.RemoveCount -= 1;
                         kind = DiffMarginKind.Change;
+
+                        if (latestWithRemove.RemoveCount == 0)
+                            latestWithRemove = null;
                     }
-                    else kind = DiffMarginKind.Insert;
+                    else
+                    {
+                        kind = DiffMarginKind.Insert;
+                        latestWithRemove = null;
+                    }
 
                     margin.Add(new DiffMarginElement(kind));
                 }

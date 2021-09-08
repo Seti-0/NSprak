@@ -7,7 +7,7 @@ namespace NSprak.Messaging
 {
     public class Messenger
     {
-        private List<Message> _messages = new List<Message>();
+        private readonly List<Message> _messages = new List<Message>();
 
         public IReadOnlyList<Message> Messages => _messages;
 

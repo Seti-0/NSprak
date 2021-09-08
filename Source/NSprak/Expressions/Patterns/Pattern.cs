@@ -89,10 +89,17 @@ namespace NSprak.Expressions.Patterns
 
             if (!pass && (currentStep == null || !currentStep.AllowEnd))
             {
-                if (tokens.HasPrevious)
-                    state.RaiseError(tokens.Previous, Messages.UnexpectedEnd);
+                if (tokens.HasCurrent)
+                    state.RaiseError(tokens.Current, Messages.UnexpectedToken);
+
                 else
-                    state.RaiseError(Messages.UnexpectedEnd);
+                {
+                    if (tokens.HasPrevious)
+                        state.RaiseError(tokens.Previous, Messages.UnexpectedEndOfLine);
+                    else
+                        // This shouldn't happen. Unless I've made a mistake, that is.
+                        throw new NotImplementedException("Internal pattern error");
+                }
             }
 
             PatternMatchResult result = new PatternMatchResult();

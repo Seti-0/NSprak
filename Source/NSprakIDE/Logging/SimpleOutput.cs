@@ -6,19 +6,12 @@ using System.Text;
 
 namespace NSprakIDE.Logging
 {
-    public interface IWriter
-    {
-        public void Write(string text);
-
-        public void WriteLine(string text = "");
-    }
-
     public class SimpleOutput :ILogEventSink
     {
-        private IWriter _writer;
+        private readonly ISimpleWriter _writer;
         private string _lastDate;
 
-        public SimpleOutput(IWriter writer)
+        public SimpleOutput(ISimpleWriter writer)
         {
             _writer = writer;
         }

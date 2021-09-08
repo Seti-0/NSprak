@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NSprakIDE.Logging
 {
-    public class FileWriter : IWriter
+    public class FileWriter : ISimpleWriter
     {
         private string _filePath;
 

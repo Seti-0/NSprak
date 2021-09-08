@@ -23,6 +23,9 @@ namespace NSprakIDE.Controls.Files
 
         public static void OpenInFileExplorer(string fullPath)
         {
+            if (!Directory.Exists(fullPath))
+                fullPath = Path.GetDirectoryName(fullPath);
+
             Process.Start("explorer", fullPath);
         }
 

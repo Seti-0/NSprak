@@ -193,6 +193,8 @@ namespace NSprakIDE.Controls
 
         public void AddFile()
         {
+            // It would be nice if we could start editing the new file,
+            // but I am not sure how to do that right now.
             PerformFileOp(FileHelper.AddComputer, "new file", "Creating new file in");
         }
 

@@ -17,7 +17,11 @@ namespace NSprakIDE.Controls.Output
 
         public FlowDocument Document { get; } = new FlowDocument();
 
-        private Paragraph _paragraph;
+        private readonly Paragraph _paragraph;
+
+        private readonly Dictionary<int, Run> _markers 
+            = new Dictionary<int, Run>();
+        private int _markerID;
 
         public OutputLog(string name, string category)
         {
@@ -33,21 +37,70 @@ namespace NSprakIDE.Controls.Output
             Document.Dispatcher.Invoke(() => WriteUnsafe(text));
         }
 
-        private void WriteUnsafe(string text)
-        {
-            Run run = new Run(text);
-            run.Foreground = new SolidColorBrush(Color);
-
-            _paragraph.Inlines.Add(run);
-            //_parent.UpdateSelection();
-
-            if (_paragraph.Inlines.Count > 100)
-                _paragraph.Inlines.Remove(_paragraph.Inlines.FirstInline);
-        }
-
         public void WriteLine(string text)
         {
             Write(text + "\n");
+        }
+
+        public int Mark(string text = "")
+        {
+            while (_markers.ContainsKey(_markerID))
+            {
+                _markerID += 1;
+
+                // I know. I'm very silly sometimes.
+                if (_markerID == int.MaxValue)
+                    return -1;
+            }
+
+            void Action()
+            {
+                Run run = new Run(text);
+                _markers.Add(_markerID, run);
+                WriteUnsafe(run);
+            };
+
+            Document.Dispatcher.Invoke(new Action(Action));
+            return _markerID;
+        }
+
+        public bool ClearMark(object id)
+        {
+            if (id is int number)
+            {
+                _markers.Remove(number);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Edit(object id, string newText)
+        {
+            if (id is int number && _markers.TryGetValue(number, out Run run))
+            {
+                Document.Dispatcher.BeginInvoke(new Action(() => {
+                    run.Text = newText;
+                }));
+                return true;
+            }
+
+            return false;
+        }
+
+        private void WriteUnsafe(string text)
+        {
+            WriteUnsafe(new Run(text));
+        }
+
+        private void WriteUnsafe(Run run)
+        {
+            run.Foreground = new SolidColorBrush(Color);
+
+            _paragraph.Inlines.Add(run);
+
+            if (_paragraph.Inlines.Count > 100)
+                _paragraph.Inlines.Remove(_paragraph.Inlines.FirstInline);
         }
     }
 }

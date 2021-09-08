@@ -52,7 +52,7 @@ namespace NSprak.Messaging
                 startIndex = matches[i].Index + matches[i].Length;
             }
 
-            result += Summary.Substring(startIndex, Summary.Length - startIndex);
+            result += Summary[startIndex..];
 
             return result;
         }

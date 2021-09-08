@@ -193,7 +193,7 @@ namespace NSprakIDE.Controls
 
         public void Save()
         {
-            Logs.Core.LogInformation("Saving " + _filePath);
+            Logs.Core.LogInformation("Saving " + Path.GetFileName(_filePath));
             File.WriteAllText(_filePath, _sourceEditor.Text);
             _sourceEditor.ResetDiff();
         }

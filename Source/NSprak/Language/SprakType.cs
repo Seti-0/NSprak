@@ -87,7 +87,7 @@ namespace NSprak.Language
             Boolean = new SprakType
             {
                 InternalName = nameof(Boolean),
-                Text = "boolean",
+                Text = "bool",
                 ValueType = typeof(SprakBoolean),
 
                 _default = new SprakBoolean()

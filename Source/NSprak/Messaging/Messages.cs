@@ -26,12 +26,6 @@ namespace NSprak.Messaging
                 Summary = "Unrecognized operator: {Content}"
             },
 
-            UnexpectedEnd = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "Unexpected end of code"
-            },
-
             UnexpectedEndOfLine = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
@@ -41,7 +35,7 @@ namespace NSprak.Messaging
             UnexpectedToken = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Unexpected token: {Token}"
+                Summary = "Unexpected token"
             },
 
             UnexpectedTokenAtEnd = new MessageTemplate
