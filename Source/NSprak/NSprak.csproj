@@ -5,13 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Language\BuiltInFunctionOld.cs" />
     <Compile Remove="Language\Builtins\BuiltinFunctionCollection.cs" />
     <Compile Remove="Language\Values\Value.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Language\BuiltInFunctionOld.cs" />
     <None Include="Language\Builtins\BuiltinFunctionCollection.cs" />
     <None Include="Language\Values\Value.cs" />
   </ItemGroup>

@@ -96,6 +96,16 @@ namespace NSprak.Language
             innerLookup.Add(key, value);
         }
 
+        public IEnumerable<TValue> GetValues(string name)
+        {
+            Dictionary<TKey, TValue> innerLookup;
+
+            if (_lookup.TryGetValue(name, out innerLookup))
+                return innerLookup.Values;
+
+            return Enumerable.Empty<TValue>();
+        }
+
         public bool TryGetValue(string name, TKey key, out TValue value)
         {
             Dictionary<TKey, TValue> innerLookup;
@@ -240,6 +250,14 @@ namespace NSprak.Language
             }
 
             return result;
+        }
+
+        public IEnumerable<FunctionInfo> FindFunctions(string name)
+        {
+            return _builtinFunctionsLookup
+                .GetValues(name)
+                .Select(x => x.Info)
+                .Concat(_userFunctionsLookup.GetValues(name));
         }
 
         public SignatureLookupResult TryFindMatch(string name, FunctionTypeSignature typeSignature)

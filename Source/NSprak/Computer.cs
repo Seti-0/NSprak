@@ -13,6 +13,11 @@ namespace NSprak
         private SignatureResolver _signatureLookup;
         private AssignmentResolver _assignmentLookup;
 
+        // This should not be visible. Actually, the resolvers shouldn't
+        // be fields of the computer at all. This is to be revisited at some 
+        // point.
+        public SignatureResolver Resolver => _signatureLookup;
+
         public Compiler Compiler { get; }
 
         public Executable Executable { get; private set; } = new Executable();
