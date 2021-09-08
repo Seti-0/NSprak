@@ -19,7 +19,7 @@
                 Make the style given in the merged dictionary the default style
                 for that type in this document.
             -->
-            <Style TargetType="General:CommandButton3" BasedOn="{StaticResource CommandButton3}"/>
+            <Style TargetType="General:CommandButton" BasedOn="{StaticResource CommandButton3}"/>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -41,7 +41,7 @@
 
             <DockPanel Margin="4" LastChildFill="True">
                 <TextBlock Style="{DynamicResource GroupTitle}">File</TextBlock>
-                <General:CommandButton3 Size="Large" IconName="Save" UICommand="{x:Static Cmd:EditorCommands.Save}"/>
+                <General:CommandButton Size="Large" IconName="Save" UICommand="{x:Static Cmd:EditorCommands.Save}"/>
             </DockPanel>
 
             <Rectangle Style="{DynamicResource VerticalSeperator}"/>
@@ -50,9 +50,9 @@
             <DockPanel Margin="4" LastChildFill="True">
                 <TextBlock Style="{DynamicResource GroupTitle}">View</TextBlock>
                 <StackPanel>
-                    <General:CommandButton3 IconName="Source" UICommand="{x:Static Cmd:EditorCommands.ViewCode}"/>
-                    <General:CommandButton3 IconName="ExpressionTree" UICommand="{x:Static Cmd:EditorCommands.ViewExpressionTree}"/>
-                    <General:CommandButton3 IconName="Operations" UICommand="{x:Static Cmd:EditorCommands.ViewOperations}"/>
+                    <General:CommandButton IconName="Source" UICommand="{x:Static Cmd:EditorCommands.ViewCode}"/>
+                    <General:CommandButton IconName="ExpressionTree" UICommand="{x:Static Cmd:EditorCommands.ViewExpressionTree}"/>
+                    <General:CommandButton IconName="Operations" UICommand="{x:Static Cmd:EditorCommands.ViewOperations}"/>
                 </StackPanel>
             </DockPanel>
 
@@ -62,13 +62,13 @@
             <DockPanel Margin="4" LastChildFill="True">
                 <TextBlock Style="{DynamicResource GroupTitle}">Execution</TextBlock>
                 <StackPanel Orientation="Horizontal">
-                    <General:CommandButton3 Size="Large" IconName="ContinueDebug" UICommand="{x:Static Cmd:EditorCommands.StartDebug}"/>
-                    <General:CommandButton3 Size="Large" IconName="Pause" UICommand="{x:Static Cmd:EditorCommands.Pause}"/>
-                    <General:CommandButton3 Size="Large" IconName="Stop" UICommand="{x:Static Cmd:EditorCommands.Stop}"/>
+                    <General:CommandButton Size="Large" IconName="ContinueDebug" UICommand="{x:Static Cmd:EditorCommands.StartDebug}"/>
+                    <General:CommandButton Size="Large" IconName="Pause" UICommand="{x:Static Cmd:EditorCommands.Pause}"/>
+                    <General:CommandButton Size="Large" IconName="Stop" UICommand="{x:Static Cmd:EditorCommands.Stop}"/>
                     <StackPanel>
-                        <General:CommandButton3 IconName="StepInto" UICommand="{x:Static Cmd:EditorCommands.StepInto}"/>
-                        <General:CommandButton3 IconName="StepOut" UICommand="{x:Static Cmd:EditorCommands.StepOut}"/>
-                        <General:CommandButton3 IconName="StepOver" UICommand="{x:Static Cmd:EditorCommands.StepOver}"/>
+                        <General:CommandButton IconName="StepInto" UICommand="{x:Static Cmd:EditorCommands.StepInto}"/>
+                        <General:CommandButton IconName="StepOut" UICommand="{x:Static Cmd:EditorCommands.StepOut}"/>
+                        <General:CommandButton IconName="StepOver" UICommand="{x:Static Cmd:EditorCommands.StepOver}"/>
                     </StackPanel>
                 </StackPanel>
             </DockPanel>
@@ -79,7 +79,7 @@
             <DockPanel Margin="4" LastChildFill="True">
                 <TextBlock Style="{DynamicResource GroupTitle}">Breakpoints</TextBlock>
                 <StackPanel>
-                    <General:CommandButton3 IconName="Breakpoint" UICommand="{x:Static Cmd:EditorCommands.ToggleBreakpoint}"/>
+                    <General:CommandButton IconName="Breakpoint" UICommand="{x:Static Cmd:EditorCommands.ToggleBreakpoint}"/>
                 </StackPanel>
             </DockPanel>
             

@@ -27,12 +27,12 @@
     </Style>
 
     <!-- Toolbar button (large & medium) -->
-    <Style TargetType="{x:Type General:CommandButton3}" x:Key="CommandButton3">
+    <Style TargetType="{x:Type General:CommandButton}" x:Key="CommandButton3">
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type General:CommandButton3}">
+                <ControlTemplate TargetType="{x:Type General:CommandButton}">
                     <Border x:Name="Root" BorderThickness="1" BorderBrush="{x:Null}">
                         <StackPanel x:Name="Panel" Margin="4,1,4,1">
                             <Image x:Name="Image" 

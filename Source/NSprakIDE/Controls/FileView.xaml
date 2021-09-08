@@ -20,7 +20,7 @@
                 Make the style given in the merged dictionary the default style
                 for that type in this document.
             -->
-            <Style TargetType="General:CommandButton3" BasedOn="{StaticResource CommandButton3}"/>
+            <Style TargetType="General:CommandButton" BasedOn="{StaticResource CommandButton3}"/>
         </ResourceDictionary>
     </UserControl.Resources>
 

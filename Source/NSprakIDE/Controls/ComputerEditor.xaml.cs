@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace NSprakIDE.Controls
         Source, Expressions, Operations
     }
 
-    public partial class ComputerEditor : UserControl, IDisposable
+    public partial class ComputerEditor : UserControl, IDisposable, ICommandButtonHost
     {
         public ComputerEditorEnviroment Environment { get; }
 
@@ -62,6 +63,7 @@ namespace NSprakIDE.Controls
         }
 
         public event EventHandler<EventArgs> HasChangesChanged;
+        public event EventHandler<EventArgs> CommandContextChanged;
 
         public ComputerEditor(ComputerEditorEnviroment environment)
         {
@@ -193,7 +195,7 @@ namespace NSprakIDE.Controls
 
         public void Save()
         {
-            Logs.Core.LogInformation("Saving " + Path.GetFileName(_filePath));
+            Logs.Core.LogInformation("Saving '" + Path.GetFileName(_filePath) + "'");
             File.WriteAllText(_filePath, _sourceEditor.Text);
             _sourceEditor.ResetDiff();
         }
@@ -276,8 +278,16 @@ namespace NSprakIDE.Controls
                 int columnNumber = token.ColumnStart;
                 _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
                 _sourceEditor.Redraw();
-
                 InvalidateVisual();
+
+                Task.Run(() =>
+                {
+                    Thread.Sleep(2000);
+                    Dispatcher.BeginInvoke(new Action(() => InvalidateVisual()));
+                    Logs.Core.LogInformation("INVOKING");
+                });
+
+                Dispatcher.BeginInvoke(new Action(() => InvalidateVisual()));
             }
 
             Dispatcher.Invoke(Action);
@@ -290,6 +300,7 @@ namespace NSprakIDE.Controls
                 Environment.LocalsView.Update();
                 _operationsView.ClearHighlight();
                 _sourceEditor.Redraw();
+                CommandContextChanged?.Invoke(this, EventArgs.Empty);
                 InvalidateVisual();
             }
 
