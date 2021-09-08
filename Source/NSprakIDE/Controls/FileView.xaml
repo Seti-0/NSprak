@@ -3,23 +3,46 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:NSprakIDE.Controls.Files"
-             xmlns:cmd ="clr-namespace:NSprakIDE.Commands"
+             xmlns:Files="clr-namespace:NSprakIDE.Controls.Files"
+             xmlns:Cmd ="clr-namespace:NSprakIDE.Commands"
+             xmlns:General="clr-namespace:NSprakIDE.Controls.General"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <!-- Styling-->
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Controls/General/Toolbar.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <!-- 
+                Make the style given in the merged dictionary the default style
+                for that type in this document.
+            -->
+            <Style TargetType="General:CommandButton3" BasedOn="{StaticResource CommandButton3}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Structure -->
+
     <DockPanel 
         Background="{StaticResource NSprakIDE.Toolbar}"
-        >
+        Focusable="True">
+
         <!-- Main Tree -->
         <TreeView Name="Tree" Margin="5,5,5,5" 
             SelectedItemChanged="Tree_SelectedItemChanged"
             PreviewMouseRightButtonDown="Tree_PreviewMouseRightButtonDown"
             MouseDoubleClick="Tree_MouseDoubleClick"
+            Focusable="True"
             >
             <TreeView.Resources>
                 <!-- Creating an editable textbox: two states -->
                 <DataTemplate x:Key="EditingTemplate">
-                    <TextBox Text="{Binding NewName}" LostFocus="FilenameEditor_LostFocus"
+                    <TextBox Text="{Binding NewName}"
+                             GotFocus="TextBox_GotFocus"
+                             LostFocus="FilenameEditor_LostFocus"
                              FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"/>
                 </DataTemplate>
                 <DataTemplate x:Key="DefaultTemplate">
@@ -36,28 +59,28 @@
                 </Style>
                 <!-- Context Menus -->
                 <!-- The command bindings are in code-behind -->
-                <ContextMenu x:Key ="{x:Static local:FileContexts.Root}"  StaysOpen="true">
-                    <MenuItem Command="{x:Static cmd:FileCommands.AddFile}"/>
-                    <MenuItem Command="{x:Static cmd:FileCommands.AddFolder}"/>
-                    <MenuItem Command="{x:Static cmd:FileCommands.OpenInFileExplorer}"/>
+                <ContextMenu x:Key ="{x:Static Files:FileContexts.Root}"  StaysOpen="true">
+                    <MenuItem Command="{x:Static Cmd:FileCommands.AddFile}"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.AddFolder}"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.OpenInFileExplorer}"/>
                     <Separator/>
-                    <MenuItem Command="{x:Static cmd:GeneralCommands.RefreshView}"/>
+                    <MenuItem Command="{x:Static Cmd:GeneralCommands.RefreshView}"/>
                 </ContextMenu>
-                <ContextMenu x:Key ="{x:Static local:FileContexts.Folder}"  StaysOpen="true">
-                    <MenuItem Command="{x:Static cmd:FileCommands.AddFile}"/>
-                    <MenuItem Command="{x:Static cmd:FileCommands.AddFolder}"/>
-                    <MenuItem Command="{x:Static cmd:GeneralCommands.Rename}"/>
+                <ContextMenu x:Key ="{x:Static Files:FileContexts.Folder}"  StaysOpen="true">
+                    <MenuItem Command="{x:Static Cmd:FileCommands.AddFile}"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.AddFolder}"/>
+                    <MenuItem Command="{x:Static Cmd:GeneralCommands.Rename}"/>
                     <MenuItem Command="ApplicationCommands.Delete"/>
-                    <MenuItem Command="{x:Static cmd:FileCommands.OpenInFileExplorer}"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.OpenInFileExplorer}"/>
                     <Separator/>
-                    <MenuItem Command="{x:Static cmd:GeneralCommands.RefreshView}"/>
+                    <MenuItem Command="{x:Static Cmd:GeneralCommands.RefreshView}"/>
                 </ContextMenu>
-                <ContextMenu x:Key ="{x:Static local:FileContexts.Computer}"  StaysOpen="true">
-                    <MenuItem Command="{x:Static cmd:FileCommands.OpenSelected}"/>
-                    <MenuItem Command="{x:Static cmd:GeneralCommands.Rename}"/>
+                <ContextMenu x:Key ="{x:Static Files:FileContexts.Computer}"  StaysOpen="true">
+                    <MenuItem Command="{x:Static Cmd:FileCommands.OpenSelected}"/>
+                    <MenuItem Command="{x:Static Cmd:GeneralCommands.Rename}"/>
                     <MenuItem Command="ApplicationCommands.Delete"/>
                     <Separator/>
-                    <MenuItem Command="{x:Static cmd:GeneralCommands.RefreshView}"/>
+                    <MenuItem Command="{x:Static Cmd:GeneralCommands.RefreshView}"/>
                 </ContextMenu>
             </TreeView.Resources>
             <TreeView.ItemContainerStyle>
@@ -72,7 +95,9 @@
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <StackPanel Orientation="Horizontal">
                         <Image x:Name="Icon" Source="{StaticResource Icon_Folder}" Margin="5,2.5,5,2.5"/>
-                        <ContentPresenter Style="{StaticResource EditableCell}" Content="{Binding}" Margin="0,2.5,5,2.5"/>
+                        <ContentPresenter Style="{StaticResource EditableCell}" Content="{Binding}" 
+                                          Margin="0,2.5,5,2.5"
+                                          GotFocus="ContentPresenter_GotFocus"/>
                     </StackPanel>
                     <HierarchicalDataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsFile}" Value="True">

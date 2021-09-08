@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,8 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-
-using Microsoft.Extensions.Logging;
 
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.Files;
@@ -75,7 +75,11 @@ namespace NSprakIDE.Controls
             Bind(this, FileCommands.AddFolder, AddFolder);
             Bind(this, FileCommands.OpenInFileExplorer, OpenInFileExplorer);
 
+            Func<bool> isEditing = () => _editTarget != null;
+
             Bind(this, GeneralCommands.Rename, StartEditingSelected);
+            Bind(this, GeneralCommands.Escape, StopEditing, isEditing);
+
             Bind(this, ApplicationCommands.Delete, Delete);
 
             Bind(this, FileCommands.OpenSelected, OpenFile);
@@ -107,6 +111,7 @@ namespace NSprakIDE.Controls
             
             // But updating the tree causes loss of focus, which in turn
             // causes the tree to update and everything crashes down.
+            // (See the 'Refresh' method to see why that nonsense happens)
 
             // The easiest solution I can see is just to lose focus from
             // the get go and trigger the update that way.
@@ -122,19 +127,23 @@ namespace NSprakIDE.Controls
 
         private void ApplyEdit()
         {
-            Logs.Core.LogDebug("Call: Apply Edit");
-
             if (_editTarget != null)
             {
-                void Rename()
+                if (_editTarget.NewName != _editTarget.Name)
                 {
-                    FileHelper.Rename(_editTarget.Path, _editTarget.NewName);
+                    void Rename(string path)
+                    {
+                        FileHelper.Rename(_editTarget.Path, _editTarget.NewName);
+                    }
+
+                    string errorName = $"renaming to '{_editTarget.NewName}'";
+                    string infoName = $"Renaming to '{_editTarget.NewName}'";
+                    PerformFileOp(Rename, errorName, infoName, _editTarget);
                 }
-
-                Logs.Core.LogDebug("Performing file op.");
-
-                string error = "Error occured while renaming {Path} to {NewName}";
-                PerformFileOp(Rename, error, _editTarget.Path, _editTarget.NewName);
+                else
+                {
+                    Refresh();
+                }
 
                 _editTarget = null;
             }
@@ -154,10 +163,14 @@ namespace NSprakIDE.Controls
             //Tree.Items.Refresh();
 
             // It seems that the selection isn't focused by default after the 
-            // tree is reconstructed, this an attempt to amend that.
-            // It returns true, but does not seem to work.
-            (Tree.ItemContainerGenerator
-                .ContainerFromItem(Tree.SelectedItem) as TreeViewItem)?.Focus();
+            // tree is reconstructed, this is to fix that.
+
+            Tree.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                (Tree.ItemContainerGenerator
+                    .ContainerFromItem(Tree.SelectedItem) as TreeViewItem)
+                    ?.Focus();
+            }));
         }
 
         public void OpenFile()
@@ -174,39 +187,44 @@ namespace NSprakIDE.Controls
                     OnFileOpened(new FileOpenedEventArgs(path));
                 };
 
-                PerformFileOp(Action, "open file");
+                PerformFileOp(Action, "open file", "Opening file");
             }
         }
 
         public void AddFile()
         {
-            PerformFileOp(FileHelper.AddComputer, "new file");
+            PerformFileOp(FileHelper.AddComputer, "new file", "Creating new file in");
         }
 
         public void AddFolder()
         {
-            PerformFileOp(FileHelper.AddNewFolder, "new folder");
+            PerformFileOp(FileHelper.AddNewFolder, "new folder", "Creating new folder in");
         }
 
         public void Delete()
         {
-            PerformFileOp(FileHelper.Delete, "delete");
+            PerformFileOp(FileHelper.Delete, "delete", "Deleting");
         }
 
         public void OpenInFileExplorer()
         {
-            PerformFileOp(FileHelper.OpenInFileExplorer, "open in file explorer");
+            PerformFileOp(FileHelper.OpenInFileExplorer, "open", "Opening in file explorer");
         }
 
-        private void PerformFileOp(Action<string> pathAction, string errorName)
+        private void PerformFileOp(Action<string> pathAction, 
+            string errorName, string infoName, FileTreeItem item = null)
         {
-            FileTreeItem item = (FileTreeItem)Tree.SelectedItem;
+            if (item == null)
+                item = (FileTreeItem)Tree.SelectedItem;
 
             item.Refresh();
 
+            Logs.Core.LogInformation("(FileOp) " + infoName + ": " + item.Path);
+
             if (item.Unknown)
             {
-                Logs.Core.LogWarning("Attempted an action a location that does not exist: {Path}", item.Path);
+                string msg = $"Attempted an action a location that does not exist: {item.Path}";
+                Logs.Core.LogWarning(msg);
                 return;
             }
 
@@ -215,23 +233,14 @@ namespace NSprakIDE.Controls
             string saveDirPath = System.IO.Path.GetFullPath(SaveDir);
             string fullPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(saveDirPath), relativePath);
 
-            void Action()
+            try
             {
                 pathAction(fullPath);
             }
-
-            PerformFileOp(Action, "Error performing action \"{Name}\" at path \"{Path}\"", errorName, item.Path);
-        }
-
-        private void PerformFileOp(Action action, string errorMessage, params object[] errorParams)
-        {
-            try
-            {
-                action();
-            }
             catch (Exception e)
             {
-                Logs.Core.LogError(e, errorMessage, errorParams);
+                string msg = $"Error performing action \"{errorName}\" at path \"{fullPath}\"";
+                Logs.Core.LogError(msg, e);
             }
 
             Refresh();
@@ -285,6 +294,26 @@ namespace NSprakIDE.Controls
                 OpenFile();
                 e.Handled = true;
             }
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox target = (TextBox)sender;
+            
+            void Action()
+            {
+                Thread.Sleep(2000);
+                target.Dispatcher.Invoke(() => target.SelectAll());
+            }
+
+            Task.Run(Action);
+        }
+
+        private void ContentPresenter_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ContentPresenter parent = (ContentPresenter)sender;
+            TextBox input = (TextBox)VisualTreeHelper.GetChild(parent, 0);
+            input.Dispatcher.BeginInvoke(new Action(() => input.SelectAll()));
         }
     }
 }

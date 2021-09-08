@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Media;
 
-using Serilog.Core;
-using Serilog.Events;
-
 using NSprakIDE.Logging;
 
 namespace NSprakIDE.Controls.Output

@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using Serilog.Core;
-using Serilog.Events;
-
 namespace NSprakIDE.Logging
 {
     using static ConsoleColor;
@@ -29,20 +26,18 @@ namespace NSprakIDE.Logging
             }
         }
 
-        private static readonly Dictionary<LogEventLevel, ColorScheme> colorLookup = new Dictionary<LogEventLevel, ColorScheme>
+        private static readonly Dictionary<LogLevel, ColorScheme> colorLookup 
+            = new Dictionary<LogLevel, ColorScheme>
         {
-            { LogEventLevel.Fatal, new ColorScheme(Red, DarkRed) },
-            { LogEventLevel.Error, new ColorScheme(Red, DarkRed) },
-            { LogEventLevel.Warning, new ColorScheme(Yellow, DarkYellow) },
-            { LogEventLevel.Information, new ColorScheme(Gray, DarkGray) },
-            { LogEventLevel.Verbose, new ColorScheme(Gray, DarkGray) },
-            { LogEventLevel.Debug, new ColorScheme(Gray, DarkGray) },
+            { LogLevel.Error, new ColorScheme(Red, DarkRed) },
+            { LogLevel.Warning, new ColorScheme(Yellow, DarkYellow) },
+            { LogLevel.Information, new ColorScheme(Gray, DarkGray) },
+            { LogLevel.Debug, new ColorScheme(Gray, DarkGray) },
         };
 
         private static readonly ColorScheme traceColors = new ColorScheme(DarkRed, DarkGray);
 
         private IColoredWriter _writer;
-        private IFormatProvider _formatProvider;
         private LogEvent _entry;
         private string _lastDate;
         private string _previousText;
@@ -51,7 +46,6 @@ namespace NSprakIDE.Logging
         public Output(IColoredWriter writer, IFormatProvider formatProvider = null)
         {
             _writer = writer;
-            _formatProvider = formatProvider;
         }
 
         public void Emit(LogEvent entry)
@@ -68,7 +62,7 @@ namespace NSprakIDE.Logging
             if (!colorLookup.TryGetValue(_entry.Level, out ColorScheme colors))
                 colors = new ColorScheme(Magenta, Gray);
 
-            string message = entry.RenderMessage(_formatProvider);
+            string message = entry.Text;
 
             const string pattern = @"[^\w]+";
             string remainingText = message;

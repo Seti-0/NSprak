@@ -5,8 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-using Microsoft.Extensions.Logging;
-
 namespace NSprakIDE.Controls.General
 {
     public enum CommandButtonSize

@@ -10,8 +10,6 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 using NSprakIDE.Themes;
 
-using Microsoft.Extensions.Logging;
-
 namespace NSprakIDE.Controls.Source
 {
     public enum DiffPathAction

@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-using Serilog;
-using Serilog.Core;
-
-using Microsoft.Extensions.Logging;
-
 using NSprakIDE.Controls;
 using NSprakIDE.Logging;
 using NSprakIDE.Controls.Output;
@@ -38,13 +33,7 @@ namespace NSprakIDE
                 "MainWindow_Output", "Debug", ViewSupplier.Category_Main);
 
             ILogEventSink output = new Output(new OutputLogWriter(debug));
-
-            Serilog.ILogger logger = new LoggerConfiguration()
-                .WriteTo.Sink(output)
-                .MinimumLevel.Debug()
-                .CreateLogger();
-
-            Logs.Factory.AddSerilog(logger);
+            Logs.AddSink(output);
 
             FileView.FileOpened += OnOpenFile;
         }

@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:NSprakIDE"
-             xmlns:editor="clr-namespace:NSprakIDE.Controls"
+             xmlns:Controls="clr-namespace:NSprakIDE.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              WindowState="Maximized">
@@ -12,6 +11,11 @@
     <!-- Styling -->
     
     <Window.Resources>
+        
+        <!-- 
+            Styling common to all three tab groups 
+                - documents, debugging, output 
+        -->
         <Style TargetType="TabControl">
             <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderBrush" Value="{StaticResource NSprakIDE.Accent}"/>
@@ -22,6 +26,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        
         <!-- Style for tab headers - red if selected, rounded corner, etc. -->
         <Style TargetType="TabItem" x:Key="MainTabItem">
             <Setter Property="Template">
@@ -51,6 +56,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <!-- Style for the close button on document tab headers -->
         <Style TargetType="Button" x:Key="DocumentHeaderButton">
             <Setter Property="Template">
@@ -71,6 +77,7 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="0"/>
         </Style>
+        
         <!-- 
             Style for document tab headers - indentical to the previous style, except for one button!!! 
             I'd much prefer a way to do this without duplicating all this XAML.
@@ -102,12 +109,14 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <!--
             A Style with a target but no key acts as the default for the target
-            type. So this sets the default to one that inherits from
+            type. So this sets the default TabItem one to one that inherits from
             MainTabItem.
         -->
         <Style TargetType="TabItem" BasedOn="{StaticResource MainTabItem}"/>
+
     </Window.Resources>
 
     <!-- Structure -->
@@ -136,7 +145,7 @@
                     
                     <TabControl Name="DocumentView" Grid.Row="0">
                         <TabItem Header="File View">
-                            <editor:FileView x:Name="FileView"/>
+                            <Controls:FileView x:Name="FileView"/>
                         </TabItem>
                     </TabControl>
 
@@ -149,10 +158,10 @@
                     
                     <TabControl Grid.Row="2">
                         <TabItem Header="Messages">
-                            <editor:MessageView x:Name="MessageView"/>
+                            <Controls:MessageView x:Name="MessageView"/>
                         </TabItem>
                         <TabItem Header="Locals">
-                            <editor:LocalsView x:Name="LocalsView"/>
+                            <Controls:LocalsView x:Name="LocalsView"/>
                         </TabItem>
                     </TabControl>
 
@@ -168,7 +177,7 @@
                 
                 <TabControl Grid.Column="2">
                     <TabItem Header="Output">
-                        <editor:OutputView x:Name="OutputView"/>
+                        <Controls:OutputView x:Name="OutputView"/>
                     </TabItem>
                 </TabControl>
 

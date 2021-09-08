@@ -5,17 +5,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 
-using Serilog;
-using Serilog.Core;
-using Serilog.Events;
-
 namespace NSprakIDE.Logging
 {
     public static class LogFormatUtility
     {
         public static void WritePrefix(IWriter writer, LogEvent entry, ref string _lastDate)
         {
-            string dateText = entry.Timestamp.UtcDateTime.ToShortDateString();
+            string dateText = entry.Timestamp.ToLocalTime().ToShortDateString();
             
             if (dateText != _lastDate)
             {
@@ -23,9 +19,9 @@ namespace NSprakIDE.Logging
                 _lastDate = dateText;
             }
 
-            string timeText = entry.Timestamp.UtcDateTime.ToShortTimeString();
+            string timeText = entry.Timestamp.ToLocalTime().ToShortTimeString();
 
-            string type = Enum.GetName(typeof(LogEventLevel), entry.Level);
+            string type = Enum.GetName(typeof(LogLevel), entry.Level);
             writer.Write($"[{timeText}][{type}] ");
         }
 
@@ -36,7 +32,7 @@ namespace NSprakIDE.Logging
             if (match.Success)
             {
                 upto = input.Substring(0, match.Index + 1);
-                after = input.Substring(match.Index + 1);
+                after = input[(match.Index + 1)..];
                 return true;
             }
             else
@@ -76,7 +72,7 @@ namespace NSprakIDE.Logging
                 index = genericIndex;
 
             name = input.Substring(0, index);
-            arguments = input.Substring(index);
+            arguments = input[index..];
         }
     }
 }

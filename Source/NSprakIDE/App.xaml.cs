@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using System.Windows;
 
-using Microsoft.Extensions.Logging;
-
 namespace NSprakIDE
 {
     /// <summary>
@@ -15,7 +13,7 @@ namespace NSprakIDE
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            Logs.Core.LogInformation("==== Beginning of Log ====");
+            Logs.Core.LogInformation("Beginning of Log");
 
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
@@ -47,7 +45,7 @@ namespace NSprakIDE
 
         protected override void OnExit(ExitEventArgs e)
         {
-            Logs.Core.LogInformation("==== End of Log ====");
+            Logs.Core.LogInformation("End of Log");
         }
     }
 }

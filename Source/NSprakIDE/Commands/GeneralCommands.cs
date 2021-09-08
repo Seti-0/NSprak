@@ -11,6 +11,7 @@ namespace NSprakIDE.Commands
     {
         public readonly static ICommand
 
+                Escape = CreateCommand("Exit", Key.Escape),
                 Rename = CreateCommand("Rename", Key.F2),
                 RefreshView = CreateCommand("Refresh View", Key.F5);
     }

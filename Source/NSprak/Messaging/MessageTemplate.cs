@@ -28,8 +28,10 @@ namespace NSprak.Messaging
             // which to check.
 
             MatchCollection matches = Regex.Matches(Summary, @"\{[^\}]+\}");
-            
-            if (matches.Count != parameters.Count)
+
+            int paramCount = parameters?.Count ?? 0;
+
+            if (matches.Count != paramCount)
             {
                 string message = $"Expected {matches.Count} " +
                     $"parameters for template: '{Summary}'," +

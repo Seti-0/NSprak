@@ -69,6 +69,12 @@ namespace NSprakIDE.Controls
         public void Update()
         {
             IViewItem selectedItem = ViewSelect.SelectedItem;
+            if (selectedItem == null)
+            {
+                Clear();
+                return;
+            }
+
             Messenger selectedMessenger = (Messenger)selectedItem.GetValue();
 
             List<MessageWrapper> messages = new List<MessageWrapper>();

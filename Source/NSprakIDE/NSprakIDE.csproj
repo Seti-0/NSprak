@@ -114,11 +114,6 @@
 
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Serilog" Version="2.9.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
-    <PackageReference Include="SerilogAnalyzer" Version="0.15.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -205,6 +200,10 @@
     <Resource Include="Icons\Images\local-close-dark.png" />
     <Resource Include="Icons\Images\local-close-toolbar.png" />
     <Resource Include="Icons\Images\local-close-white.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Computers\" />
   </ItemGroup>
 
 </Project>

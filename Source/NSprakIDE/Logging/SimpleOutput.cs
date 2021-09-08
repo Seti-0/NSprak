@@ -1,13 +1,8 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
-
-using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 
 namespace NSprakIDE.Logging
 {
@@ -21,18 +16,16 @@ namespace NSprakIDE.Logging
     public class SimpleOutput :ILogEventSink
     {
         private IWriter _writer;
-        private IFormatProvider _provider;
         private string _lastDate;
 
-        public SimpleOutput(IWriter writer, IFormatProvider provider = null)
+        public SimpleOutput(IWriter writer)
         {
             _writer = writer;
-            _provider = provider;
         }
 
         public void Emit(LogEvent entry)
         {
-            string message = entry.RenderMessage(_provider);
+            string message = entry.Text;
 
             LogFormatUtility.WritePrefix(_writer, entry, ref _lastDate);
             _writer.WriteLine(message);

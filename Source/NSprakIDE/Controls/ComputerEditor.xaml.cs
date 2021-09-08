@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Linq;
 
-using Microsoft.Extensions.Logging;
-
 using NSprak;
 using NSprak.Tokens;
 using NSprak.Expressions;
@@ -15,8 +13,6 @@ using NSprak.Operations;
 
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.General;
-using NSprakIDE.Controls.Output;
-using NSprak.Messaging;
 
 namespace NSprakIDE.Controls
 {
