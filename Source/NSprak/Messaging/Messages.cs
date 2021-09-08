@@ -17,13 +17,37 @@ namespace NSprak.Messaging
             UnrecognizedOperator = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Unrecognized operator: {Content}"
+                Summary = "Unrecognized operator: '{Content}'"
+            },
+
+            UnrecognizedName = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unrecognized name: '{Name}'"
+            },
+
+            ReferenceBeforeDefinition = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Name referenced before its local definition: '{Name}'"
+            },
+
+            UnresolvedCall = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unable to resolve function call: {Signature}"
             },
 
             UnrecognizedNumber = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Unrecognized operator: {Content}"
+                Summary = "Unrecognized number: '{Content}'"
+            },
+
+            UnresolvedOperation = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unrecognized operation: '{Content}'"
             },
 
             UnexpectedEndOfLine = new MessageTemplate
@@ -41,19 +65,19 @@ namespace NSprak.Messaging
             UnexpectedTokenAtEnd = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "End of statement reached. Unexpected token: {Token}"
+                Summary = "End of statement reached. Unexpected token: '{Token}'"
             },
 
             DuplicateVariable = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "A variable of name \"{Name}\" has already been declared in this scope"
+                Summary = "A variable of name '{Name}' has already been declared in this scope"
             },
 
             DuplicateFunction = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "A function of name \"{Name}\" has already been declared in this scope"
+                Summary = "A function of name '{Name}' has already been declared in this scope"
             },
 
             NestedFunction = new MessageTemplate

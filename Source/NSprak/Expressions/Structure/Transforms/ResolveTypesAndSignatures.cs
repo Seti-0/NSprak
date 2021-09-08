@@ -6,6 +6,7 @@ using System.Text;
 using NSprak.Expressions.Types;
 using NSprak.Language;
 using NSprak.Language.Builtins;
+using NSprak.Messaging;
 
 namespace NSprak.Expressions.Structure.Transforms
 {
@@ -13,25 +14,25 @@ namespace NSprak.Expressions.Structure.Transforms
     {
         public void Apply(Block root, CompilationEnvironment environment)
         {
-            Update(root, environment.SignatureLookup);
+            Update(root, environment);
         }
 
-        private void Update(IEnumerable<Expression> expressions, SignatureResolver resolver)
+        private void Update(IEnumerable<Expression> expressions, CompilationEnvironment env)
         {
             foreach (Expression expression in expressions)
-                Update(expression, resolver);
+                Update(expression, env);
         }
 
-        private void Update(Expression expression, SignatureResolver resolver)
+        private void Update(Expression expression, CompilationEnvironment env)
         {
             // Type hints can be dependent on child expressions.
             // (They are indie of parents, and neighbours)
-            Update(expression.GetSubExpressions(), resolver);
+            Update(expression.GetSubExpressions(), env);
 
             switch (expression)
             {
                 case FunctionCall function:
-                    ResolveCallAndTypeHint(function, resolver);
+                    ResolveCallAndTypeHint(function, env);
                     break;
 
                 case LiteralArrayGet array:
@@ -43,7 +44,7 @@ namespace NSprak.Expressions.Structure.Transforms
                     break;
 
                 case OperatorCall op:
-                    ResolveCallAndTypeHint(op, resolver);
+                    ResolveCallAndTypeHint(op, env);
                     break;
 
                 case Return ret:
@@ -54,17 +55,25 @@ namespace NSprak.Expressions.Structure.Transforms
                     break;
 
                 case VariableAssignment assignment:
-                    ResolveAssignmentOperator(assignment, resolver);
+                    ResolveAssignmentOperator(assignment, env);
                     break;
 
                 case VariableReference variable:
 
                     if (variable.ParentBlockHint.TryGetVariableInfo(variable.Name, out VariableInfo result))
-                        variable.TypeHint = result.DeclaredType;
+                    {
+                        if (variable.StartToken.Start < result.DeclarationEnd)
+                        {
+                            env.Messages.AtToken(variable.Token,
+                                Messages.ReferenceBeforeDefinition, variable.Name);
+                        }
 
+                        variable.TypeHint = result.DeclaredType;
+                    }   
                     else
                     {
-                        //variable.RaiseError(environment.Messages, $"Unable to find variable: {variable.Name}");
+                        env.Messages.AtToken(variable.Token, 
+                            Messages.UnrecognizedName, variable.Name);
                         variable.TypeHint = null;
                     }
 
@@ -73,7 +82,7 @@ namespace NSprak.Expressions.Structure.Transforms
             }
         }
 
-        private void ResolveCallAndTypeHint(FunctionCall call, SignatureResolver resolver)
+        private void ResolveCallAndTypeHint(FunctionCall call, CompilationEnvironment env)
         {
             call.TypeHint = null;
 
@@ -87,7 +96,8 @@ namespace NSprak.Expressions.Structure.Transforms
             string name = call.Name;
 
             SignatureLookupResult lookupResult;
-            lookupResult = resolver.TryFindMatch(name, typeSignature);
+            lookupResult = env.SignatureLookup
+                .TryFindMatch(name, typeSignature);
 
             if (lookupResult.Success)
             {
@@ -104,9 +114,15 @@ namespace NSprak.Expressions.Structure.Transforms
 
                 call.TypeHint = lookupResult.FunctionInfo?.ReturnType;
             }
+            else
+            {
+                string signature = name + typeSignature.ToString();
+                env.Messages.AtToken(call.NameToken, 
+                    Messages.UnresolvedCall, signature);
+            }
         }
 
-        private void ResolveCallAndTypeHint(OperatorCall call, SignatureResolver resolver)
+        private void ResolveCallAndTypeHint(OperatorCall call, CompilationEnvironment env)
         {
             call.TypeHint = null;
 
@@ -120,19 +136,37 @@ namespace NSprak.Expressions.Structure.Transforms
                 = new OperatorTypeSignature(call.LeftInput?.TypeHint, call.RightInput?.TypeHint);
 
             SignatureLookupResult lookupResult;
-            lookupResult = resolver.TryFindMatch(call.Operator.Name, signature);
+            lookupResult = env.SignatureLookup
+                .TryFindMatch(call.Operator.Name, signature);
 
             if (lookupResult.Success)
             {
                 call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
                 call.TypeHint = lookupResult.FunctionInfo?.ReturnType;
             }
+            else
+            {
+                string operation = $"({call.LeftInput.TypeHint.Text})"
+                    + $" {call.OperatorToken.Content}"
+                    + $" ({call.RightInput.TypeHint.Text})";
+
+                env.Messages.AtToken(call.OperatorToken, 
+                    Messages.UnresolvedOperation, operation);
+            }
         }
 
-        private void ResolveAssignmentOperator(VariableAssignment call, SignatureResolver resolver)
+        private void ResolveAssignmentOperator(VariableAssignment call, CompilationEnvironment env)
         {
             if (call.Value != null && call.Value.TypeHint == null)
                 return;
+
+            if (!call.ParentBlockHint
+                .TryGetVariableInfo(call.Name, out VariableInfo nameInfo))
+            {
+                env.Messages.AtToken(call.NameToken,
+                    Messages.UnrecognizedName, call.NameToken.Content);
+                return;
+            }
 
             bool both = call.Operator.Inputs == OperatorSide.Both;
             bool requiresLeft = both || call.Operator.Inputs == OperatorSide.Left;
@@ -146,17 +180,20 @@ namespace NSprak.Expressions.Structure.Transforms
             else if (call.IsDeclaration)
                 left = call.DeclarationType;
 
-            else if (call.ParentBlockHint.TryGetVariableInfo(call.Name, out VariableInfo info))
-                left = info.DeclaredType;
-
-            else return;
+            else
+                left = nameInfo.DeclaredType;
 
             SprakType right = null;
 
             if (requiresRight)
             {
-                right = call.Value?.TypeHint;
-                if (right == null) return;
+                if (!requiresLeft)
+                    right = nameInfo.DeclaredType;
+                else
+                {
+                    right = call.Value?.TypeHint;
+                    if (right == null) return;
+                }
             }
 
             OperatorTypeSignature signature
@@ -164,12 +201,19 @@ namespace NSprak.Expressions.Structure.Transforms
 
             string name = call.Operator.Name;
 
-            SignatureLookupResult lookupResult = resolver.TryFindMatch(name, signature);
+            SignatureLookupResult lookupResult = env.SignatureLookup
+                .TryFindMatch(name, signature);
 
             if (lookupResult.Success)
             {
                 call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
                 call.OpHint = lookupResult.OpBuilder;
+            }
+            else
+            {
+                string operation = call.ToString();
+                env.Messages.AtExpression(call,
+                    Messages.UnresolvedOperation, operation);
             }
         }
     }

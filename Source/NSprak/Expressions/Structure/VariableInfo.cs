@@ -6,12 +6,12 @@ namespace NSprak.Expressions.Structure
     {
         public SprakType DeclaredType;
 
-        public int Offset;
+        public int DeclarationEnd;
 
         public VariableInfo(SprakType type, int offset)
         {
             DeclaredType = type;
-            Offset = offset;
+            DeclarationEnd = offset;
         }
     }
 }

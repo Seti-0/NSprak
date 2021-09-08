@@ -13,15 +13,15 @@ namespace NSprak.Expressions.Structure.Transforms
     {
         public void Apply(Block root, CompilationEnvironment environment)
         {
-            Dictionary<FunctionSignature, FunctionInfo> functions = new Dictionary<FunctionSignature, FunctionInfo>();
+            Dictionary<FunctionSignature, FunctionInfo> functions 
+                = new Dictionary<FunctionSignature, FunctionInfo>();
 
-            int offset = 0;
-            UpdateBlock(root, ref offset, environment.Messages, functions);
+            UpdateBlock(root, environment.Messages, functions);
 
             environment.SignatureLookup.SpecifyUserFunctions(functions);
         }
 
-        private void UpdateBlock(Block block, ref int offset, 
+        private void UpdateBlock(Block block, 
             Messenger messenger, Dictionary<FunctionSignature, FunctionInfo> functions)
         {
             Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
@@ -66,9 +66,11 @@ namespace NSprak.Expressions.Structure.Transforms
                         if (assignment.IsDeclaration)
                         {
                             if (variables.ContainsKey(assignment.Name))
-                                messenger.AtToken(assignment.NameToken, Messages.DuplicateVariable, assignment.Name);
+                                messenger.AtToken(assignment.NameToken, 
+                                    Messages.DuplicateVariable, assignment.Name);
 
-                            else variables.Add(assignment.Name, new VariableInfo(assignment.DeclarationType, offset));
+                            else variables.Add(assignment.Name, 
+                                new VariableInfo(assignment.DeclarationType, assignment.EndToken.End));
                         }
 
                         break;
@@ -78,17 +80,17 @@ namespace NSprak.Expressions.Structure.Transforms
                         if (subBlock.Header is FunctionHeader function)
                         {
                             if (functions.ContainsKey(function.Signature))
-                                messenger.AtToken(function.NameToken, Messages.DuplicateFunction, function.Name);
+                                messenger.AtToken(function.NameToken, 
+                                    Messages.DuplicateFunction, function.Name);
 
-                            else functions.Add(function.Signature, new FunctionInfo(function));
+                            else functions.Add(function.Signature, 
+                                new FunctionInfo(function));
                         }
 
-                        UpdateBlock(subBlock, ref offset, messenger, functions);
+                        UpdateBlock(subBlock, messenger, functions);
 
                         break;
                 }
-
-                offset++;
             }
 
             block.VariableDeclarationsHint = variables;
