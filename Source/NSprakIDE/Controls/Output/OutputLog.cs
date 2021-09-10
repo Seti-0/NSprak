@@ -98,9 +98,6 @@ namespace NSprakIDE.Controls.Output
             run.Foreground = new SolidColorBrush(Color);
 
             _paragraph.Inlines.Add(run);
-
-            if (_paragraph.Inlines.Count > 100)
-                _paragraph.Inlines.Remove(_paragraph.Inlines.FirstInline);
         }
     }
 }

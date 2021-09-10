@@ -31,10 +31,11 @@ namespace NSprak.Expressions
             Pattern pattern = MainPattern.Instance;
             foreach (PageLine line in page)
             {
-                PatternMatchResult result = pattern.Apply(line, environment.Messages);
+                pattern.TryMatch(line, 
+                    environment.Messages, out Expression expression);
 
-                if (result.Item != null)
-                    _flatStatements.Add(result.Item as Expression);
+                if (expression != null)
+                    _flatStatements.Add(expression);
             }
 
             Root = TreeBuilder.Build(_flatStatements, environment);

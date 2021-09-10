@@ -1,154 +1,114 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NSprak.Messaging;
+﻿using NSprak.Messaging;
 using NSprak.Tokens;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NSprak.Expressions.Patterns
 {
-    public delegate object EndStep(MatchIterator iterator);
+    public delegate object PatternEnd(MatchIterator iterator);
 
-    public class PatternMatchResult
-    {
-        public object Item;
-        public bool Error;
-    }
-
-    public class Pattern
+    public class Pattern : PatternElement
     {
         public string Name { get; }
 
-        public bool AllowEmpty { get; set; }
-
-        public List<PatternStep> EntryPoints = new List<PatternStep>();
+        public PatternElement Value { get; set; }
 
         public Pattern(string name)
         {
             Name = name;
         }
 
-        public bool IsMatch(PatternState state)
-        {
-            return EntryPoints.Any(x => x.IsMatch(state));
-        }
-
-        public PatternMatchResult Apply(IEnumerable<Token> tokens, Messenger messenger)
+        public bool TryMatch(IEnumerable<Token> tokens, 
+            Messenger messenger, out Expression expression)
         {
             PatternState state = new PatternState(tokens, messenger);
+            expression = null;
+
+            // The enumerator starts at index -1, before the 
+            // collection. The pattern expects a start at index 0.
             state.Enumerator.MoveNext();
-            return ApplyWithin(state);
-        }
 
-        public PatternMatchResult ApplyWithin(PatternState state)
-        {
-            PatternEnumerator tokens = state.Enumerator;
-            state.StartCollection();
+            bool result = false;
+            List<object> resultItems = null;
 
-            PatternStep currentStep = null;
-            bool pass = false;
-
-            if (!tokens.HasCurrent)
+            if (OnCanExecute(state))
             {
-                if (!AllowEmpty)
+                state.BeginCollection();
+
+                result = OnExecute(state);
+
+                resultItems = state.EndCollection();
+            }
+ 
+
+            if (state.Enumerator.HasCurrent)
+            {
+                state.Messenger.AtToken(
+                    state.Enumerator.Current, Messages.UnexpectedToken);
+            }
+
+            if (!result)
+            {
+                if (state.Enumerator.AtEnd)
                 {
-                    if (tokens.HasPrevious)
-                        state.RaiseError(tokens.Previous, Messages.UnexpectedEndOfLine);
-                    else
-                        state.RaiseError(Messages.UnexpectedEndOfLine);
+                    if (state.Enumerator.HasPrevious)
+                        state.Messenger.AtToken(
+                            state.Enumerator.Previous, 
+                            Messages.UnexpectedEndOfLine);
                 }
-                else pass = true;
-            }
-            else
-            {
-                while (true)
-                {
-                    if (TryGetNextStep(currentStep, state, out PatternStep nextStep))
-                        currentStep = nextStep;
 
-                    else break;
-
-                    state.Steps.Add(currentStep);
-                    currentStep.Execute(state);
-
-                    if (currentStep.RequireEnd && tokens.HasNext)
-                        state.RaiseError(tokens.Current, 
-                            Messages.UnexpectedTokenAtEnd, tokens.Current);
-
-                    if (state.Error) break;
-
-                    if (!currentStep.StayInPlace)
-                        tokens.MoveNext();
-
-                    if (currentStep.AllowEnd && !state.Enumerator.HasCurrent)
-                        break;
-                }
-            }
-
-            if (!pass && (currentStep == null || !currentStep.AllowEnd))
-            {
-                if (tokens.HasCurrent)
-                    state.RaiseError(tokens.Current, Messages.UnexpectedToken);
-
-                else
-                {
-                    if (tokens.HasPrevious)
-                        state.RaiseError(tokens.Previous, Messages.UnexpectedEndOfLine);
-                    else
-                        // This shouldn't happen. Unless I've made a mistake, that is.
-                        throw new NotImplementedException("Internal pattern error");
-                }
-            }
-
-            PatternMatchResult result = new PatternMatchResult();
-
-            if (state.Error)
-                result.Error = true;
-
-            else if (currentStep != null)
-            {
-                MatchIterator collection = new MatchIterator(state.EndCollection());
-
-                // The end step is currently not allowed to raise an error message, though it 
-                // may throw an exception if an internal error occurs
-                result.Item = currentStep.EndStep(collection);
-            }
-
-            return result;
-        }
-
-        private bool TryGetNextStep(PatternStep current, PatternState state, out PatternStep nextStep)
-        {
-            IEnumerable<PatternStep> options;
-
-            if (current == null)
-                options = EntryPoints.Where(x => x.IsMatch(state));
-
-            else options = current.Options.Where(x => x.IsMatch(state));
-
-            int n = options.Count();
-
-            if (n > 1)
-                throw new NotSupportedException("Ambiguous statement juncture");
-
-            else if (n == 0)
-            {
-                if (current != null && current.AllowLoopback)
-                    return TryGetNextStep(null, state, out nextStep);
-
-                nextStep = null;
                 return false;
             }
 
-            nextStep = options.First();
-            return true;
+            if (resultItems == null || resultItems.Count != 1)
+                throw new Exception("Unexpected result from pattern match");
+
+            if (resultItems[0] == null || resultItems[0] is Expression)
+            {
+                expression = (Expression)resultItems[0];
+                return true;
+            }
+            else throw new Exception("Unexpected result from pattern match");
         }
 
-        public override string ToString()
+        protected override void OnValidate(PatternCheckContext context)
         {
-            return "Pattern: "+Name;
+            if (Value == null)
+                throw new Exception("Pattern has no value");
+
+            Value.Validate(context);
+        }
+
+        protected override bool OnCanExecute(PatternState state)
+        {
+            PatternElement value = Value;
+            return value.CanExecute(state);
+        }
+
+        protected override bool OnExecute(PatternState state)
+        {
+            state.BeginCollection();
+
+            PatternElement value = Value;
+            bool success = value.Execute(state);
+
+            List<object> items = state.EndCollection();
+
+            if (!success)
+                return false;
+
+            if (state.Command != PatternCommand.End)
+                throw new Exception(
+                    "Successful pattern match with unexpected command");
+
+            MatchIterator iterator = new MatchIterator(items);
+            object result = state.EndDestination(iterator);
+            state.AddToCollection(result);
+            state.ClearCommand();
+
+            return true;
         }
     }
 }

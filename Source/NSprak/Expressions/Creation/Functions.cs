@@ -24,18 +24,10 @@ namespace NSprak.Expressions.Creation
             iterator.AssertTokenType(TokenType.Name, out Token name);
             iterator.AssertKeySymbol(Symbols.OpenBracket);
 
-            List<Expression> arguments = new List<Expression>();
+            if (iterator.Next(out List<Expression> arguments))
+                iterator.MoveNext();
 
-            if (iterator.NextIsExpression(out Expression argument))
-            {
-                arguments.Add(argument);
-
-                while (iterator.NextIsKeySymbol(Symbols.Comma))
-                {
-                    iterator.AssertExpression(out argument);
-                    arguments.Add(argument);
-                }
-            }
+            else arguments = new List<Expression>();
 
             iterator.AssertKeySymbol(Symbols.CloseBracket);
             Token end = (Token)iterator.Current;
@@ -52,34 +44,22 @@ namespace NSprak.Expressions.Creation
             iterator.AssertTokenType(TokenType.Name, out Token nameToken);
             iterator.AssertKeySymbol(Symbols.OpenBracket);
 
-            List<string> parameterNames = new List<string>();
-            List<SprakType> parameterTypes = new List<SprakType>();
-
-            if (iterator.NextIsType(out SprakType paramType))
-            {
-                iterator.AssertTokenType(TokenType.Name, out Token paramName);
-                parameterNames.Add(paramName.Content);
-                parameterTypes.Add(paramType);
-
-                while (iterator.NextIsKeySymbol(Symbols.Comma))
-                {
-                    iterator.AssertType(out paramType);
-                    iterator.AssertTokenType(TokenType.Name, out paramName);
-                    parameterNames.Add(paramName.Content);
-                    parameterTypes.Add(paramType);
-                }
-            }
+            CollectedParameters parameters;
+            if (iterator.Next(out parameters))
+                iterator.MoveNext();
+            else
+                parameters = new CollectedParameters();
 
             iterator.AssertKeySymbol(Symbols.CloseBracket);
             Token end = (Token)iterator.Current;
 
             iterator.AssertEnd();
 
-            FunctionTypeSignature typeSignature = new FunctionTypeSignature(parameterTypes);
+            FunctionTypeSignature typeSignature = new FunctionTypeSignature(parameters.Types);
             FunctionSignature signature = new FunctionSignature(null, nameToken.Content, typeSignature);
 
             FunctionHeader result = new FunctionHeader(
-                typeToken, nameToken, end, signature, parameterNames);
+                typeToken, nameToken, end, signature, parameters.Names);
             return result;
         }
     }

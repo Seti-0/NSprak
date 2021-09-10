@@ -36,36 +36,42 @@ namespace NSprak.Expressions.Creation
                 return result;
             }
 
-            if (iterator.NextIsExpression(out array))
-            {
-                iterator.AssertEnd();
+            iterator.AssertExpression(out Expression firstExpression);
 
+            if (iterator.AtEnd())
+            {
+                // Actually checking that this expression is an array is for
+                // a later step, when the messenger is available.
+                array = firstExpression;
                 LoopHeader result = new LoopHeader(loop, array);
                 return result;
             }
 
-            if (iterator.NextIsToken(TokenType.Name, out Token name))
+            if (iterator.NextIsKeyword(Keywords.In, out Token inToken))
             {
-                if (iterator.NextIsKeyword(Keywords.In, out Token inToken))
-                {
-                    iterator.AssertExpression(out array);
-                    iterator.AssertEnd();
+                // Again, actually checking that this is indeed just a name
+                // has to wait for a later stage.
+                Expression name = firstExpression;
 
-                    LoopHeader result = new LoopHeader(loop, name, inToken, array);
-                    return result;
-                }
+                iterator.AssertExpression(out array);
+                iterator.AssertEnd();
 
-                if (iterator.NextIsKeyword(Keywords.From, out Token from))
-                {
-                    iterator.AssertExpression(out Expression start);
-                    iterator.AssertKeyword(Keywords.To, out Token to);
-                    iterator.AssertExpression(out Expression end);
-                    iterator.AssertEnd();
+                LoopHeader result = new LoopHeader(loop, name, inToken, array);
+                return result;
+            }
 
-                    LoopHeader result = new LoopHeader(
-                        loop, name, from, start, to, end);
-                    return result;
-                }
+            if (iterator.NextIsKeyword(Keywords.From, out Token from))
+            {
+                Expression name = firstExpression;
+
+                iterator.AssertExpression(out Expression start);
+                iterator.AssertKeyword(Keywords.To, out Token to);
+                iterator.AssertExpression(out Expression end);
+                iterator.AssertEnd();
+
+                LoopHeader result = new LoopHeader(
+                    loop, name, from, start, to, end);
+                return result;
             }
 
             throw iterator.UnexpectedEnd();

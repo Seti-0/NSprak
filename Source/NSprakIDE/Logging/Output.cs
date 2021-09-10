@@ -31,7 +31,7 @@ namespace NSprakIDE.Logging
             { LogLevel.Debug, new ColorScheme(Gray, DarkGray) },
         };
 
-        private static readonly ColorScheme traceColors = new ColorScheme(DarkRed, DarkGray);
+        private static readonly ColorScheme traceColors = new ColorScheme(Red, DarkGray);
 
         private readonly IWriter _writer;
         private LogEvent _entry;

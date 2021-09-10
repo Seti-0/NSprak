@@ -35,7 +35,7 @@ namespace NSprak.Expressions.Patterns
 
         public bool MoveNext()
         {
-            if (HasNext)
+            if (Index <= Items.Count - 1)
                 Index++;
 
             return HasCurrent;
@@ -72,7 +72,7 @@ namespace NSprak.Expressions.Patterns
             else return new MatchException($"Unexpected end of iteratorof length {Items.Count}");
         }
 
-        private void Assert<T>(out T item)
+        public void Assert<T>(out T item)
         {
             if (!MoveNext())
                 throw new MatchException($"Expected type {typeof(T).Name}, " +
@@ -126,13 +126,19 @@ namespace NSprak.Expressions.Patterns
             type = current.AssertType();
         }
 
+        public void AssertName(out string name)
+        {
+            Assert(out Token current);
+            name = current.AssertName();
+        }
+
         public void AssertOperator(out Operator op)
         {
             Assert(out Token current);
             op = current.AssertOperator();
         }
 
-        private bool Next<T>(out T item)
+        public bool Next<T>(out T item)
         {
             item = default;
 

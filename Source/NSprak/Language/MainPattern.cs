@@ -1,220 +1,177 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 using NSprak.Expressions.Patterns;
-using NSprak.Tokens;
 using NSprak.Expressions.Creation;
 
 namespace NSprak.Language
 {
-    using static PatternBuilder;
+    using static NSprak.Expressions.Patterns.RuntimeTrace;
+    using static PatternSyntax;
 
-    public static class MainPattern
+    public class MainPattern
     {
-        private static Pattern _pattern;
+        private static Pattern _instance;
 
         public static Pattern Instance
         {
-            get
+            get 
             {
-                if (_pattern == null)
-                    _pattern = CreatePattern();
+                if (_instance == null)
+                    _instance = Create();
 
-                return _pattern;
+                _instance.Validate();
+                new PatternTextHelper()
+                    .Visit(_instance);
+
+                return _instance;
             }
         }
 
-        private static Pattern CreatePattern()
+        private static Pattern Create()
         {
-            /*
-             *  PART ONE - EXPRESSIONS
-             */
+            // & has higher precedence than |
+            // (Similar to how * has higher precendece than +)
 
-            Pattern expressionPattern = new Pattern("Expression");
-            Pattern arrayPattern = new Pattern("Array");
-            Pattern getPattern = new Pattern("Get");
-            Pattern literalPattern = new Pattern("Literal");
-
-
-            // Literals
-
-            literalPattern.AddEntryPoints(
-                Element(TokenType.Boolean).End(Literals.Create),
-                Element(TokenType.Number).End(Literals.Create),
-                Element(TokenType.String).End(Literals.Create)
-                );
-
-            /* Arrays. 
-             * Form: [expr1, expr2, ..., exprN] 
-             * Empty arrays are allowed with []
-             */
-
-            arrayPattern.AddEntryPoints(
-                Array(
-                    Element(Symbols.OpenSquareBracket),
-                    Element(expressionPattern),
-                    Element(Symbols.Comma),
-                    Element(Symbols.CloseSquareBracket)
-                    )
-                .End(Literals.CreateArray)
-                );
-
-            /* Variable get, and function call (get) share a pattern
-             * Variable form: name
-             * Function call form: name(expr1, expr2, ..., exprN)
-             */
-
-            getPattern.AddEntryPoints(
-                Element(TokenType.Name)
-                .Break()
-                .AllowEnd(Variables.CreateReference)
-                .Array(
-                    Element(Symbols.OpenBracket),
-                    Element(expressionPattern),
-                    Element(Symbols.Comma),
-                    Element(Symbols.CloseBracket)
-                    )
-                .End(Functions.CreateCall)
-                );
-
-            /* Expression
-             * The form here is complicated.
-             * 
-             * An expression can be elements X interspersed by operators,
-             * and possibly surrounded by operators.
-             * 
-             * X in the above could:
-             *  - A subexpression (in brackets)
-             *  - A variable get or function call
-             *  - A literal (including arrays)
-             */
-
-            // Leaving out unary operators for now, until a
-            // when statement is introduced, I guess
-
-            expressionPattern.SplitAndAddEntryPoints(
-                Dummy()
-                .Join(
-                    Element(literalPattern),
-
-                    Element(arrayPattern),
-                    Element(getPattern),
-
-                    Element(Symbols.OpenBracket)
-                    .Then(expressionPattern)
-                    .Then(Symbols.CloseBracket)
-                    )
-                .AllowEnd(ExpressionGroups.Create)
-                .Then(TokenType.Operator)
-                .AllowLoopback()
-                );
+            // That means any option groups need brackets around them.
 
             /*
-             *  PART TWO - STATEMENTS
-             */
+                PART ONE
+                Expressions
+            */
 
-            Pattern mainPattern = new Pattern("Main");
+            Pattern Expression = Pattern("Expression");
 
-            mainPattern
-                .AllowEmpty()
-                .AddEntryPoints(
+            Pattern ExpressionTuple = Pattern("Expression Tuple");
 
-                // Some keywords
+            Pattern Literal = Pattern("Literal");
+            Pattern ArrayLiteral = Pattern("Array Literal");
+            Pattern Get = Pattern("Get");
+            Pattern Index = Pattern("Index");
 
-                Element(Keywords.Break).End(Commands.Create),
-                Element(Keywords.Continue).End(Commands.Create),
-                Element(Keywords.Else).End(Commands.Create),
-                Element(Keywords.End).End(Commands.Create),
+            Literal.Value = (Boolean | Number | Text) 
+                & EndWith(Literals.Create);
 
-                Element(Keywords.Return).AllowEnd(Commands.CreateReturn)
-                .Then(expressionPattern).End(Commands.CreateReturn),
+            ArrayLiteral.Value = KeySymbol.OpenSquareBracket
+                & ExpressionTuple
+                & KeySymbol.CloseSquareBracket
+                & EndWith(Literals.CreateArray);
 
-                // If statement header
+            Get.Value = Name
+                & Allow(EndWith(Variables.CreateReference))
+                & KeySymbol.OpenBracket
+                & ExpressionTuple
+                & KeySymbol.CloseBracket
+                & EndWith(Functions.CreateCall);
 
-                Element(Keywords.If)
-                .Then(expressionPattern)
-                .End(ControlFlow.CreateIfHeader),
+            Index.Value = KeySymbol.OpenSquareBracket
+                & Expression
+                & KeySymbol.CloseSquareBracket
+                & Allow(EndWith(null))
+                & Loopback;
 
-                // Loop statement header
+            ExpressionTuple.Value = Expression
+                & Allow(EndWith(Collection.Arguments))
+                & KeySymbol.Comma
+                & Loopback;
 
-                // I'm keeping only three of the four Sprak headers for the
-                // sake of avoiding ambiguity, for now
-
-                Element(Keywords.Loop)
-
-                    // Infinite
-                    .AllowEnd(ControlFlow.CreateLoopHeader)
-
-                    .Then(TokenType.Name)
-                    .Fork(
-                        
-                        // Range
-                        Element(Keywords.From)
-                        .Then(expressionPattern)
-                        .Then(Keywords.To)
-                        .Then(expressionPattern)
-                        .End(ControlFlow.CreateLoopHeader),
-
-                        // Foreach
-                        Element(Keywords.In)
-                        .Then(expressionPattern)
-                        .End(ControlFlow.CreateLoopHeader)
-
-                    ),
-
-                // Names can begin two statements - function calls and variable assignments
-
-                Element(TokenType.Name)
-                .Fork(
-
-                    // Variable assignment
-                    // Form: myvar += expr
-                    // (Where += can be any assignment op)
-                    // Short form: myvar++
-                    Element(TokenType.Operator)
-                    .AllowEnd(Variables.CreateAssignment)
-                    .Then(expressionPattern)
-                    .End(Variables.CreateAssignment),
-
-                    // Function call
-                    // Form: myfunction(expr1, expr2, ..., exprN)
-                    Array(
-                        Element(Symbols.OpenBracket),
-                        Element(expressionPattern),
-                        Element(Symbols.Comma),
-                        Element(Symbols.CloseBracket)
-                        )
-                    .End(Functions.CreateCall)
-
-                    ),
-
-                // Types have a similar two options - function headers and variable declarations
-                Element(TokenType.Type)
-                .Then(TokenType.Name)
-                .Fork(
-
-                    // Variable declaration:
-                    // Form: type name = expr
-                    // Or just: type name
-                    Element(TokenType.Operator)
-                    .Then(expressionPattern)
-                    .End(Variables.CreateAssignment),
-
-                    // Function header
-                    // Form: type1 name1(type2 name2, ..., typeN nameN)
-                    Array(
-                        Element(Symbols.OpenBracket),
-                        Element(TokenType.Type).Then(TokenType.Name),
-                        Element(Symbols.Comma),
-                        Element(Symbols.CloseBracket)
-                        )
-                    .End(Functions.CreateHeader)
-
+            Expression.Value = (
+                    OperatorToken & Expression
+                    | Literal
+                    | ArrayLiteral
+                    | Get
+                    | KeySymbol.OpenBracket
+                        & Expression
+                        & KeySymbol.CloseBracket
                     )
-                );
+                & (
+                    Index & OperatorToken
+                    | OperatorToken
+                    | EndWith(ExpressionGroups.Create)
+                )
+                & Allow(EndWith(ExpressionGroups.Create))
+                & Loopback;
 
-            return mainPattern;
+            /*
+                PART TWO
+                Statements
+            */
+
+            Pattern Statement = Pattern("Statement");
+            Pattern DeclarationTuple = Pattern("Declaration Tuple");
+
+            DeclarationTuple.Value = 
+                Type & Name
+                & Allow(EndWith(Collection.Parameters))
+                & KeySymbol.Comma
+                & Loopback;
+
+            Statement.Value =
+                
+                // Allow an empty file
+
+                Empty & EndWith(_ => null)
+                
+                // Standalone keywords
+
+                | (Keyword.Continue | Keyword.End | Keyword.Break)
+                    & EndWith(Commands.Create)
+
+                | Keyword.Return 
+                    & Allow(Expression)
+                    & EndWith(Commands.CreateReturn)
+
+                // Assignments and calls
+
+                | Name
+                    & (
+                        OperatorToken
+                            & Allow(EndWith(Variables.CreateAssignment))
+                            & Expression
+                            & EndWith(Variables.CreateAssignment)
+
+                        | KeySymbol.OpenBracket
+                            & ExpressionTuple
+                            & KeySymbol.CloseBracket
+                            & EndWith(Functions.CreateCall)
+                    )
+
+                // If, Else and Else If statements.
+
+                | Keyword.If & Expression & EndWith(ControlFlow.CreateIfHeader)
+                | Keyword.Else 
+                    & Allow(EndWith(null))
+                    & Keyword.If & Expression & EndWith(null)
+
+                // Loop statements
+
+                | Keyword.Loop 
+                    & Allow(EndWith(ControlFlow.CreateLoopHeader))
+                    & Expression
+                    & Allow(EndWith(ControlFlow.CreateLoopHeader))
+                    & (
+                        Keyword.From 
+                            & Expression 
+                            & Keyword.To 
+                            & Expression
+                        | Keyword.In 
+                            & Expression
+                    )
+                    & EndWith(ControlFlow.CreateLoopHeader)
+
+                // Declarations of variables and functions
+
+                | Type & Name 
+                    & (
+                        OperatorToken & Expression & EndWith(Variables.CreateAssignment)
+                        | KeySymbol.OpenBracket
+                            & DeclarationTuple
+                            & KeySymbol.CloseBracket
+                            & EndWith(Functions.CreateHeader)
+                    );
+
+            return Statement;
         }
     }
 }

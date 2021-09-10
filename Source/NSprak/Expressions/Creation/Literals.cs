@@ -28,20 +28,13 @@ namespace NSprak.Expressions.Creation
         {
             Token start, end;
 
-            List<Expression> elements = new List<Expression>();
-
             iterator.AssertKeySymbol(Symbols.OpenSquareBracket);
             start = (Token)iterator.Current;
 
-            if (iterator.NextIsExpression(out Expression element))
-            {
-                elements.Add(element);
-                while (iterator.NextIsKeySymbol(Symbols.Comma))
-                {
-                    iterator.AssertExpression(out element);
-                    elements.Add(element);
-                }
-            }
+            if (iterator.Next(out List<Expression> elements))
+                iterator.MoveNext();
+
+            else elements = new List<Expression>();
 
             iterator.AssertKeySymbol(Symbols.CloseSquareBracket);
             end = (Token)iterator.Current;

@@ -20,6 +20,8 @@ namespace NSprak.Expressions.Patterns
 
         public bool HasNext => Index >= -1 && Index < _elements.Count - 1;
 
+        public bool AtEnd => Index == _elements.Count;
+
         public Token Previous => _elements[Index - 1];
 
         public Token Current => _elements[Index];
@@ -45,7 +47,9 @@ namespace NSprak.Expressions.Patterns
 
         public override string ToString()
         {
-            string tokens = string.Join("", _elements.Select(x => x.ToString()));
+            string tokens = string.Join("", 
+                _elements.Select(x => x.ToShortString()));
+
             return $"Index {Index} of {tokens}";
         }
     }
