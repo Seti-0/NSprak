@@ -179,6 +179,10 @@
                     <TabItem Header="Output">
                         <Controls:OutputView x:Name="OutputView"/>
                     </TabItem>
+                    <!--
+                    An experiment. At some point we need a fixed size 
+                    display on which we can draw anywhere in text or color.
+                    Also, input, with an input caret, will be needed.
                     <TabItem Header="Screen Test">
                         <ScrollViewer 
                             HorizontalScrollBarVisibility="Auto"
@@ -186,6 +190,7 @@
                             <Controls:Screen/>
                         </ScrollViewer>
                     </TabItem>
+                    -->
                 </TabControl>
 
             </Grid>
