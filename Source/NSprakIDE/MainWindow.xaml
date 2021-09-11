@@ -179,6 +179,13 @@
                     <TabItem Header="Output">
                         <Controls:OutputView x:Name="OutputView"/>
                     </TabItem>
+                    <TabItem Header="Screen Test">
+                        <ScrollViewer 
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto">
+                            <Controls:Screen/>
+                        </ScrollViewer>
+                    </TabItem>
                 </TabControl>
 
             </Grid>
