@@ -65,7 +65,7 @@ namespace NSprak.Execution
             _context.Reset();
             State = ExecutorState.Idle;
 
-            Computer.StandardOut?.SetColor(System.Drawing.Color.White);
+            Computer.Screen?.SetColor(Color.White);
         }
 
         protected void OnPause(EventArgs e)
@@ -321,10 +321,10 @@ namespace NSprak.Execution
                 string message = $"Exception occured while executing op {Instructions.Index}: {opString}";
                 string exception = e.ToString();
 
-                Computer.StandardOut?.SetColor(System.Drawing.Color.Red);
-                Computer.StandardOut?.Print(message);
-                Computer.StandardOut?.Print(sourceTrace);
-                Computer.StandardOut?.Print(exception);
+                Computer.Screen?.SetColor(Color.Red);
+                Computer.Screen?.Print(message);
+                Computer.Screen?.Print(sourceTrace);
+                Computer.Screen?.Print(exception);
 
                 _breakRequested = true;
             }

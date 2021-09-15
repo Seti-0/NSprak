@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.IO;
 
 using NSprakIDE.Controls;
 using NSprakIDE.Logging;
@@ -59,8 +60,10 @@ namespace NSprakIDE
                 }
             }
 
-            string id = "ComputerEditor -- " + filePath;
-            string name = System.IO.Path.GetFileNameWithoutExtension(filePath);
+            string id = "ComputerEditor -- " + Path
+                .GetRelativePath(Environment.CurrentDirectory, filePath);
+
+            string name = Path.GetFileNameWithoutExtension(filePath);
 
             // The need for all this could be removed by passing the computer
             // parameter to the aux. components, rather than the other way
@@ -72,7 +75,8 @@ namespace NSprakIDE
                 Output = OutputView.Supplier,
                 FilePath = filePath,
                 LocalsView = LocalsView,
-                MessageView = MessageView
+                MessageView = MessageView,
+                ScreenView = ScreenView
             };
 
             ComputerEditor editor = new ComputerEditor(enviroment);
@@ -95,7 +99,7 @@ namespace NSprakIDE
             void OnTabSelected()
             {
                 MessageView.Supplier.Select(id);
-                OutputView.Supplier.Select(id);
+                ScreenView.Supplier.Select(id);
                 LocalsView.Supplier.Select(id);
             }
             newTab.MouseUp += (s, e) => OnTabSelected();

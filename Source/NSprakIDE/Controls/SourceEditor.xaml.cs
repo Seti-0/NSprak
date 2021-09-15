@@ -93,7 +93,7 @@ namespace NSprakIDE.Controls
             MainEditor.TextArea.TextView.LineTransformers.Add(_tokenColorizer);
             MainEditor.TextArea.TextView.LineTransformers.Add(_expressionColorizer);
 
-            MainEditor.TextArea.SelectionBrush = new SolidColorBrush(Color.FromRgb(160, 200, 241));
+            MainEditor.TextArea.SelectionBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(160, 200, 241));
             MainEditor.TextArea.SelectionBorder = null;
             MainEditor.TextArea.SelectionCornerRadius = 0;
             MainEditor.TextArea.SelectionForeground = null;

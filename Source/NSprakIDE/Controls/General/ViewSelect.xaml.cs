@@ -75,6 +75,8 @@ namespace NSprakIDE.Controls.General
             .Select(x => x.Value)
             .Where(x => x != null);
 
+        public ViewSelect View => _view;
+
         public ViewSupplier(ViewSelect view)
         {
             _view = view;
@@ -109,6 +111,19 @@ namespace NSprakIDE.Controls.General
                 items = items.Skip(1);
 
             _view.UpdateOptions(items);
+        }
+    }
+
+    public class DefaultViewSupplier<T> : ViewSupplier<T>
+        where T : new()
+    {
+        public DefaultViewSupplier(ViewSelect view) : base(view) { }
+
+        public T Start(string id, string name, string category)
+        {
+            T value = new T();
+            Start(value, id, name, category);
+            return value;
         }
     }
 

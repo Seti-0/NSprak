@@ -84,13 +84,13 @@ namespace NSprak.Language.Libraries
 
         public static SprakUnit Print(ExecutionContext context, SprakString input)
         {
-            context.Computer.StandardOut?.Print(input.Value);
+            context.Computer.Screen?.Print(input.Value);
             return SprakUnit.Value;
         }
 
         public static SprakUnit PrintS(ExecutionContext context, SprakString input)
         {
-            context.Computer.StandardOut?.PrintS(input.Value);
+            context.Computer.Screen?.PrintS(input.Value);
             return SprakUnit.Value;
         }
 

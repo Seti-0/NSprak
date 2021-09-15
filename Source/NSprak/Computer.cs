@@ -22,7 +22,7 @@ namespace NSprak
 
         public Executable Executable { get; private set; } = new Executable();
 
-        public IConsole StandardOut { get; set; }
+        public IComputerScreen Screen { get; set; }
 
         public Messenger Messenger { get; set; } = new Messenger();
 

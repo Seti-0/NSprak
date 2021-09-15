@@ -69,5 +69,11 @@
 
     <SolidColorBrush x:Key="NSprakIDE.Operations.Error" Color="#FFFF2300"/>
     <SolidColorBrush x:Key="NSprakIDE.Operations.Comment" Color="#FF538544"/>
+    
+    <!-- Screen View -->
+
+    <SolidColorBrush x:Key="NSprakIDE.Screen.Border" Color="#777777"/>
+    <SolidColorBrush x:Key="NSprakIDE.Screen.Background" Color="Black"/>
+    <SolidColorBrush x:Key="NSprakIDE.Screen.Text" Color="White"/>
 
 </ResourceDictionary>

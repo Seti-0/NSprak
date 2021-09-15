@@ -176,21 +176,12 @@
                 <!-- Ouput -->
                 
                 <TabControl Grid.Column="2">
-                    <TabItem Header="Output">
+                    <TabItem Header="Computer Screen">
+                        <Controls:ScreenView x:Name="ScreenView"/>
+                    </TabItem>
+                    <TabItem Header="Log">
                         <Controls:OutputView x:Name="OutputView"/>
                     </TabItem>
-                    <!--
-                    An experiment. At some point we need a fixed size 
-                    display on which we can draw anywhere in text or color.
-                    Also, input, with an input caret, will be needed.
-                    <TabItem Header="Screen Test">
-                        <ScrollViewer 
-                            HorizontalScrollBarVisibility="Auto"
-                            VerticalScrollBarVisibility="Auto">
-                            <Controls:Screen/>
-                        </ScrollViewer>
-                    </TabItem>
-                    -->
                 </TabControl>
 
             </Grid>

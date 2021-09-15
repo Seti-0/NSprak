@@ -14,6 +14,7 @@ using NSprak.Operations;
 
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.General;
+using NSprakIDE.Controls.Screen;
 
 namespace NSprakIDE.Controls
 {
@@ -34,6 +35,8 @@ namespace NSprakIDE.Controls
         public CallStackView CallStackView;
 
         public MessageView MessageView;
+
+        public ScreenView ScreenView;
     }
 
     public enum ComputerEditorMode
@@ -71,15 +74,15 @@ namespace NSprakIDE.Controls
 
             Environment = environment;
 
-            IConsole console = new ComputerOutput(environment.Output.Start(
-                environment.GivenID, 
-                environment.Name, 
-                MainWindow.ComputerLogCategory)
-            );
+            ComputerScreen screen = Environment.ScreenView.Supplier.Start(
+                    Environment.GivenID,
+                    environment.Name,
+                    MainWindow.ComputerLogCategory
+                );
 
             Computer = new Computer()
             {
-                StandardOut = console
+                Screen = screen
             };
 
             _executor = Computer.CreateExecutor();

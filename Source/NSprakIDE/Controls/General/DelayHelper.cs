@@ -13,11 +13,18 @@ namespace NSprakIDE.Controls.General
     {
         public event EventHandler Complete;
 
-        public TimeSpan WaitTime { get; set; } = TimeSpan.FromSeconds(0.5);
+        public TimeSpan WaitTime { get; set; }
 
         public bool Waiting { get; private set; }
 
         private DateTime _lastPokeTime = DateTime.MinValue;
+
+        public DelayHelper() : this(TimeSpan.FromSeconds(0.5)) { }
+
+        public DelayHelper(TimeSpan waitTime)
+        {
+            WaitTime = waitTime;
+        }
 
         public void Poke()
         {

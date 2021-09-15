@@ -83,6 +83,14 @@ namespace NSprakIDE.Themes
                 BreakpointText = "NSprakIDE.Runtime.BreakpointText";
         }
 
+        public static class Screen
+        {
+            public const string
+                Border = "NSprakIDE.Screen.Border",
+                Background = "NSprakIDE.Screen.Background",
+                Text = "NSprakIDE.Screen.Text";
+        }
+
         private static Dictionary<string, Brush> _brushes = new Dictionary<string, Brush>();
 
         public static Brush GetBrush(string name)
