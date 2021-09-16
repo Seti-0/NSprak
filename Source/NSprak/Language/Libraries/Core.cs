@@ -37,6 +37,12 @@ namespace NSprak.Language.Libraries
                 return new SprakNumber(double.NaN);
         }
 
+        public static SprakUnit ClearText(ExecutionContext context)
+        {
+            context.Computer.Screen?.ClearText();
+            return SprakUnit.Value;
+        }
+
         public static SprakNumber Cos(SprakNumber x)
         {
             return new SprakNumber(Math.Cos(x.Value));
