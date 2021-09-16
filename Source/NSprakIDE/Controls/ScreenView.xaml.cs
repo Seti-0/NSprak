@@ -45,7 +45,12 @@ namespace NSprakIDE.Controls
         private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
         {
             ComputerScreen item = (ComputerScreen)e.NewValue;
-            Screen.SetLayers(item.Layers);
+
+            if (item == null)
+                Screen.ClearLayers();
+
+            else
+                Screen.SetLayers(item.Layers);
         }
     }
 }

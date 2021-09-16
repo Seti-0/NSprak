@@ -56,6 +56,11 @@ namespace NSprakIDE.Controls.Screen
             InvalidateVisual();
         }
 
+        public void ClearLayers()
+        {
+            _layers.Clear();
+        }
+
         public void SetLayers(IEnumerable<ScreenLayer> layers)
         {
             _layers.Clear();

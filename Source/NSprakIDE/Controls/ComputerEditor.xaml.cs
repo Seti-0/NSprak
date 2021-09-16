@@ -139,7 +139,7 @@ namespace NSprakIDE.Controls
 
         public void Dispose()
         {
-            Environment.Output.End(Environment.GivenID);
+            Environment.ScreenView.Supplier.End(Environment.GivenID);
             Environment.MessageView.Supplier.End(Environment.GivenID);
             Environment.LocalsView.Supplier.End(Environment.GivenID);
         }
