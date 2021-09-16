@@ -44,17 +44,22 @@ namespace NSprakIDE.Controls.Screen.Layers
             if (Screen.HeightChars == 0)
                 return;
 
-            int startIndex = _lines.Count - Screen.HeightChars;
+            // Leaving a border of 1 char height above and below, hence the 
+            // minus 2.
+            int effectiveTerminalHeight = Screen.HeightChars - 2;
+
+            int startIndex = _lines.Count - effectiveTerminalHeight;
             if (_lastLine.Length > 0)
                 startIndex++;
 
             if (startIndex < 0)
                 startIndex = 0;
 
-            Point cursor = new Point(targetRect.X + 10, targetRect.Y + 10);
+            double border = Screen.CharHeight;
+            Point cursor = new Point(targetRect.X + border, targetRect.Y + border);
             for (int i = startIndex; i < _lines.Count; i++)
             {
-                _lines[i].SetFontSize(Screen.FontSize);
+                _lines[i].SetFontSize(Screen.TerminalFontSize);
                 context.DrawText(_lines[i], cursor);
                 cursor.Y += _lines[i].Height;
             }

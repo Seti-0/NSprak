@@ -47,10 +47,18 @@ namespace NSprakIDE.Controls.Screen
 
             _fontSize = 5;
             _em = GetFormattedText("M", Foreground);
+
+            SizeChanged += FixedSizeScreen_SizeChanged;
+        }
+
+        private void FixedSizeScreen_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            InvalidateVisual();
         }
 
         public void SetLayers(IEnumerable<ScreenLayer> layers)
         {
+            _layers.Clear();
             _layers.AddRange(layers);
             foreach (ScreenLayer layer in layers)
                 layer.Screen = this;
@@ -124,7 +132,7 @@ namespace NSprakIDE.Controls.Screen
             double fontSize = Math.Min(xw, xh);
             _fontSize = fontSize;
 
-            if (_fontSize > 0)
+            if (fontSize > 0)
                 _em.SetFontSize(fontSize);
         }
 

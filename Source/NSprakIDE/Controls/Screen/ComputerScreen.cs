@@ -29,19 +29,19 @@ namespace NSprakIDE.Controls.Screen
             };
         }
 
-        private void Invoke(ScreenLayer layer, Action action)
+        private void Invoke(Action action)
         {
-            _dispatcher.Invoke(action);
+            _dispatcher.Invoke(action, DispatcherPriority.ApplicationIdle);
         }
 
         public void ClearText()
         {
-            Invoke(_text, _text.ClearText);
+            Invoke(_text.ClearText);
         }
 
         public void DisplayGraphics()
         {
-            Invoke(_graphics, _graphics.DisplayGraphics);
+            Invoke(_graphics.DisplayGraphics);
         }
 
         public SprakColor GetColor()
@@ -52,22 +52,22 @@ namespace NSprakIDE.Controls.Screen
 
         public void Line(double x1, double y1, double x2, double y2)
         {
-            Invoke(_graphics, () => _graphics.AddLine(x1, y1, x2, y2));
+            Invoke(() => _graphics.AddLine(x1, y1, x2, y2));
         }
 
         public void Print(string line)
         {
-            Invoke(_text, () => _text.Print(line));
+            Invoke(() => _text.Print(line));
         }
 
         public void PrintS(string text)
         {
-            Invoke(_text, () => _text.PrintS(text));
+            Invoke(() => _text.PrintS(text));
         }
 
         public void Rect(double x, double y, double w, double h)
         {
-            Invoke(_graphics, () => _graphics.AddRect(x, y, w, h));
+            Invoke(() => _graphics.AddRect(x, y, w, h));
         }
 
         public void SetColor(SprakColor color)
@@ -75,12 +75,12 @@ namespace NSprakIDE.Controls.Screen
             WindowsColor converted = WindowsColor
                 .FromRgb(color.R, color.G, color.B);
 
-            Invoke(_graphics, () => _graphics.Color = converted);
+            Invoke(() => _graphics.Color = converted);
         }
 
         public void Text(string text, double x, double y)
         {
-            Invoke(_graphics, () => _graphics.AddText(text, x, y));
+            Invoke(() => _graphics.AddText(text, x, y));
         }
     }
 }

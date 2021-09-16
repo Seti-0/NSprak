@@ -122,7 +122,7 @@ namespace NSprakIDE.Controls.Screen.Layers
                     case TextEntry text:
                         text.ScreenOrigin.X = targetRect.X + text.Origin.X;
                         text.ScreenOrigin.Y = targetRect.Y + text.Origin.Y;
-                        text.Content.SetFontSize(Screen.FontSize);
+                        text.Content.SetFontSize(Screen.TerminalFontSize);
                         context.DrawText(text.Content, text.ScreenOrigin);
                         break;
                 }
