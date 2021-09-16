@@ -23,7 +23,8 @@ namespace NSprak.Expressions.Patterns.Elements
             foreach (PatternElement element in Elements)
                 element.Validate(context);
 
-            if (Elements.Last().Optional && Elements.Last() is EndElement)
+            if (Elements.Last() is OptionalElement option
+                && option.Value is EndElement)
                 throw new Exception("A final optional end will never execute");
 
             context.EndSequenceScope();
@@ -33,11 +34,14 @@ namespace NSprak.Expressions.Patterns.Elements
         {
             foreach (PatternElement element in Elements)
             {
-                if (element.CanExecute(state))
-                    return true;
-
-                if (!element.Optional)
-                    return false;
+                // The special case for optional elements isn't really needed here.
+                if (element is OptionalElement option)
+                {
+                    if (option.Value.CanExecute(state))
+                        return true;
+                }
+                else 
+                    return element.CanExecute(state);
             }
 
             return false;
@@ -56,7 +60,8 @@ namespace NSprak.Expressions.Patterns.Elements
                 // Special case for optional end elements
                 // They can always be executed, but whether or not they 
                 // should be depends on if the next element can be.
-                if (element.Optional && element is EndElement endElement)
+                if (element is OptionalElement option 
+                    && option.Value is EndElement endElement)
                 {
                     optionalEnd = endElement;
                     continue;
@@ -64,10 +69,7 @@ namespace NSprak.Expressions.Patterns.Elements
 
                 if (!element.CanExecute(state))
                 {
-                    if (element.Optional)
-                        continue;
-
-                    else if (optionalEnd != null)
+                    if (optionalEnd != null)
                     {
                         optionalEnd.Execute(state);
                         return true;
@@ -77,8 +79,9 @@ namespace NSprak.Expressions.Patterns.Elements
                 }
 
                 // An optional end only applied to the CanExecute
-                // of the first element after it.
-                optionalEnd = null;
+                // until the first non-optional element after it.
+                if (!(element is OptionalElement))
+                    optionalEnd = null;
 
                 bool success = element.Execute(state);
 

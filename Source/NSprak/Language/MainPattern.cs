@@ -54,14 +54,14 @@ namespace NSprak.Language
                 & EndWith(Literals.Create);
 
             ArrayLiteral.Value = KeySymbol.OpenSquareBracket
-                & ExpressionTuple
+                & Allow(ExpressionTuple)
                 & KeySymbol.CloseSquareBracket
                 & EndWith(Literals.CreateArray);
 
             Get.Value = Name
                 & Allow(EndWith(Variables.CreateReference))
                 & KeySymbol.OpenBracket
-                & ExpressionTuple
+                & Allow(ExpressionTuple)
                 & KeySymbol.CloseBracket
                 & EndWith(Functions.CreateCall);
 
@@ -132,7 +132,7 @@ namespace NSprak.Language
                             & EndWith(Variables.CreateAssignment)
 
                         | KeySymbol.OpenBracket
-                            & ExpressionTuple
+                            & Allow(ExpressionTuple)
                             & KeySymbol.CloseBracket
                             & EndWith(Functions.CreateCall)
                     )
@@ -166,7 +166,7 @@ namespace NSprak.Language
                     & (
                         OperatorToken & Expression & EndWith(Variables.CreateAssignment)
                         | KeySymbol.OpenBracket
-                            & DeclarationTuple
+                            & Allow(DeclarationTuple)
                             & KeySymbol.CloseBracket
                             & EndWith(Functions.CreateHeader)
                     );

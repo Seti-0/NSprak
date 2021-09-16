@@ -171,7 +171,7 @@ namespace NSprak.Expressions.Patterns
 
                     case EndElement end:
 
-                        string opName = end.Optional ? "AllowEnd" : "End";
+                        string opName = "End";
 
                         if (end.Destination == null)
                         {
@@ -189,6 +189,13 @@ namespace NSprak.Expressions.Patterns
                             .Name;
 
                         result = $"{opName}({enclosingName}.{fnName})";
+                        break;
+
+                    case OptionalElement option:
+
+                        Visit(option, ancestors, visited);
+                        result = $"Allow({option.Value})";
+
                         break;
 
                     case Options options:

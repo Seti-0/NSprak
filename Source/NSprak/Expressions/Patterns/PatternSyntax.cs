@@ -71,8 +71,7 @@ namespace NSprak.Expressions.Patterns
 
         public static PatternElement Allow(PatternElement element)
         {
-            element.Optional = true;
-            return element;
+            return new OptionalElement(element);
         }
 
         public static PatternElement EndWith(PatternEnd iterator)

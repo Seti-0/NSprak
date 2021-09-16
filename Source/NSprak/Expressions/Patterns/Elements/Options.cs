@@ -22,7 +22,7 @@ namespace NSprak.Expressions.Patterns.Elements
             {
                 element.Validate(context);
 
-                if (element.Optional)
+                if (element is OptionalElement)
                     throw new Exception("Optional Option element");
             }
         }

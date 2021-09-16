@@ -69,8 +69,6 @@ namespace NSprak.Expressions.Patterns
         // keeps track of cycles and loops in case something goes wrgon.
         private string _sourceText = "No source string specified";
 
-        public bool Optional { get; set; }
-
         public void Validate()
         {
             Validate(new PatternCheckContext());
