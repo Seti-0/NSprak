@@ -28,7 +28,7 @@ namespace NSprak.Expressions.Creation
         {
             Token start, end;
 
-            iterator.AssertKeySymbol(Symbols.OpenSquareBracket);
+            iterator.AssertKeySymbol(Symbols.OpenSquareBracket, out _);
             start = (Token)iterator.Current;
 
             if (iterator.Next(out List<Expression> elements))
@@ -36,7 +36,7 @@ namespace NSprak.Expressions.Creation
 
             else elements = new List<Expression>();
 
-            iterator.AssertKeySymbol(Symbols.CloseSquareBracket);
+            iterator.AssertKeySymbol(Symbols.CloseSquareBracket, out _);
             end = (Token)iterator.Current;
 
             return new LiteralArrayGet(start, end, elements);

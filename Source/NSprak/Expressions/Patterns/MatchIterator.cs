@@ -114,10 +114,10 @@ namespace NSprak.Expressions.Patterns
             token.AssertKeyword(keyword);
         }
 
-        public void AssertKeySymbol(char symbol)
+        public void AssertKeySymbol(char symbol, out Token token)
         {
-            Assert(out Token current);
-            current.AssertKeySymbol(symbol);
+            Assert(out token);
+            token.AssertKeySymbol(symbol);
         }
 
         public void AssertType(out SprakType type)

@@ -78,11 +78,6 @@ namespace NSprak.Expressions.Patterns.Elements
                     return false;
                 }
 
-                // An optional end only applied to the CanExecute
-                // until the first non-optional element after it.
-                if (!(element is OptionalElement))
-                    optionalEnd = null;
-
                 bool success = element.Execute(state);
 
                 if (!success)
@@ -110,6 +105,11 @@ namespace NSprak.Expressions.Patterns.Elements
                     case PatternCommand.End:
                         return true;
                 }
+
+                // An optional end only applied to the CanExecute
+                // until the first non-optional, non-command, element after it.
+                if (!(element is OptionalElement))
+                    optionalEnd = null;
             }
 
             return true;

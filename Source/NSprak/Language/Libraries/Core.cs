@@ -43,6 +43,14 @@ namespace NSprak.Language.Libraries
             return SprakUnit.Value;
         }
 
+        public static SprakUnit Color(
+            ExecutionContext context, SprakNumber r, SprakNumber g, SprakNumber b)
+        {
+            context.Computer?.Screen.SetColor(
+                new Color((byte)r.Value, (byte)g.Value, (byte)b.Value));
+            return SprakUnit.Value;
+        }
+
         public static SprakNumber Cos(SprakNumber x)
         {
             return new SprakNumber(Math.Cos(x.Value));
@@ -55,7 +63,13 @@ namespace NSprak.Language.Libraries
 
         // Need to figure out the clipboard at some point.
 
+        // D
 
+        public static SprakUnit DisplayGraphics(ExecutionContext context)
+        {
+            context.Computer.Screen?.DisplayGraphics();
+            return SprakUnit.Value;
+        }
 
         // H
 
@@ -67,6 +81,15 @@ namespace NSprak.Language.Libraries
                 .Any();
 
             return new SprakBoolean(exists);
+        }
+
+        // L
+
+        public static SprakUnit Line(ExecutionContext context,
+            SprakNumber x1, SprakNumber y1, SprakNumber x2, SprakNumber y2)
+        {
+            context.Computer.Screen?.Line(x1.Value, y1.Value, x2.Value, y2.Value);
+            return SprakUnit.Value;
         }
 
         // M
@@ -107,6 +130,13 @@ namespace NSprak.Language.Libraries
             return new SprakNumber(_random.NextDouble());
         }
 
+        public static SprakUnit Rect(ExecutionContext context,
+            SprakNumber x, SprakNumber y, SprakNumber w, SprakNumber h)
+        {
+            context.Computer.Screen?.Rect(x.Value, y.Value, w.Value, h.Value);
+            return SprakUnit.Value;
+        }
+
         public static SprakNumber Round(SprakNumber a)
         {
             return new SprakNumber(Math.Round(a.Value));
@@ -118,5 +148,22 @@ namespace NSprak.Language.Libraries
         {
             return new SprakNumber(Math.Sqrt(a.Value));
         }
+
+
+        public static SprakUnit Sleep(SprakNumber seconds)
+        {
+            System.Threading.Thread.Sleep((int)(seconds.Value * 1000));
+            return SprakUnit.Value;
+        }
+
+        // T
+
+        public static SprakUnit Text(ExecutionContext context,
+            SprakNumber x, SprakNumber y, SprakString text)
+        {
+            context.Computer.Screen?.Text(text.Value, x.Value, y.Value);
+            return SprakUnit.Value;
+        }
+
     }
 }

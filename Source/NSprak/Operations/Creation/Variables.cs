@@ -18,6 +18,13 @@ namespace NSprak.Operations.Creation
             builder.AddOp(new VariableGet(reference.Name), reference.Token);
         }
 
+        public static void GenerateCode(Indexer indexer, GeneratorContext builder)
+        {
+            builder.AddCode(indexer.SourceExpression);
+            builder.AddCode(indexer.IndexExpression);
+            builder.AddOp(new ArrayElementGet(), indexer.OpeningBracket);
+        }
+
         public static void GenerateCode(VariableAssignment assignment, GeneratorContext builder)
         {
             if (assignment.IsDeclaration)

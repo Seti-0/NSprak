@@ -67,7 +67,7 @@ namespace NSprak.Operations
                 case VariableAssignment x: Variables.GenerateCode(x, this); break;
                 case VariableReference x: Variables.GenerateCode(x, this); break;
                 case Block block: Blocks.GenerateCode(block, this); break;
-
+                case Indexer indexer: Variables.GenerateCode(indexer, this); break;
                 case MainHeader _: break;
 
                 case null: throw new ArgumentNullException(nameof(expression));

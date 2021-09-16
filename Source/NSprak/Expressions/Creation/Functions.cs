@@ -22,14 +22,14 @@ namespace NSprak.Expressions.Creation
             // It would also require defining a special "Expression" subpattern? At this point it would be better if everything were an expression, I guess
 
             iterator.AssertTokenType(TokenType.Name, out Token name);
-            iterator.AssertKeySymbol(Symbols.OpenBracket);
+            iterator.AssertKeySymbol(Symbols.OpenBracket, out _);
 
             if (iterator.Next(out List<Expression> arguments))
                 iterator.MoveNext();
 
             else arguments = new List<Expression>();
 
-            iterator.AssertKeySymbol(Symbols.CloseBracket);
+            iterator.AssertKeySymbol(Symbols.CloseBracket, out _);
             Token end = (Token)iterator.Current;
 
             iterator.AssertEnd();
@@ -42,7 +42,7 @@ namespace NSprak.Expressions.Creation
         {
             iterator.AssertTokenType(TokenType.Type, out Token typeToken);
             iterator.AssertTokenType(TokenType.Name, out Token nameToken);
-            iterator.AssertKeySymbol(Symbols.OpenBracket);
+            iterator.AssertKeySymbol(Symbols.OpenBracket, out _);
 
             CollectedParameters parameters;
             if (iterator.Next(out parameters))
@@ -50,7 +50,7 @@ namespace NSprak.Expressions.Creation
             else
                 parameters = new CollectedParameters();
 
-            iterator.AssertKeySymbol(Symbols.CloseBracket);
+            iterator.AssertKeySymbol(Symbols.CloseBracket, out _);
             Token end = (Token)iterator.Current;
 
             iterator.AssertEnd();

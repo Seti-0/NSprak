@@ -26,7 +26,7 @@ namespace NSprak.Language
         {
             All = new string[]
             {
-                If, Loop, From, To, In, Break, Continue, Return, End
+                If, Else, Loop, From, To, In, Break, Continue, Return, End
             };
         }
 

@@ -116,6 +116,8 @@ namespace NSprakIDE.Controls.Screen.Layers
                     case RectEntry rect:
                         rect.ScreenRect.X = targetRect.X + rect.Content.X;
                         rect.ScreenRect.Y = targetRect.Y + rect.Content.Y;
+                        rect.ScreenRect.Width = rect.Content.Width;
+                        rect.ScreenRect.Height = rect.Content.Height;
                         context.DrawRectangle(rect.Brush, null, rect.ScreenRect);
                         break;
 

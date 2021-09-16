@@ -277,10 +277,14 @@ namespace NSprakIDE.Controls
                 Environment.LocalsView.Update();
 
                 Token token = _executor.Instructions.CurrentInfo.FocusToken;
-                int lineNumber = token.LineNumber;
-                int columnNumber = token.ColumnStart;
-                _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
-                _sourceEditor.Redraw();
+                if (token != null)
+                {
+                    int lineNumber = token.LineNumber;
+                    int columnNumber = token.ColumnStart;
+                    _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
+                    _sourceEditor.Redraw();
+                }
+
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
                 InvalidateVisual();
             }

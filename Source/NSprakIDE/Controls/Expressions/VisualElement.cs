@@ -165,6 +165,11 @@ namespace NSprakIDE.Controls.Expressions
 
                     break;
 
+                case Indexer indexer:
+                    AddParameter("Source", indexer.SourceExpression);
+                    AddParameter("Index", indexer.IndexExpression);
+                    break;
+
                 case FunctionInfo function:
                     AddParameter("Return Type", function.ReturnType);
                     AddParameter("Parameters", function.Parameters.ToList());
@@ -499,7 +504,9 @@ namespace NSprakIDE.Controls.Expressions
                 case NSprakBlock block: RenderHeader(block.Header); break;
 
                 case Command command: RenderKeyword(command.Keyword); break;
-                
+
+                case Indexer _: RenderKeyword("Array Index"); break;
+
                 case FunctionCall functionCall:
                     RenderKeyword("Call ");
                     RenderName(functionCall.Name);

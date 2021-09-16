@@ -68,7 +68,7 @@ namespace NSprak.Language
             Index.Value = KeySymbol.OpenSquareBracket
                 & Expression
                 & KeySymbol.CloseSquareBracket
-                & Allow(EndWith(null))
+                & Allow(EndWith(Collection.Indices))
                 & Loopback;
 
             ExpressionTuple.Value = Expression
@@ -85,11 +85,9 @@ namespace NSprak.Language
                         & Expression
                         & KeySymbol.CloseBracket
                     )
-                & (
-                    Index & OperatorToken
-                    | OperatorToken
-                    | EndWith(ExpressionGroups.Create)
-                )
+                & Allow(Index)
+                & Allow(EndWith(ExpressionGroups.Create))
+                & OperatorToken
                 & Allow(EndWith(ExpressionGroups.Create))
                 & Loopback;
 

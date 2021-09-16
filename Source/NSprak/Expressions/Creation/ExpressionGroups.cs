@@ -27,10 +27,21 @@ namespace NSprak.Expressions.Creation
             if (iterator.NextIsKeySymbol(Symbols.OpenBracket))
             {
                 iterator.AssertExpression(out nextExpr);
-                iterator.AssertKeySymbol(Symbols.CloseBracket);
+                iterator.AssertKeySymbol(Symbols.CloseBracket, out _);
             }
 
             else iterator.AssertExpression(out nextExpr);
+
+            if (iterator.AtEnd())
+                return nextExpr;
+
+            if (iterator.Next(out List<CollectedIndex> indices))
+            {
+                foreach (CollectedIndex index in indices)
+                    nextExpr = new Indexer(nextExpr, index.Open, index.Index, index.Close);
+
+                iterator.MoveNext();
+            }
 
             if (iterator.AtEnd())
                 return nextExpr;
@@ -41,7 +52,7 @@ namespace NSprak.Expressions.Creation
                 // Assume a right operator for now
                 return new OperatorCall(opToken, nextExpr, null);
 
-            // assume a binary operator for now
+            // Assume a binary operator for now
             Expression remainder = Create(iterator);
             return new OperatorCall(opToken, nextExpr, remainder);
         }

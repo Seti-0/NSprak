@@ -63,6 +63,8 @@ namespace NSprak.Expressions.Patterns
 
         public List<TraceItem> Items { get; } = new List<TraceItem>();
 
+        public IEnumerable<TraceItem> Path => Items.Where(x => x.State != TraceState.Fail);
+
         public Dictionary<PatternElement, TallyEntry> Tally { get; }
             = new Dictionary<PatternElement, TallyEntry>();
 

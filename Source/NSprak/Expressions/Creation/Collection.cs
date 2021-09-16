@@ -4,44 +4,37 @@ using System.Text;
 
 using NSprak.Expressions.Patterns;
 using NSprak.Language;
+using NSprak.Tokens;
 
 namespace NSprak.Expressions.Creation
 {
-    public class CollectedParameters
-    {
-        public List<SprakType> Types;
-        public List<string> Names;
-
-        public CollectedParameters()
-        {
-            Types = new List<SprakType>();
-            Names = new List<string>();
-        }
-
-        public CollectedParameters(List<SprakType> types, List<string> names)
-        {
-            Types = types;
-            Names = names;
-        }
-
-        public override string ToString()
-        {
-            List<string> items = new List<string>();
-
-            for (int i = 0; i < Types.Count; i++)
-            {
-                string item = Types[i].Text;
-                item += " " + Names[i];
-                items.Add(item);
-            }
-
-            string result = string.Join(", ", items);
-            return result;
-        }
-    }
-
     public static class Collection
     {
+        public static List<CollectedIndex> Indices(MatchIterator iterator)
+        {
+            List<CollectedIndex> indices = new List<CollectedIndex>();
+
+            iterator.AssertNext();
+
+            while (iterator.HasNext)
+            {
+                iterator.AssertKeySymbol(Symbols.OpenSquareBracket, out Token open);
+                iterator.AssertExpression(out Expression index);
+                iterator.AssertKeySymbol(Symbols.CloseSquareBracket, out Token close);
+
+                CollectedIndex entry = new CollectedIndex
+                {
+                    Open = open,
+                    Index = index,
+                    Close = close
+                };
+
+                indices.Add(entry);
+            }
+
+            return indices;
+        } 
+
         public static List<Expression> Arguments(MatchIterator iterator)
         {
             List<Expression> arguments = new List<Expression>();

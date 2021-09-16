@@ -8,6 +8,18 @@ namespace NSprak.Messaging
     {
         public static MessageTemplate
 
+            CanOnlyIndexArrays = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Only an array can be indexed. Found: {Type}"
+            },
+
+            IndexShouldBeNumber = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "An index should be a number. Found: {Type}"
+            },
+
             UnrecognizedSymbols = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,

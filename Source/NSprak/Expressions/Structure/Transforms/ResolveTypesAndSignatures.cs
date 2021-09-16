@@ -39,6 +39,27 @@ namespace NSprak.Expressions.Structure.Transforms
                     array.TypeHint = SprakType.Array;
                     break;
 
+                case Indexer indexer:
+
+                    SprakType sourceType = indexer.SourceExpression.TypeHint;
+
+                    // The source should be an array
+                    if (sourceType != null && sourceType != SprakType.Array && sourceType != SprakType.Any)
+                        env.Messages.AtExpression(indexer.SourceExpression,
+                            Messages.CanOnlyIndexArrays, sourceType.Text);
+
+                    // The index should be a number
+                    SprakType indexType = indexer.IndexExpression.TypeHint;
+                    if (indexType != null && indexType != SprakType.Number && sourceType != SprakType.Any)
+                        env.Messages.AtExpression(indexer.IndexExpression,
+                            Messages.IndexShouldBeNumber, indexType.Text);
+
+                    // This is unfortunate, and to be worked on
+                    // later.
+                    indexer.TypeHint = SprakType.Any;
+
+                    break;
+
                 case LiteralGet literal:
                     literal.TypeHint = literal.Value.Type;
                     break;
