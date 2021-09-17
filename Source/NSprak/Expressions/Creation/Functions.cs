@@ -14,7 +14,7 @@ namespace NSprak.Expressions.Creation
 {
     public static class Functions
     {
-        public static FunctionCall CreateCall(MatchIterator iterator)
+        public static FunctionCall Call(MatchIterator iterator)
         {
             // It would be cool in patterner v2 if the pattern was constructed in the same method as the finalizer.
             // For example, a "dummy" matchIterator could be passed through here and pick up the requirements, perhaps?
@@ -38,7 +38,7 @@ namespace NSprak.Expressions.Creation
             return result;
         }
 
-        public static FunctionHeader CreateHeader(MatchIterator iterator)
+        public static FunctionHeader Header(MatchIterator iterator)
         {
             iterator.AssertTokenType(TokenType.Type, out Token typeToken);
             iterator.AssertTokenType(TokenType.Name, out Token nameToken);

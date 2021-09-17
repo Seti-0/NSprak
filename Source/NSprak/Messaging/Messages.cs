@@ -14,6 +14,12 @@ namespace NSprak.Messaging
                 Summary = "Only an array can be indexed. Found: {Type}"
             },
 
+            ExtraEndStatement = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Found extra end statement that does not seem to close anything"
+            },
+
             IndexShouldBeNumber = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
@@ -42,6 +48,18 @@ namespace NSprak.Messaging
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Name referenced before its local definition: '{Name}'"
+            },
+
+            UnexpectedElseIfStatement = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "'else if' statement without preceding 'if' statement"
+            },
+
+            UnexpectedElseStatement = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "'else' statement without preceding 'if' statement"
             },
 
             UnresolvedCall = new MessageTemplate
@@ -98,7 +116,7 @@ namespace NSprak.Messaging
                 Summary = "A function inside a block is not allowed. (Have you forgotten to close the previous block?)"
             },
 
-            MissingEndStatement = new MessageTemplate
+            BlockNotClosed = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
                 Summary = "No end found for this header"

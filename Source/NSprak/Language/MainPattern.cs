@@ -63,7 +63,7 @@ namespace NSprak.Language
                 & KeySymbol.OpenBracket
                 & Allow(ExpressionTuple)
                 & KeySymbol.CloseBracket
-                & EndWith(Functions.CreateCall);
+                & EndWith(Functions.Call);
 
             Index.Value = KeySymbol.OpenSquareBracket
                 & Expression
@@ -118,36 +118,36 @@ namespace NSprak.Language
 
                 | Keyword.Return 
                     & Allow(Expression)
-                    & EndWith(Commands.CreateReturn)
+                    & EndWith(Commands.Return)
 
                 // Assignments and calls
 
                 | Name
                     & (
                         OperatorToken
-                            & Allow(EndWith(Variables.CreateAssignment))
+                            & Allow(EndWith(Variables.Assignment))
                             & Expression
-                            & EndWith(Variables.CreateAssignment)
+                            & EndWith(Variables.Assignment)
 
                         | KeySymbol.OpenBracket
                             & Allow(ExpressionTuple)
                             & KeySymbol.CloseBracket
-                            & EndWith(Functions.CreateCall)
+                            & EndWith(Functions.Call)
                     )
 
                 // If, Else and Else If statements.
 
-                | Keyword.If & Expression & EndWith(ControlFlow.CreateIfHeader)
+                | Keyword.If & Expression & EndWith(ControlFlow.If)
                 | Keyword.Else 
-                    & Allow(EndWith(null))
-                    & Keyword.If & Expression & EndWith(null)
+                    & Allow(EndWith(ControlFlow.Else))
+                    & Keyword.If & Expression & EndWith(ControlFlow.ElseIf)
 
                 // Loop statements
 
                 | Keyword.Loop 
-                    & Allow(EndWith(ControlFlow.CreateLoopHeader))
+                    & Allow(EndWith(ControlFlow.Loop))
                     & Expression
-                    & Allow(EndWith(ControlFlow.CreateLoopHeader))
+                    & Allow(EndWith(ControlFlow.Loop))
                     & (
                         Keyword.From 
                             & Expression 
@@ -156,17 +156,17 @@ namespace NSprak.Language
                         | Keyword.In 
                             & Expression
                     )
-                    & EndWith(ControlFlow.CreateLoopHeader)
+                    & EndWith(ControlFlow.Loop)
 
                 // Declarations of variables and functions
 
                 | Type & Name 
                     & (
-                        OperatorToken & Expression & EndWith(Variables.CreateAssignment)
+                        OperatorToken & Expression & EndWith(Variables.Assignment)
                         | KeySymbol.OpenBracket
                             & Allow(DeclarationTuple)
                             & KeySymbol.CloseBracket
-                            & EndWith(Functions.CreateHeader)
+                            & EndWith(Functions.Header)
                     );
 
             return Statement;

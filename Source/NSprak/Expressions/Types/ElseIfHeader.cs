@@ -12,22 +12,30 @@ using NSprak.Operations;
 
 namespace NSprak.Expressions.Types
 {
-    public class IfHeader : Header
+    public class ElseIfHeader : Header, IConditionalSubComponent
     {
-        public override string FriendlyBlockName => "if";
+        public override string FriendlyBlockName => "else if";
 
         public Expression Condition { get; }
 
+        public Token ElseToken { get; }
+
         public Token IfToken { get; }
 
-        public override Token StartToken => IfToken;
+        public override Token StartToken => ElseToken;
 
         public override Token EndToken => Condition.EndToken;
 
+        public string EndLabelHint { get; set; }
+
         public IConditionalSubComponent NextConditionalComponentHint { get; set; }
 
-        public IfHeader(Token ifToken, Expression condition)
+        public ElseIfHeader(
+            Token elseToken, Token ifToken, Expression condition)
         {
+            elseToken.AssertKeyword(Keywords.Else);
+            ElseToken = elseToken;
+
             ifToken.AssertKeyword(Keywords.If);
             IfToken = ifToken;
 
@@ -36,7 +44,7 @@ namespace NSprak.Expressions.Types
 
         public override string ToString()
         {
-            return $"If {Condition}";
+            return $"Else If {Condition}";
         }
 
         public override IEnumerable<Expression> GetSubExpressions()

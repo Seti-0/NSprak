@@ -165,11 +165,6 @@ namespace NSprakIDE.Controls.Expressions
 
                     break;
 
-                case Indexer indexer:
-                    AddParameter("Source", indexer.SourceExpression);
-                    AddParameter("Index", indexer.IndexExpression);
-                    break;
-
                 case FunctionInfo function:
                     AddParameter("Return Type", function.ReturnType);
                     AddParameter("Parameters", function.Parameters.ToList());
@@ -235,6 +230,11 @@ namespace NSprakIDE.Controls.Expressions
 
                 case LiteralArrayGet array:
                     AddParameter("Elements", array.Elements);
+                    break;
+
+                case Indexer indexer:
+                    AddParameter("Source", indexer.SourceExpression);
+                    AddParameter("Index", indexer.IndexExpression);
                     break;
 
                 case OperatorCall op:
@@ -325,8 +325,12 @@ namespace NSprakIDE.Controls.Expressions
 
                     break;
 
-                case IfHeader conditional:
-                    AddParameter("Condition", conditional.Condition);
+                case IfHeader ifHeader:
+                    AddParameter("Condition", ifHeader.Condition);
+                    break;
+
+                case ElseIfHeader elseifHeader:
+                    AddParameter("Condition", elseifHeader.Condition);
                     break;
 
                 case FunctionHeader function:
@@ -573,6 +577,10 @@ namespace NSprakIDE.Controls.Expressions
                     break;
 
                 case IfHeader _: RenderKeyword("If"); break;
+
+                case ElseIfHeader _: RenderKeyword("Else If"); break;
+
+                case ElseHeader _: RenderKeyword("Else"); break;
 
                 case FunctionHeader function:
                     RenderKeyword("Function");

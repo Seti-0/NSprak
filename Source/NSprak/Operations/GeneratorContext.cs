@@ -68,6 +68,8 @@ namespace NSprak.Operations
                 case VariableReference x: Variables.GenerateCode(x, this); break;
                 case Block block: Blocks.GenerateCode(block, this); break;
                 case Indexer indexer: Variables.GenerateCode(indexer, this); break;
+                case ElseHeader elseHeader: Conditional.GenerateCode(elseHeader, this); break;
+                case ElseIfHeader elseIfHeader: Conditional.GenerateCode(elseIfHeader, this); break;
                 case MainHeader _: break;
 
                 case null: throw new ArgumentNullException(nameof(expression));

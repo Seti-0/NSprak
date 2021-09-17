@@ -8,6 +8,7 @@ using System.Transactions;
 using NSprak.Expressions.Types;
 using NSprak.Tokens;
 using NSprak.Messaging;
+using NSprak.Language;
 
 namespace NSprak.Expressions.Structure
 {
@@ -15,62 +16,98 @@ namespace NSprak.Expressions.Structure
     {
         public static Block Build(List<Expression> statements, CompilationEnvironment env)
         {
-            Token start = null, end = null;
+            Token mainStart = null, mainEnd = null;
 
             if (statements.Count > 0)
             {
-                start = statements[0].StartToken;
-                end = statements[^1].EndToken;
+                mainStart = statements[0].StartToken;
+                mainEnd = statements[^1].EndToken;
             }
 
-            return Parse(new MainHeader(), statements, env, 
-                startToken: start, endToken: end, allowFunctions: true);
-        }
+            Stack<List<Expression>> statementStack = new Stack<List<Expression>>();
+            Stack<Header> headerStack = new Stack<Header>();
 
-        private static Block Parse(Header currentHeader, List<Expression> statements, CompilationEnvironment env, 
-            Token startToken = null, Token endToken = null, bool allowFunctions = true)
-        {
-            StatementEnumerator enumerator = new StatementEnumerator(statements);
-            enumerator.BeginCollection();
+            statementStack.Push(new List<Expression>());
 
-            bool error = false;
-
-            while ((!error) && enumerator.SeekHeader(out Header header))
+            foreach (Expression statement in statements)
             {
-                enumerator.MoveNext(collect:false); // don't include the "header" statement
-                enumerator.BeginCollection();
-                bool found = enumerator.SeekEnd(out Token subEndToken);
-                List<Expression> innerStatements = enumerator.EndCollection();
-
-                if ((!allowFunctions) && header is FunctionHeader functionHeader)
+                if (statement is IConditionalSubComponent subcomponent)
                 {
-                    // A function inside a function is no problem in theory, but it is not a specified possibility in Sprak
-                    env.Messages.AtExpression(functionHeader, Messages.NestedFunction);
-                    error = true;
-                }
-                else if (!found)
-                {
-                    env.Messages.AtExpression(header, Messages.MissingEndStatement);
-                    error = true;
-                }
-                else
-                {
-                    enumerator.MoveNext(collect:false); // don't include the "end" statement
+                    bool valid = false;
+                    if (headerStack.Count > 0)
+                    {
+                        if (headerStack.Peek() is IfHeader ifHeader)
+                        {
+                            ifHeader.NextConditionalComponentHint = subcomponent;
 
-                    Block subBlock = Parse(header, innerStatements, env,
-                        startToken: null, endToken: subEndToken, allowFunctions: false);
+                            Token endToken = statementStack.Peek()[^1].EndToken;
+                            EndBlock(endToken);
+                            valid = true;
+                        }
+                        else if (headerStack.Peek() is ElseIfHeader elseIfHeader)
+                        {
+                            elseIfHeader.NextConditionalComponentHint = subcomponent;
 
-                    enumerator.AddToCollection(subBlock);
+                            Token endToken = statementStack.Peek()[^1].EndToken;
+                            EndBlock(endToken);
+                            valid = true;
+                        }
+                    }
+
+                    if (!valid)
+                    {
+                        if (statement is ElseHeader)
+                            env.Messages.AtExpression(
+                                statement, Messages.UnexpectedElseStatement);
+
+                        else if (statement is ElseIfHeader)
+                            env.Messages.AtExpression(
+                                statement, Messages.UnexpectedElseIfStatement);
+                    }
                 }
+
+                if (statement is Header newBlockHeader)
+                {
+                    headerStack.Push(newBlockHeader);
+                    statementStack.Push(new List<Expression>());
+                }
+                else if (statement is Command command && command.Keyword == Keywords.End)
+                {
+                    if (headerStack.Count == 0)
+                        env.Messages.AtExpression(command, Messages.ExtraEndStatement);
+
+                    else EndBlock(command.Token);
+                }
+                else statementStack.Peek().Add(statement);
             }
 
-            if (!error) 
-                enumerator.Complete();
-            
-            List<Expression> body = enumerator.EndCollection();
-            Block result = new Block(currentHeader, body, startToken, endToken);
+            void EndBlock(Token endToken)
+            {
+                Header blockHeader = headerStack.Pop();
+                List<Expression> blockStatements = statementStack.Pop();
+                Token blockStart = blockHeader.StartToken;
+                Block block = new Block(
+                    blockHeader, blockStatements, blockStart, endToken);
 
-            return result;
+                statementStack.Peek().Add(block);
+            }
+
+            while (headerStack.Count > 0)
+            {
+                env.Messages.AtExpression(
+                    headerStack.Peek(), Messages.BlockNotClosed);
+
+                EndBlock(mainEnd);
+            }
+
+            if (statementStack.Count != 1)
+                // Unless I've made a mistake, this should never happen.
+                throw new Exception("Assertion error");
+
+            Header header = new MainHeader();
+            List<Expression> mainStatements = statementStack.Pop();
+            Block mainBlock = new Block(header, mainStatements, mainStart, mainEnd);
+            return mainBlock;
         }
     }
 }

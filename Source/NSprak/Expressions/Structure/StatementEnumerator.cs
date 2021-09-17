@@ -6,6 +6,7 @@ using System.Text;
 using NSprak.Expressions.Types;
 using NSprak.Language;
 using NSprak.Tokens;
+using NSprak.Messaging;
 
 namespace NSprak.Expressions.Structure
 {
@@ -93,6 +94,48 @@ namespace NSprak.Expressions.Structure
             return false;
         }
 
+        /*
+        public bool SeekEnd(
+            Header initial, out Expression endStatement, Messenger messenger)
+        {
+            if (Index == -1)
+                MoveNext();
+
+            Stack<Header> stack = new Stack<Header>();
+
+            while (HasCurrent)
+            {
+                if (Current is ElseHeader || Current is ElseIfHeader)
+                {
+                    if (stack.Count == 0)
+                    {
+                        endStatement = Current;
+                        return true;
+                    }
+
+                    Header previous = stack.Peek();
+                    if (previous is IfHeader || previous is ElseIfHeader)
+                        stack.Pop();
+                }
+                else if (Current is Header header)
+                    stack.Push(header);
+
+                else if (Current is Command command && command.Keyword == Keywords.End)
+                {
+                    if (stack.Count == 0)
+                    {
+                        endStatement = command;
+                        return true;
+                    }
+
+                    stack.Pop();
+                }
+
+                MoveNext();
+            }
+        }
+        */
+
         public bool SeekEnd(out Token endToken)
         {
             if (Index == -1)
@@ -105,7 +148,7 @@ namespace NSprak.Expressions.Structure
                 if (Current is Header)
                     depth++;
 
-                if (Current is Command command && command.Keyword == Keywords.End)
+                else if (Current is Command command && command.Keyword == Keywords.End)
                 {
                     depth--;
                     if (depth == 0)

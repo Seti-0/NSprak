@@ -22,7 +22,7 @@ namespace NSprak.Expressions.Creation
             return result;
         }
 
-        public static Return CreateReturn(MatchIterator iterator)
+        public static Return Return(MatchIterator iterator)
         {
             iterator.AssertKeyword(Keywords.Return);
             Token startToken = (Token)iterator.Current;

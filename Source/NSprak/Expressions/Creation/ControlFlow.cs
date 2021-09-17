@@ -11,19 +11,37 @@ namespace NSprak.Expressions.Creation
 {
     public static class ControlFlow
     {
-        public static IfHeader CreateIfHeader(MatchIterator iterator)
+        public static IfHeader If(MatchIterator iterator)
         {
-            iterator.AssertKeyword(Keywords.If);
-            Token start = (Token)iterator.Current;
-
+            iterator.AssertKeyword(Keywords.If, out Token ifToken);
             iterator.AssertExpression(out Expression condition);
             iterator.AssertEnd();
 
-            IfHeader result = new IfHeader(start, condition);
+            IfHeader result = new IfHeader(ifToken, condition);
             return result;
         }
 
-        public static LoopHeader CreateLoopHeader(MatchIterator iterator)
+        public static ElseIfHeader ElseIf(MatchIterator iterator)
+        {
+            iterator.AssertKeyword(Keywords.Else, out Token elseToken);
+            iterator.AssertKeyword(Keywords.If, out Token ifToken);
+            iterator.AssertExpression(out Expression condition);
+            iterator.AssertEnd();
+
+            ElseIfHeader result = new ElseIfHeader(elseToken, ifToken, condition);
+            return result;
+        }
+
+        public static ElseHeader Else(MatchIterator iterator)
+        {
+            iterator.AssertKeyword(Keywords.Else, out Token elseToken);
+            iterator.AssertEnd();
+
+            ElseHeader result = new ElseHeader(elseToken);
+            return result;
+        }
+
+        public static LoopHeader Loop(MatchIterator iterator)
         {
             Expression array;
 

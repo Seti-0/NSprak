@@ -18,19 +18,78 @@ namespace NSprak.Operations.Creation
             if (header.RequiresScopeHint)
                 builder.AddOp(new ScopeBegin(), header.IfToken);
 
-            string endLabel = builder.DeclareLabel("endIf");
+            string currentEndLabel = builder.DeclareLabel("endIf");
+
+            string finalEndLabel = null;
+            if (header.NextConditionalComponentHint != null)
+                finalEndLabel = builder.DeclareLabel("endConditional");
 
             builder.AddCode(header.Condition);
 
-            builder.AddOp(new JumpLabelConditionalNegated(endLabel), header.IfToken);
+            builder.AddOp(new JumpLabelConditionalNegated(currentEndLabel), header.IfToken);
 
             foreach (Expression statement in header.ParentBlockHint.Statements)
                 builder.AddCode(statement);
 
-            builder.SetLabelToNext(endLabel);
+            if (header.NextConditionalComponentHint != null)
+            {
+                IConditionalSubComponent current = header.NextConditionalComponentHint;
+                while (current != null)
+                {
+                    current.EndLabelHint = finalEndLabel;
+                    current = current.NextConditionalComponentHint;
+                }
 
+                builder.AddOp(new JumpLabel(finalEndLabel));
+            }
+
+            builder.SetLabelToNext(currentEndLabel);
+
+            if (header.NextConditionalComponentHint == null 
+                && header.RequiresScopeHint)
+            {
+                builder.AddOp(new ScopeEnd(), header.ParentBlockHint.EndToken);
+            }
+        }
+
+        public static void GenerateCode(ElseIfHeader header, GeneratorContext builder)
+        {
+            string currentEndLabel = builder.DeclareLabel("endElif");
+
+            builder.AddCode(header.Condition);
+            builder.AddOp(new JumpLabelConditionalNegated(currentEndLabel), header.IfToken);
+
+            foreach (Expression statement in header.ParentBlockHint.Statements)
+                builder.AddCode(statement);
+
+            string finalEndLabel = header.EndLabelHint;
+            if (finalEndLabel == null)
+                throw new Exception("Encountered ElseIf Header without an end label!");
+
+            if (header.NextConditionalComponentHint == null && header.RequiresScopeHint)
+            {
+                builder.SetLabelToNext(finalEndLabel);
+                builder.AddOp(new ScopeEnd(), header.ParentBlockHint.EndToken);
+            }
+            else
+                builder.AddOp(new JumpLabel(finalEndLabel));
+
+            builder.SetLabelToNext(currentEndLabel);
+        }
+
+        public static void GenerateCode(ElseHeader header, GeneratorContext builder)
+        {
+            foreach (Expression statement in header.ParentBlockHint.Statements)
+                builder.AddCode(statement);
+
+            string conditionalEndLabel = header.EndLabelHint;
+            if (conditionalEndLabel == null)
+                throw new Exception("Encountered Else Header without an end label!");
+
+            builder.SetLabelToNext(conditionalEndLabel);
+                
             if (header.RequiresScopeHint)
-                builder.AddOp(new ScopeEnd(), header.EndToken);
+                builder.AddOp(new ScopeEnd(), header.ParentBlockHint.EndToken);
         }
 
         public static void GenerateCode(LoopHeader header, GeneratorContext builder)

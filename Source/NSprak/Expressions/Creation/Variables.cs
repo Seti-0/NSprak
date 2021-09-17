@@ -21,7 +21,7 @@ namespace NSprak.Expressions.Creation
             return new VariableReference(token);
         }
 
-        public static VariableAssignment CreateAssignment(MatchIterator iterator)
+        public static VariableAssignment Assignment(MatchIterator iterator)
         {
 
             if (!iterator.NextIsToken(TokenType.Type, out Token type))

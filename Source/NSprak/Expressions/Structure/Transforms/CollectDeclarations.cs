@@ -26,7 +26,7 @@ namespace NSprak.Expressions.Structure.Transforms
         {
             Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
 
-            // Two steps
+            // Three steps
 
             // First: check if the header declares any variables - function arguments, for example
 
@@ -94,6 +94,42 @@ namespace NSprak.Expressions.Structure.Transforms
             }
 
             block.VariableDeclarationsHint = variables;
+
+            // Third, loosely related step: 
+            // Link up conditional scopes.
+
+            // If any linked conditional block needs a scope for declarations,
+            // they all need to know about it, since they share the scope.
+
+            foreach (Expression statement in block.Statements)
+            {
+                if (!(statement is Block currentBlock))
+                    continue;
+
+                if (!(currentBlock.Header is IfHeader ifHeader))
+                    continue;
+
+                if (ifHeader.NextConditionalComponentHint == null)
+                    continue;
+
+                bool combinedScope = ifHeader.RequiresScopeHint;
+
+                IConditionalSubComponent current = ifHeader.NextConditionalComponentHint;
+                while (current != null)
+                {
+                    combinedScope |= (current as Header).RequiresScopeHint;
+                    current = current.NextConditionalComponentHint;
+                }
+
+                ifHeader.CombinedScopeHint = combinedScope;
+
+                current = ifHeader.NextConditionalComponentHint;
+                while (current != null)
+                {
+                    (current as Header).CombinedScopeHint = combinedScope;
+                    current = current.NextConditionalComponentHint;
+                }
+            }
         }
     }
 }
