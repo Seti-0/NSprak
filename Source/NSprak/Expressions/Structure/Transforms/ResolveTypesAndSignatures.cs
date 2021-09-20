@@ -150,10 +150,17 @@ namespace NSprak.Expressions.Structure.Transforms
 
         private void ResolveCallAndTypeHint(OperatorCall call, CompilationEnvironment env)
         {
-            if (call.Operator.IsAssignment)
+            if (!Operator.TryParse(out Operator op, text: call.OperatorText))
+            {
+                env.Messages.AtToken(call.OperatorToken,
+                    Messages.UnrecognizedOperator, call.OperatorText);
+                return;
+            }
+
+            if (op.IsAssignment)
             {
                 env.Messages.AtToken(call.OperatorToken, 
-                    Messages.IncorrectUseOfAssignment, call.Operator.Text);
+                    Messages.IncorrectUseOfAssignment, op.Text);
                 return;
             }
 
@@ -183,7 +190,7 @@ namespace NSprak.Expressions.Structure.Transforms
 
             SignatureLookupResult lookupResult;
             lookupResult = env.SignatureLookup
-                .TryFindMatch(call.Operator.Name, signature);
+                .TryFindMatch(op.Name, signature);
 
             if (lookupResult.Success)
             {

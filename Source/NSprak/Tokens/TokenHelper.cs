@@ -159,12 +159,7 @@ namespace NSprak.Tokens
 
                     case TokenPrototype.Word: completedType = TokenType.Name; break;
 
-                    // Numbers and operators are recognized, but could still have an immediately recognizable error
-
-                    case TokenPrototype.Operator:
-                        completedType = TokenType.Operator;
-                        CheckOperator(currentToken);
-                        break;
+                    // Numbers can be recognized as valid/invalid straight away.
 
                     case TokenPrototype.Number:
                         completedType = TokenType.Number;
@@ -173,6 +168,11 @@ namespace NSprak.Tokens
 
                     // These will always be valid tokens
 
+                    // Technically, operator tokens might not represent a real
+                    // operator, but fully checking that requires more context and
+                    // is left until later.
+
+                    case TokenPrototype.Operator: completedType = TokenType.Operator; break;
                     case TokenPrototype.KeySymbol: completedType = TokenType.KeySymbol; break;
                     case TokenPrototype.String: completedType = TokenType.String; break;
                     case TokenPrototype.Comment: completedType = TokenType.Comment; break;
@@ -192,16 +192,6 @@ namespace NSprak.Tokens
             } // end main while 
 
             tokens = tokenList;
-        }
-
-        private static void CheckOperator(RawToken token)
-        {
-            if (Operator.IsOperator(text: token.Content))
-                return;
-
-            token.Error = true;
-            token.ErrorMessage = Messages.UnrecognizedOperator;
-            token.ErrorParams = new object[] { token.Content };
         }
 
         private static void CheckNumber(RawToken token)

@@ -8,7 +8,7 @@ namespace NSprak.Expressions.Types
 {
     public class OperatorCall : Expression
     {
-        public Operator Operator { get; }
+        public string OperatorText { get; }
 
         public Expression LeftInput { get; }
 
@@ -24,7 +24,7 @@ namespace NSprak.Expressions.Types
 
         public OperatorCall(Token opToken, Expression left, Expression right)
         {
-            Operator = opToken.AssertOperator();
+            OperatorText = opToken.Content;
             OperatorToken = opToken;
 
             LeftInput = left;
@@ -33,7 +33,7 @@ namespace NSprak.Expressions.Types
 
         public override string ToString()
         {
-            string result = Operator.Text;
+            string result = OperatorText;
 
             if (LeftInput != null)
                 result = $"{LeftInput} {result}";
