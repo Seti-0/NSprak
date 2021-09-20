@@ -38,8 +38,19 @@ namespace NSprak.Operations.Creation
 
                     if (builder.ContinueLabels.Count == 0)
                         builder.ThrowError("Encountered continue statement outside of loop");
-
                     label = builder.ContinueLabels.Peek();
+
+                    Header ancestor = command.ParentBlockHint.Header;
+                    while (ancestor != null && !(ancestor is LoopHeader))
+                        ancestor = ancestor.ParentBlockHint.Header;
+
+                    if (ancestor == null)
+                        throw new Exception("Unable to locate continue command loop header");
+
+                    LoopHeader loopHeader = (LoopHeader)ancestor;
+                    if (loopHeader.IsRange)
+                        builder.AddOp(new Increment(loopHeader.IndexNameHint), command.Token);
+
                     break;
 
                 default:
@@ -49,7 +60,12 @@ namespace NSprak.Operations.Creation
             }
 
             if (label != null)
+            {
+                if (command.ParentBlockHint.Header.RequiresScopeHint)
+                    builder.AddOp(new ScopeEnd(), command.Token);
+
                 builder.AddOp(new JumpLabel(label), command.Token);
+            }
         }
     }
 }

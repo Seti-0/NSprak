@@ -177,6 +177,9 @@ namespace NSprak.Operations.Creation
                 builder.AddOp(new Increment(indexName), header.InToken);
             };
 
+            // This is used by the continue command, currently.
+            header.IndexNameHint = indexName;
+
             if (requiresScopes)
                 builder.AddOp(new ScopeBegin(), header.LoopToken);
 
@@ -197,6 +200,9 @@ namespace NSprak.Operations.Creation
 
             if (requiresScopes)
                 builder.AddOp(new ScopeEnd(), header.EndToken);
+
+            builder.BreakLabels.Pop();
+            builder.ContinueLabels.Pop();
         }
     }
 }

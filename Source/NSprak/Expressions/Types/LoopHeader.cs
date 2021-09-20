@@ -59,6 +59,8 @@ namespace NSprak.Expressions.Types
 
         public override string FriendlyBlockName => "loop";
 
+        public string IndexNameHint { get; set; }
+
         public LoopHeader(Token loop)
         {
             loop.AssertKeyword(Keywords.Loop);
