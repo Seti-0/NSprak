@@ -123,6 +123,7 @@ namespace NSprak.Language
                 // Assignments and calls
 
                 | Name
+                    & Allow(Index)
                     & (
                         OperatorToken
                             & Allow(EndWith(Variables.Assignment))

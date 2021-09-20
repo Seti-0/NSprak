@@ -28,6 +28,13 @@ namespace NSprak.Expressions.Creation
                 type = null;
 
             iterator.AssertTokenType(TokenType.Name, out Token name);
+
+
+            if (iterator.Next(out List<CollectedIndex> indices))
+                iterator.MoveNext();
+
+            else indices = new List<CollectedIndex>(0);
+
             iterator.AssertTokenType(TokenType.Operator, out Token op);
 
             if (!iterator.NextIsExpression(out Expression value))
@@ -35,7 +42,7 @@ namespace NSprak.Expressions.Creation
 
             iterator.AssertEnd();
 
-            return new VariableAssignment(type, name, op, value);
+            return new VariableAssignment(type, name, indices, op, value);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NSprak.Expressions.Creation;
 using NSprak.Functions;
 using NSprak.Language;
 using NSprak.Operations;
@@ -16,6 +17,8 @@ namespace NSprak.Expressions.Types
         public SprakType DeclarationType { get; }
 
         public Token NameToken { get; }
+
+        public List<CollectedIndex> Indices { get; }
 
         public Token OperatorToken { get; }
 
@@ -37,9 +40,11 @@ namespace NSprak.Expressions.Types
 
         public override Token EndToken => Value?.EndToken ?? OperatorToken;
 
-        public VariableAssignment(Token typeToken, Token nameToken, Token operatorToken, Expression value)
+        public VariableAssignment(Token typeToken, Token nameToken, 
+            List<CollectedIndex> indices, Token operatorToken, Expression value)
         {
             nameToken.AssertName();
+            Indices = indices;
             Operator = operatorToken.AssertOperator();
             DeclarationType = typeToken?.AssertType();
 

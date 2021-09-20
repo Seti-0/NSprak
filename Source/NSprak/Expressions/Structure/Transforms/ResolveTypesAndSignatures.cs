@@ -77,7 +77,7 @@ namespace NSprak.Expressions.Structure.Transforms
                     break;
 
                 case VariableAssignment assignment:
-                    ResolveAssignmentOperator(assignment, env);
+                    ResolveAssignment(assignment, env);
                     break;
 
                 case VariableReference variable:
@@ -197,30 +197,14 @@ namespace NSprak.Expressions.Structure.Transforms
             }
         }
 
-        private void ResolveAssignmentOperator(VariableAssignment call, CompilationEnvironment env)
+        private void ResolveAssignment(VariableAssignment call, CompilationEnvironment env)
         {
-            if (call.IsDeclaration)
-                // The name and type were determined in the call constructor,
-                // nothing more to determine here.
-                return;
-
-            if (!call.Operator.IsAssignment)
+            if (call.Indices.Count > 1)
             {
-                env.Messages.AtToken(call.OperatorToken, 
-                    Messages.ExpectedAssignmentOperator, call.Operator.Text);
-                return;
+                env.Messages.AtExpression(call.Indices.Last().Index,
+                    Messages.MultipleIndicesNotSupported);
             }
 
-            if (call.Operator.AssignmentOperation == null)
-                // Straight forward variable set, nothing to resolve here.
-                return;
-
-            if (call.Value != null && call.Value.TypeHint == null)
-                // No need to raise an error, the value will already have
-                // one explaining why it's type could not be determined.
-                return;
-
-            // Variable not recognized.
             if (!call.ParentBlockHint
                 .TryGetVariableInfo(call.Name, out VariableInfo nameInfo))
             {
@@ -234,50 +218,107 @@ namespace NSprak.Expressions.Structure.Transforms
                 // very convoluted. I wish C# was more nullable-aware.
                 throw new Exception("Declaration with Declaration Type");
 
-            // Ignoring left assignments for now, they aren't really needed 
-            // anyways. (Statements like --i)
+            SprakType dstType;
 
-            InputSides inputs;
+            if (call.Indices.Count == 0)
+                dstType = nameInfo.DeclaredType;
 
-            if (!call.HasValue)
-                inputs = InputSides.Left;
             else
-                inputs = InputSides.Both;
-
-            SprakType left = nameInfo.DeclaredType;
-            SprakType right = call.Value?.TypeHint;
-
-            // We need the name of the function to called before assignment.
-            // That may or may not be the same name as that of the operator.
-            string name = call.Operator.AssignmentOperation;
-
-            OperatorTypeSignature signature
-                = new OperatorTypeSignature(left, right, inputs);
-
-            SignatureLookupResult lookupResult = env.SignatureLookup
-                .TryFindMatch(name, signature);
-
-            if (lookupResult.Success)
             {
-                SprakType src = lookupResult.BuiltInFunction.ReturnType;
-                SprakType dst = nameInfo.DeclaredType;
-
-                if (env.AssignmentLookup.IsAssignable(src, dst))
+                if (nameInfo.DeclaredType != SprakType.Array)
                 {
-                    call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
-                    call.OpHint = lookupResult.OpBuilder;
+                    env.Messages.AtToken(call.NameToken,
+                        Messages.CanOnlyIndexArrays, nameInfo.DeclaredType);
+                }
+
+                // Best we can do with array assignments until generic
+                // type tracking is introduced.
+                dstType = SprakType.Any;
+            }
+
+            SprakType srcType;
+
+            if (call.Value == null)
+                srcType = nameInfo.DeclaredType;
+
+            else if (call.Value.TypeHint != null)
+                srcType = call.Value.TypeHint;
+
+            else
+                srcType = SprakType.Any;
+
+            if (call.IsDeclaration)
+            {
+                if (call.Operator != Operator.Set)
+                {
+                    env.Messages.AtToken(call.OperatorToken,
+                        Messages.InvalidDeclarationOperator);
+                }
+
+                if (call.Indices.Count > 0)
+                {
+                    env.Messages.AtExpression(call.Indices.First().Index,
+                        Messages.InvalidIndexDeclaration);
+                }
+            }
+            else if (!call.Operator.IsAssignment)
+            {
+                env.Messages.AtToken(call.OperatorToken, 
+                    Messages.ExpectedAssignmentOperator, call.Operator.Text);
+                return;
+            }
+            else if (call.Operator.AssignmentOperation != null)
+            {
+                // I doubt I'll bother implementing right-only inputs.
+                // (Like --i) They don't show up much.
+
+                InputSides inputs;
+                SprakType left;
+                SprakType right;
+
+                if (!call.HasValue)
+                {
+                    inputs = InputSides.Left;
+                    left = srcType;
+                    right = null;
                 }
                 else
                 {
-                    env.Messages.AtExpression(
-                        call, Messages.AssignmentTypeMismatch, src, dst);
+                    inputs = InputSides.Both;
+                    left = srcType;
+                    right = dstType;
+                }
+
+                // We need the name of the function to called before assignment.
+                // That may or may not be the same name as that of the operator.
+                string name = call.Operator.AssignmentOperation;
+
+                OperatorTypeSignature signature
+                    = new OperatorTypeSignature(left, right, inputs);
+
+                SignatureLookupResult lookupResult = env.SignatureLookup
+                    .TryFindMatch(name, signature);
+
+                if (lookupResult.Success)
+                {
+                    call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
+                    call.OpHint = lookupResult.OpBuilder;
+                    srcType = lookupResult.BuiltInFunction.ReturnType;
+                }
+                else
+                {
+                    string operation = call.ToString();
+                    env.Messages.AtExpression(call,
+                        Messages.UnresolvedOperation, operation);
+
+                    srcType = SprakType.Any;
                 }
             }
-            else
+
+            if (!env.AssignmentLookup.IsAssignable(srcType, dstType))
             {
-                string operation = call.ToString();
-                env.Messages.AtExpression(call,
-                    Messages.UnresolvedOperation, operation);
+                env.Messages.AtExpression(
+                    call, Messages.AssignmentTypeMismatch, srcType, dstType);
             }
         }
     }

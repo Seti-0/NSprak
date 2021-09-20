@@ -46,7 +46,7 @@ namespace NSprak.Messaging
             {
                 // I'd be surprised if there was not a built in utility for
                 // this as well somewhere
-                result += Summary.Substring(startIndex, matches[i].Index);
+                result += Summary.Substring(startIndex, matches[i].Index - startIndex);
                 result += parameters[i].ToString();
 
                 startIndex = matches[i].Index + matches[i].Length;

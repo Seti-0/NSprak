@@ -38,6 +38,24 @@ namespace NSprak.Messaging
                 Summary = "An index should be a number. Found: {Type}"
             },
 
+            InvalidDeclarationOperator = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Only the '=' operator may be used to declare variables"
+            },
+
+            InvalidIndexDeclaration = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A single index cannot be declared on its own."
+            },
+
+            MultipleIndicesNotSupported = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Currently only one layer of indexing is supported"
+            },
+
             AssignmentTypeMismatch = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,

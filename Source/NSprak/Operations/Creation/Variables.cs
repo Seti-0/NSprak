@@ -46,7 +46,18 @@ namespace NSprak.Operations.Creation
                     builder.AddOp(new CallBuiltIn(assignment.BuiltInFunctionHint), assignment.OperatorToken);
                 }
 
-                builder.AddOp(new VariableSet(assignment.Name), assignment.NameToken);
+                if (assignment.Indices.Count == 0)
+                    builder.AddOp(new VariableSet(assignment.Name), assignment.NameToken);
+
+                else if (assignment.Indices.Count > 1)
+                    throw new NotImplementedException("Only one level of indexing is supported at the moment");
+
+                else
+                {
+                    builder.AddCode(assignment.Indices[0].Index);
+                    builder.AddOp(new ArrayElementSet(assignment.Name), 
+                        assignment.NameToken);
+                }
             }
         }
     }
