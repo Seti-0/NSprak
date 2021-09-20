@@ -397,9 +397,9 @@ namespace NSprakIDE.Controls.Expressions
             Write(" " + name, Theme.Expressions.Name);
         }
 
-        private void RenderOperator(Operator op)
+        private void RenderOperator(string name)
         {
-            Write(op.Name, Theme.Expressions.Operator);
+            Write(name, Theme.Expressions.Operator);
         }
 
         private void RenderBoolean(bool boolean)
@@ -445,7 +445,7 @@ namespace NSprakIDE.Controls.Expressions
                     break;
 
                 case Operator op:
-                    RenderOperator(op);
+                    RenderOperator(op.Name);
                     break;
 
                 case NSprakExpression expr:
@@ -524,7 +524,7 @@ namespace NSprakIDE.Controls.Expressions
 
                 case OperatorCall op:
                     RenderKeyword("Op ");
-                    RenderOperator(op.Operator);
+                    RenderOperator(op.OperatorText);
                     break;
 
                 case Return _:

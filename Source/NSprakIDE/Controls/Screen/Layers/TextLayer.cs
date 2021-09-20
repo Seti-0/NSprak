@@ -15,18 +15,27 @@ namespace NSprakIDE.Controls.Screen.Layers
 
         public void Print(string text)
         {
+            PrintS(text + "\n");
+        }
+
+        public void PrintS(string text)
+        {
+            string[] lines = text.Split('\n');
+            for (int i = 0; i < lines.Length - 1; i++)
+                PrintSingleLine(lines[i]);
+
+            _lastLine += lines[^1];
+
+            Invalidate();
+        }
+
+        private void PrintSingleLine(string text)
+        {
             _lastLine += text;
 
             Brush brush = Theme.GetBrush(Theme.Screen.Text);
             _lines.Add(Screen.GetFormattedText(_lastLine, brush));
             _lastLine = "";
-
-            Invalidate();
-        }
-
-        public void PrintS(string text)
-        {
-            _lastLine += text;
 
             Invalidate();
         }
