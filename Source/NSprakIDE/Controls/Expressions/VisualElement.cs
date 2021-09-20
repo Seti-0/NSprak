@@ -206,8 +206,12 @@ namespace NSprakIDE.Controls.Expressions
 
                     AddHeaderParameters(block.Header);
 
-                    if (block.VariableDeclarationsHint == null || block.VariableDeclarationsHint.Count > 0)
-                        AddDebugParameter("Variable Declarations Hint", block.VariableDeclarationsHint);
+                    if (block.ScopeHint?.VariableDeclarations == null 
+                        || block.ScopeHint.VariableDeclarations.Count > 0)
+                    {
+                        AddDebugParameter("Variable Declarations Hint",
+                            block.ScopeHint.VariableDeclarations);
+                    }
 
                     foreach (NSprakExpression statement in block.Statements)
                         AddParameter(null, statement);

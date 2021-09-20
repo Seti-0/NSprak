@@ -86,15 +86,23 @@ namespace NSprak.Expressions.Structure.Transforms
 
                 case VariableReference variable:
 
-                    if (variable.ParentBlockHint.TryGetVariableInfo(variable.Name, out VariableInfo result))
+                    if (variable.ParentBlockHint.TryGetVariableInfo(variable.Name, out VariableInfo info))
                     {
-                        if (variable.StartToken.Start < result.DeclarationEnd)
+                        Block refAncestor = variable.ParentBlockHint;
+                        while (refAncestor != null && refAncestor != info.Source)
+                            refAncestor = refAncestor.ParentBlockHint;
+
+                        if (refAncestor == null)
+                            env.Messages.AtToken(variable.Token,
+                                Messages.VariableFromDisconnectedBlock);
+
+                        else if (variable.StartToken.Start < info.DeclarationEnd)
                         {
                             env.Messages.AtToken(variable.Token,
                                 Messages.ReferenceBeforeDefinition, variable.Name);
                         }
 
-                        variable.TypeHint = result.DeclaredType;
+                        variable.TypeHint = info.DeclaredType;
                     }   
                     else
                     {
@@ -208,20 +216,31 @@ namespace NSprak.Expressions.Structure.Transforms
             }
         }
 
-        private void ResolveAssignment(VariableAssignment call, CompilationEnvironment env)
+        private void ResolveAssignment(VariableAssignment assignment, CompilationEnvironment env)
         {
-            if (call.Indices.Count > 1)
+            if (assignment.Indices.Count > 1)
             {
-                env.Messages.AtExpression(call.Indices.Last().Index,
+                env.Messages.AtExpression(assignment.Indices.Last().Index,
                     Messages.MultipleIndices);
             }
 
-            if (!call.ParentBlockHint
-                .TryGetVariableInfo(call.Name, out VariableInfo nameInfo))
+            if (!assignment.ParentBlockHint
+                .TryGetVariableInfo(assignment.Name, out VariableInfo nameInfo))
             {
-                env.Messages.AtToken(call.NameToken,
-                    Messages.UnrecognizedName, call.NameToken.Content);
+                env.Messages.AtToken(assignment.NameToken,
+                    Messages.UnrecognizedName, assignment.NameToken.Content);
                 return;
+            }
+
+            if (!assignment.IsDeclaration)
+            {
+                Block ancestor = assignment.ParentBlockHint;
+                while (ancestor != null && ancestor != nameInfo.Source)
+                    ancestor = ancestor.ParentBlockHint;
+
+                if (ancestor == null)
+                    env.Messages.AtToken(assignment.NameToken,
+                        Messages.VariableFromDisconnectedBlock);
             }
 
             if (nameInfo.DeclaredType == null)
@@ -231,14 +250,14 @@ namespace NSprak.Expressions.Structure.Transforms
 
             SprakType dstType;
 
-            if (call.Indices.Count == 0)
+            if (assignment.Indices.Count == 0)
                 dstType = nameInfo.DeclaredType;
 
             else
             {
                 if (nameInfo.DeclaredType != SprakType.Array)
                 {
-                    env.Messages.AtToken(call.NameToken,
+                    env.Messages.AtToken(assignment.NameToken,
                         Messages.CanOnlyIndexArrays, nameInfo.DeclaredType);
                 }
 
@@ -249,36 +268,36 @@ namespace NSprak.Expressions.Structure.Transforms
 
             SprakType srcType;
 
-            if (call.Value == null)
+            if (assignment.Value == null)
                 srcType = nameInfo.DeclaredType;
 
-            else if (call.Value.TypeHint != null)
-                srcType = call.Value.TypeHint;
+            else if (assignment.Value.TypeHint != null)
+                srcType = assignment.Value.TypeHint;
 
             else
                 srcType = SprakType.Any;
 
-            if (call.IsDeclaration)
+            if (assignment.IsDeclaration)
             {
-                if (call.Operator != Operator.Set)
+                if (assignment.Operator != Operator.Set)
                 {
-                    env.Messages.AtToken(call.OperatorToken,
+                    env.Messages.AtToken(assignment.OperatorToken,
                         Messages.InvalidDeclarationOperator);
                 }
 
-                if (call.Indices.Count > 0)
+                if (assignment.Indices.Count > 0)
                 {
-                    env.Messages.AtExpression(call.Indices.First().Index,
+                    env.Messages.AtExpression(assignment.Indices.First().Index,
                         Messages.InvalidIndexDeclaration);
                 }
             }
-            else if (!call.Operator.IsAssignment)
+            else if (!assignment.Operator.IsAssignment)
             {
-                env.Messages.AtToken(call.OperatorToken, 
-                    Messages.ExpectedAssignmentOperator, call.Operator.Text);
+                env.Messages.AtToken(assignment.OperatorToken, 
+                    Messages.ExpectedAssignmentOperator, assignment.Operator.Text);
                 return;
             }
-            else if (call.Operator.AssignmentOperation != null)
+            else if (assignment.Operator.AssignmentOperation != null)
             {
                 // I doubt I'll bother implementing right-only inputs.
                 // (Like --i) They don't show up much.
@@ -287,7 +306,7 @@ namespace NSprak.Expressions.Structure.Transforms
                 SprakType left;
                 SprakType right;
 
-                if (!call.HasValue)
+                if (!assignment.HasValue)
                 {
                     inputs = InputSides.Left;
                     left = srcType;
@@ -302,7 +321,7 @@ namespace NSprak.Expressions.Structure.Transforms
 
                 // We need the name of the function to called before assignment.
                 // That may or may not be the same name as that of the operator.
-                string name = call.Operator.AssignmentOperation;
+                string name = assignment.Operator.AssignmentOperation;
 
                 OperatorTypeSignature signature
                     = new OperatorTypeSignature(left, right, inputs);
@@ -312,14 +331,14 @@ namespace NSprak.Expressions.Structure.Transforms
 
                 if (lookupResult.Success)
                 {
-                    call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
-                    call.OpHint = lookupResult.OpBuilder;
+                    assignment.BuiltInFunctionHint = lookupResult.BuiltInFunction;
+                    assignment.OpHint = lookupResult.OpBuilder;
                     srcType = lookupResult.BuiltInFunction.ReturnType;
                 }
                 else
                 {
-                    string operation = call.ToString();
-                    env.Messages.AtExpression(call,
+                    string operation = assignment.ToString();
+                    env.Messages.AtExpression(assignment,
                         Messages.UnresolvedOperation, operation);
 
                     srcType = SprakType.Any;
@@ -329,7 +348,7 @@ namespace NSprak.Expressions.Structure.Transforms
             if (!env.AssignmentLookup.IsAssignable(srcType, dstType))
             {
                 env.Messages.AtExpression(
-                    call, Messages.AssignmentTypeMismatch, srcType, dstType);
+                    assignment, Messages.AssignmentTypeMismatch, srcType, dstType);
             }
         }
     }

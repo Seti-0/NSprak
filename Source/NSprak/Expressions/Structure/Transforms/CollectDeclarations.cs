@@ -25,7 +25,13 @@ namespace NSprak.Expressions.Structure.Transforms
         private void UpdateBlock(Block block, 
             Messenger messenger, Dictionary<FunctionSignature, FunctionInfo> functions)
         {
-            Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
+            if (block.ScopeHint == null)
+                block.ScopeHint = new Scope();
+
+            if (block.Header is IfHeader ifHeader)
+                ApplyCombinedScope(ifHeader);
+
+            Scope scope = block.ScopeHint;
 
             // Three steps
 
@@ -39,7 +45,8 @@ namespace NSprak.Expressions.Structure.Transforms
                     {
                         string name = function.ParameterNames[i];
                         SprakType type = function.ParameterTypes[i];
-                        variables.Add(name, new VariableInfo(type, -1));
+                        scope.VariableDeclarations
+                            .Add(name, new VariableInfo(type, -1, block));
                     }
 
                     break;
@@ -47,7 +54,8 @@ namespace NSprak.Expressions.Structure.Transforms
                 case LoopHeader loop when loop.HasName:
 
                     // we need an "undetermined" type here
-                    variables.Add(loop.Name, new VariableInfo(SprakType.Any, -1));
+                    scope.VariableDeclarations
+                        .Add(loop.Name, new VariableInfo(SprakType.Any, -1, block));
 
                     break;
             }
@@ -66,12 +74,13 @@ namespace NSprak.Expressions.Structure.Transforms
 
                         if (assignment.IsDeclaration)
                         {
-                            if (variables.ContainsKey(assignment.Name))
+                            if (scope.VariableDeclarations.ContainsKey(assignment.Name))
                                 messenger.AtToken(assignment.NameToken, 
                                     Messages.DuplicateVariable, assignment.Name);
 
-                            else variables.Add(assignment.Name, 
-                                new VariableInfo(assignment.DeclarationType, assignment.EndToken.End));
+                            else scope.VariableDeclarations.Add(assignment.Name, 
+                                new VariableInfo(assignment.DeclarationType, 
+                                assignment.EndToken.End, block));
                         }
 
                         break;
@@ -94,42 +103,21 @@ namespace NSprak.Expressions.Structure.Transforms
                 }
             }
 
-            block.VariableDeclarationsHint = variables;
+            block.ScopeHint = scope;
+        }
 
-            // Third, loosely related step: 
-            // Link up conditional scopes.
+        private void ApplyCombinedScope(IfHeader ifHeader)
+        {
+            if (ifHeader.NextConditionalComponentHint == null)
+                return;
 
-            // If any linked conditional block needs a scope for declarations,
-            // they all need to know about it, since they share the scope.
+            Scope scope = ifHeader.ParentBlockHint.ScopeHint;
 
-            foreach (Expression statement in block.Statements)
+            IConditionalSubComponent current = ifHeader.NextConditionalComponentHint;
+            while (current != null)
             {
-                if (!(statement is Block currentBlock))
-                    continue;
-
-                if (!(currentBlock.Header is IfHeader ifHeader))
-                    continue;
-
-                if (ifHeader.NextConditionalComponentHint == null)
-                    continue;
-
-                bool combinedScope = ifHeader.RequiresScopeHint;
-
-                IConditionalSubComponent current = ifHeader.NextConditionalComponentHint;
-                while (current != null)
-                {
-                    combinedScope |= (current as Header).RequiresScopeHint;
-                    current = current.NextConditionalComponentHint;
-                }
-
-                ifHeader.CombinedScopeHint = combinedScope;
-
-                current = ifHeader.NextConditionalComponentHint;
-                while (current != null)
-                {
-                    (current as Header).CombinedScopeHint = combinedScope;
-                    current = current.NextConditionalComponentHint;
-                }
+                ((Expression)current).ParentBlockHint.ScopeHint = scope;
+                current = current.NextConditionalComponentHint;
             }
         }
     }

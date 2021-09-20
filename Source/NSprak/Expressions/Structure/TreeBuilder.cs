@@ -31,6 +31,14 @@ namespace NSprak.Expressions.Structure
 
             foreach (Expression statement in statements)
             {
+                if (statement is FunctionHeader functionHeader)
+                {
+                    // Sprak does not allow functions within other blocks.
+                    if (headerStack.Count > 0)
+                        env.Messages.AtToken(functionHeader.NameToken,
+                            Messages.NestedFunction);
+                }
+
                 if (statement is IConditionalSubComponent subcomponent)
                 {
                     bool valid = false;
@@ -115,6 +123,7 @@ namespace NSprak.Expressions.Structure
             Header header = new MainHeader();
             List<Expression> mainStatements = statementStack.Pop();
             Block mainBlock = new Block(header, mainStatements, mainStart, mainEnd);
+            mainBlock.ScopeHint = new Scope();
             return mainBlock;
         }
     }

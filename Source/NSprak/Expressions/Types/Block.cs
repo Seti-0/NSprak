@@ -15,7 +15,7 @@ namespace NSprak.Expressions.Types
 
         public Header Header { get; }
 
-        public IDictionary<string, VariableInfo> VariableDeclarationsHint { get; set; }
+        public Scope ScopeHint { get; set; }
 
         public IReadOnlyList<Expression> Statements { get; }
 
@@ -55,7 +55,7 @@ namespace NSprak.Expressions.Types
 
         public bool TryGetVariableInfo(string name, out VariableInfo result)
         {
-            if (VariableDeclarationsHint.TryGetValue(name, out result))
+            if (ScopeHint.VariableDeclarations.TryGetValue(name, out result))
                 return true;
 
             if (ParentBlockHint != null && ParentBlockHint.TryGetVariableInfo(name, out result))

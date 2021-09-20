@@ -32,6 +32,12 @@ namespace NSprak.Messaging
                 Summary = "'{Operator}' is an assignment operator, and cannot be used as an expression"
             },
 
+            VariableFromDisconnectedBlock = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "This variable was declared in the same scope but in a disconnected block, and cannot be used here"
+            },
+
             IndexShouldBeNumber = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,

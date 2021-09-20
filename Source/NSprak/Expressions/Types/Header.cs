@@ -4,18 +4,14 @@
     {
         public abstract string FriendlyBlockName { get; }
 
-        public bool CombinedScopeHint { get; set; }
-
         public bool RequiresScopeHint
         {
             get
             {
-                bool? hint = ParentBlockHint?.VariableDeclarationsHint?.Count > 0;
+                bool? hint = ParentBlockHint?.ScopeHint?
+                    .VariableDeclarations?.Count > 0;
 
-                bool result = hint ?? true;
-                result |= CombinedScopeHint;
-
-                return result;
+                return hint ?? true;
             }
         }
     }
