@@ -150,7 +150,7 @@ namespace NSprak.Expressions.Structure.Transforms
             }
             else
             {
-                string signature = name + typeSignature.ToString();
+                string signature = $"{name}({typeSignature})";
                 env.Messages.AtToken(call.NameToken, 
                     Messages.UnresolvedCall, signature);
             }

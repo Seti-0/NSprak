@@ -94,9 +94,10 @@ namespace NSprak.Operations.Creation
 
         public static void GenerateCode(LoopHeader header, GeneratorContext builder)
         {
-            bool requiresScopes = header.RequiresScopeHint;
+            bool requiresOuterScope = !header.IsInfinite;
+            bool requiresInnerScope = header.RequiresScopeHint;
 
-            if (requiresScopes)
+            if (requiresOuterScope)
                 builder.AddOp(new ScopeBegin(), header.LoopToken);
 
             string endLabel = builder.DeclareLabel("LoopEnd");
@@ -180,13 +181,13 @@ namespace NSprak.Operations.Creation
             // This is used by the continue command, currently.
             header.IndexNameHint = indexName;
 
-            if (requiresScopes)
+            if (requiresInnerScope)
                 builder.AddOp(new ScopeBegin(), header.LoopToken);
 
             foreach (Expression statement in header.ParentBlockHint.Statements)
                 builder.AddCode(statement);
 
-            if (requiresScopes)
+            if (requiresInnerScope)
                 builder.AddOp(new ScopeEnd(), header.EndToken);
 
             if (header.IsRange)
@@ -198,7 +199,7 @@ namespace NSprak.Operations.Creation
             if (!header.IsInfinite)
                 builder.PopIndex();
 
-            if (requiresScopes)
+            if (requiresOuterScope)
                 builder.AddOp(new ScopeEnd(), header.EndToken);
 
             builder.BreakLabels.Pop();
