@@ -25,7 +25,7 @@ namespace NSprakIDE.Controls
             public static Brush BreakpointBackground;
             public static Brush ActiveBackground;
 
-            private Brush _defaultBackground;
+            private readonly Brush _defaultBackground;
 
             public IEnumerable<Run> Runs { get; }
             public bool Breakpoint { get; set; }
@@ -59,7 +59,7 @@ namespace NSprakIDE.Controls
         private Paragraph _paragraph;
         private int _currentLineLength;
 
-        private List<InstructionLine> _lines = new List<InstructionLine>();
+        private readonly List<InstructionLine> _lines = new List<InstructionLine>();
         private List<Run> _currentLine;
         private InstructionLine _currentHighlighted;
         private bool _alternateLineColors;

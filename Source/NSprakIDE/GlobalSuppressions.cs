@@ -5,4 +5,15 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "<Pending>", Scope = "member", Target = "~M:NSprakIDE.Controls.FileView.#ctor")]
+[assembly: SuppressMessage(
+    "Style", 
+    "IDE0017:Simplify object initialization", 
+    Justification = "This is sometimes the opposite of simplification, syntaxwise at least.", 
+    Scope = "module")]
+
+[assembly: SuppressMessage(
+    "Style",
+    "IDE0018:Variable declaration can be inlined",
+    Justification = "Non-inlined declarations can be useful for keeping the line length short.",
+    Scope = "module")]
+

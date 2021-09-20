@@ -150,6 +150,7 @@ namespace NSprak.Tokens
                 {
                     // Some words have immediately recognizable meaning
 
+                    case TokenPrototype.Word when Operator.IsOperator(text: content): completedType = TokenType.Operator; break;
                     case TokenPrototype.Word when Keywords.IsKeyword(content): completedType = TokenType.KeyWord; break;
                     case TokenPrototype.Word when SprakType.IsType(content): completedType = TokenType.Type; break;
                     case TokenPrototype.Word when Value.IsBoolean(content): completedType = TokenType.Boolean; break;

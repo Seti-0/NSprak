@@ -11,8 +11,9 @@ using System.Windows.Media;
 using NSprak.Expressions.Types;
 using NSprak.Expressions.Structure;
 
+using NSprak.Functions;
+using NSprak.Functions.Signatures;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 using NSprak.Language.Values;
 using NSprak.Operations;
 
@@ -102,16 +103,6 @@ namespace NSprakIDE.Controls.Expressions
         private void AddDebugParameter<T>(string name, IReadOnlyList<T> items)
         {
             AddDebugParameter(name, (object) items.ToList());
-        }
-
-        private void AddParameter<K,V>(string name, IReadOnlyDictionary<K,V> items)
-        {
-            AddParameter(name, (object) items.ToDictionary(x => x.Key, x => x.Value));
-        }
-
-        private void AddDebugParameter<K,V>(string name, IReadOnlyDictionary<K,V> items)
-        {
-            AddDebugParameter(name, (object) items.ToDictionary(x => x.Key, x => x.Value));
         }
 
         #endregion

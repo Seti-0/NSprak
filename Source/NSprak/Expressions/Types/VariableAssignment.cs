@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using NSprak.Functions;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 using NSprak.Operations;
 using NSprak.Tokens;
 

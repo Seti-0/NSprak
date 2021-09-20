@@ -9,48 +9,23 @@ using NSprak.Tokens;
 
 namespace NSprak.Language
 {
-    public enum OperatorSide
-    {
-        Left, Right, Both, Neither
-    }
-
-    public static class OperatorSideExtMethods
-    {
-        public static bool None(this OperatorSide side)
-        {
-            return side == OperatorSide.Neither;
-        }
-
-        public static bool Single(this OperatorSide side)
-        {
-            return side == OperatorSide.Left || side == OperatorSide.Right;
-        }
-
-        public static bool IsBinary(this OperatorSide side)
-        {
-            return side == OperatorSide.Both;
-        }
-    }
-
     public partial class Operator
     {
         public string Text { get; }
 
         public string Name { get; }
 
-        public OperatorSide Syntax { get; private set; } = OperatorSide.Neither;
+        public bool IsAssignment { get; }
 
-        public OperatorSide Inputs { get; private set; } = OperatorSide.Neither;
+        public string AssignmentOperation { get; }
 
-        public OperatorSide Assignments { get; private set; } = OperatorSide.Neither;
-
-        public bool IsAssignment => !Assignments.None();
-
-
-        public Operator(string name, string text)
+        public Operator(string name, string text, 
+            string assignmentOp = null, bool isAssignment = false)
         {
             Text = text;
             Name = name;
+            AssignmentOperation = assignmentOp;
+            IsAssignment = isAssignment || (assignmentOp != null);
         }
     }
 
@@ -75,6 +50,9 @@ namespace NSprak.Language
                SelfOver = "SelfOver",
 
                Not = "Not",
+               And = "And",
+               Or = "Or",
+
                EqualTo = "EqualTo",
                NotEqualTo = "NotEqualTo",
 
@@ -86,34 +64,39 @@ namespace NSprak.Language
 
         public static readonly Operator
 
-               Add = Binary(Names.Add, "+"),
-               Subtract = Binary(Names.Subtract, "-"),
-               Multiply = Binary(Names.Multiply, "*"),
-               Divide = Binary(Names.Divide, "/"),
+               Add = new Operator(Names.Add, "+"),
+               Subtract = new Operator(Names.Subtract, "-"),
+               Multiply = new Operator(Names.Multiply, "*"),
+               Divide = new Operator(Names.Divide, "/"),
 
-               Increment = NullaryAssignment(Names.Increment, "++"),
-               Decrement = NullaryAssignment(Names.Decrement, "--"),
+               Increment = new Operator(Names.Increment, "++", Names.Increment),
+               Decrement = new Operator(Names.Decrement, "--", Names.Decrement),
 
-               Set = UnaryAssignment(Names.Set, "="),
+               Set = new Operator(Names.Set, "=", isAssignment: true),
 
-               SelfPlus = BinaryAssignment(Names.SelfPlus, "+="),
-               SelfLess = BinaryAssignment(Names.SelfLess, "-="),
-               SelfTimes = BinaryAssignment(Names.SelfTimes, "*="),
-               SelfOver = BinaryAssignment(Names.SelfOver, "/="),
+               SelfPlus = new Operator(Names.SelfPlus, "+=", Names.Add),
+               SelfLess = new Operator(Names.SelfLess, "-=", Names.Subtract),
+               SelfTimes = new Operator(Names.SelfTimes, "*=", Names.Multiply),
+               SelfOver = new Operator(Names.SelfOver, "/=", Names.Divide),
 
-               Not = Right(Names.Not, "!"),
-               EqualTo = Binary(Names.EqualTo, "=="),
-               NotEqualTo = Binary(Names.NotEqualTo, "!="),
+               Not = new Operator(Names.Not, "!"),
+               And = new Operator(Names.And, "and"),
+               Or = new Operator(Names.Or, "or"),
 
-               LessThan = Binary(Names.LessThan, "<"),
-               LessThanOrEquals = Binary(Names.LessThanOrEquals, "<="),
-               GreaterThan = Binary(Names.GreaterThan, ">"),
-               GreaterThanOrEquals = Binary(Names.GreaterThanOrEquals, ">=");
+               EqualTo = new Operator(Names.EqualTo, "=="),
+               NotEqualTo = new Operator(Names.NotEqualTo, "!="),
+
+               LessThan = new Operator(Names.LessThan, "<"),
+               LessThanOrEquals = new Operator(Names.LessThanOrEquals, "<="),
+               GreaterThan = new Operator(Names.GreaterThan, ">"),
+               GreaterThanOrEquals = new Operator(Names.GreaterThanOrEquals, ">=");
 
         public static readonly IReadOnlyCollection<Operator> All;
 
         private readonly static Dictionary<string, Operator> operatorsByName;
         private readonly static Dictionary<string, Operator> operatorsByText;
+
+        public static readonly IReadOnlyCollection<string> Keywords;
 
         static Operator()
         {
@@ -122,12 +105,17 @@ namespace NSprak.Language
                 Add, Subtract, Multiply, Divide,
                 Increment, Decrement,
                 Set, SelfPlus, SelfLess, SelfTimes, SelfOver,
-                Not, EqualTo, NotEqualTo,
+                Not, And, Or, EqualTo, NotEqualTo,
                 LessThan, LessThanOrEquals, GreaterThan, GreaterThanOrEquals
             };
 
             operatorsByName = All.ToDictionary(x => x.Name);
             operatorsByText = All.ToDictionary(x => x.Text);
+
+            Keywords = All
+                .Select(x => x.Text)
+                .Where(x => char.IsLetter(x[0]))
+                .ToList();
         }
 
         public static bool IsOperator(string name = null, string text = null)
@@ -151,56 +139,6 @@ namespace NSprak.Language
 
             op = null;
             return false;
-        }
-
-        private static Operator Right(string name, string text)
-        {
-            return new Operator(name, text)
-            {
-                Syntax = OperatorSide.Right,
-                Inputs = OperatorSide.Right,
-                Assignments = OperatorSide.Neither
-            };
-        }
-
-        private static Operator Binary(string name, string text)
-        {
-            return new Operator(name, text)
-            {
-                Syntax = OperatorSide.Both,
-                Inputs = OperatorSide.Both,
-                Assignments = OperatorSide.Neither
-            };
-        }
-
-        private static Operator BinaryAssignment(string name, string text)
-        {
-            return new Operator(name, text)
-            {
-                Syntax = OperatorSide.Both,
-                Inputs = OperatorSide.Both,
-                Assignments = OperatorSide.Left
-            };
-        }
-
-        private static Operator UnaryAssignment(string name, string text)
-        {
-            return new Operator(name, text)
-            {
-                Syntax = OperatorSide.Both,
-                Inputs = OperatorSide.Right,
-                Assignments = OperatorSide.Left
-            };
-        }
-
-        private static Operator NullaryAssignment(string name, string text)
-        {
-            return new Operator(name, text)
-            {
-                Syntax = OperatorSide.Left,
-                Inputs = OperatorSide.Left,
-                Assignments = OperatorSide.Left
-            };
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using NSprak.Expressions.Types;
+using NSprak.Functions.Signatures;
 using NSprak.Language;
 using System.Collections.Generic;
 
-namespace NSprak.Language.Builtins
+namespace NSprak.Functions
 {
     public class FunctionInfo
     {

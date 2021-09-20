@@ -15,21 +15,8 @@ namespace NSprak.Operations.Creation
     {
         public static void GenerateCode(OperatorCall call, GeneratorContext builder)
         {
-            switch (call.Operator.Inputs)
-            {
-                case OperatorSide.Both:
-                    if (call.LeftInput != null) builder.AddCode(call.LeftInput);
-                    if (call.RightInput != null) builder.AddCode(call.RightInput);
-                    break;
-
-                case OperatorSide.Left:
-                    if (call.LeftInput != null) builder.AddCode(call.LeftInput);
-                    break;
-
-                case OperatorSide.Right:
-                    if (call.RightInput != null) builder.AddCode(call.RightInput);
-                    break;
-            }
+            if (call.LeftInput != null) builder.AddCode(call.LeftInput);
+            if (call.RightInput != null) builder.AddCode(call.RightInput);
 
             builder.AddOp(new CallBuiltIn(call.BuiltInFunctionHint), call.OperatorToken);
         }
@@ -55,7 +42,7 @@ namespace NSprak.Operations.Creation
 
             // This is hacky, and might be cleaned up someday
             List<Op> sheet = builder.Operations;
-            bool returnMissing = sheet.Count == 0 || !(sheet[sheet.Count - 1] is Types.Return);
+            bool returnMissing = sheet.Count == 0 || !(sheet[^1] is Types.Return);
             if (returnMissing) builder.AddOp(new Types.Return(), header.EndToken);
         }
     }

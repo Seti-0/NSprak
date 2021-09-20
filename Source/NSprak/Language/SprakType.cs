@@ -10,6 +10,10 @@ using NSprak.Tokens;
 
 namespace NSprak.Language
 {
+    // This other partial definition is in this file as well, below.
+    // They are only separated because there is lots of both static and
+    // instance content and they are a bit hard to read when put together.
+
     public partial class SprakType : IEquatable<SprakType>
     {
         private Value _default;

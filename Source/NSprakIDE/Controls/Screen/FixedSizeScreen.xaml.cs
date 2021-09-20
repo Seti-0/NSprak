@@ -24,8 +24,8 @@ namespace NSprakIDE.Controls.Screen
 
         private readonly FormattedText _em;
         private double _fontSize;
-        private DpiScale _dpi = new DpiScale(1, 1);
-        private Typeface _face = new Typeface("Consolas");
+        private readonly DpiScale _dpi = new DpiScale(1, 1);
+        private readonly Typeface _face = new Typeface("Consolas");
 
         public int WidthChars { get; set; } = 65;
 

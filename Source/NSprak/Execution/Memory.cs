@@ -6,16 +6,18 @@ using System.Linq.Expressions;
 using System.Text;
 
 using NSprak.Exceptions;
+using NSprak.Functions;
+using NSprak.Functions.Signatures;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 using NSprak.Language.Values;
 
 namespace NSprak.Execution
 {
     public class ExecutionScope
     {
-        private bool _inherit;
-        private Dictionary<string, Value> _locals = new Dictionary<string, Value>();
+        private readonly bool _inherit;
+        private readonly Dictionary<string, Value> _locals 
+            = new Dictionary<string, Value>();
 
         public ExecutionScope Parent { get; }
 
@@ -76,7 +78,7 @@ namespace NSprak.Execution
 
     public class Memory
     {
-        private SprakConverter _converter;
+        private readonly SprakConverter _converter;
 
         public Stack<Value> Values { get; } = new Stack<Value>();
 

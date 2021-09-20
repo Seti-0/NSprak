@@ -6,13 +6,10 @@ using System.Windows;
 using System.Windows.Controls;
 
 using NSprak.Execution;
-using NSprak.Language.Builtins;
+using NSprak.Functions.Signatures;
 
 namespace NSprakIDE.Controls.Execution
 {
-    /// <summary>
-    /// Interaction logic for FrameView.xaml
-    /// </summary>
     public partial class FrameView : UserControl
     {
         public Executor Target { get; set; }

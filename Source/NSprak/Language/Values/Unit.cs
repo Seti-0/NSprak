@@ -24,5 +24,27 @@ namespace NSprak.Language.Values
         {
             throw new SprakInternalRuntimeException($"Cannot copy the {nameof(SprakUnit)} value");
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SprakUnit;
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
+
+        public static bool operator ==(SprakUnit a, SprakUnit b)
+        {
+            if (a is null) return b is null;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(SprakUnit a, SprakUnit b)
+        {
+            if (a is null) return !(b is null);
+            return !a.Equals(b);
+        }
     }
 }

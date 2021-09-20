@@ -75,7 +75,7 @@ namespace NSprakIDE.Controls
             Bind(this, FileCommands.AddFolder, AddFolder);
             Bind(this, FileCommands.OpenInFileExplorer, OpenInFileExplorer);
 
-            Func<bool> isEditing = () => _editTarget != null;
+            bool isEditing() => _editTarget != null;
 
             Bind(this, GeneralCommands.Rename, StartEditingSelected);
             Bind(this, GeneralCommands.Escape, StopEditing, isEditing);

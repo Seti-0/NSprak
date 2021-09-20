@@ -8,7 +8,7 @@ namespace NSprakIDE.Logging
 {
     public class FileWriter : ISimpleWriter
     {
-        private string _filePath;
+        private readonly string _filePath;
 
         public FileWriter(string filePath)
         {

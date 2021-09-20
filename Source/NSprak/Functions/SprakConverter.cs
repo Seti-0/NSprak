@@ -1,17 +1,19 @@
 ﻿using NSprak.Execution;
-using NSprak.Language.Builtins;
+using NSprak.Functions.Resolution;
+using NSprak.Functions.Signatures;
+using NSprak.Language;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NSprak.Language
+namespace NSprak.Functions
 {
     public class SprakConverter
     {
-        private SignatureResolver _resolver;
-        private ExecutionContext _context;
+        private readonly SignatureResolver _resolver;
+        private readonly ExecutionContext _context;
 
         public SprakConverter(SignatureResolver resolver, ExecutionContext context)
         {
@@ -25,7 +27,7 @@ namespace NSprak.Language
             {
                 destination = source;
                 return true;
-            }    
+            }
 
             if (destinationType == SprakType.Any)
             {

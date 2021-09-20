@@ -15,7 +15,7 @@ namespace NSprakIDE.Controls.Screen
     {
         private readonly TextLayer _text = new TextLayer();
         private readonly GraphicalLayer _graphics = new GraphicalLayer();
-        private Dispatcher _dispatcher;
+        private readonly Dispatcher _dispatcher;
 
         public IEnumerable<ScreenLayer> Layers { get; }
 

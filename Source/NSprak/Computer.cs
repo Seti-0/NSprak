@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 
 using NSprak.Execution;
-using NSprak.Language;
+using NSprak.Functions;
+using NSprak.Functions.Resolution;
 using NSprak.Messaging;
 
 namespace NSprak
 {
     public class Computer
     {
-        private SignatureResolver _signatureLookup;
-        private AssignmentResolver _assignmentLookup;
+        private readonly SignatureResolver _signatureLookup;
+        private readonly AssignmentResolver _assignmentLookup;
 
         // This should not be visible. Actually, the resolvers shouldn't
         // be fields of the computer at all. This is to be revisited at some 

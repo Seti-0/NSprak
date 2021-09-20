@@ -7,7 +7,7 @@ namespace NSprak.Messaging
 {
     public class MessageLocation
     {
-        private Token _startToken, _endToken;
+        private readonly Token _startToken, _endToken;
 
         public int Start => _startToken.Start;
 

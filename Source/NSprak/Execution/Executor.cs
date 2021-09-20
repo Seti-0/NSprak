@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
-using NSprak.Language;
+using NSprak.Functions.Resolution;
 using NSprak.Operations;
 using NSprak.Operations.Types;
 
@@ -34,7 +34,7 @@ namespace NSprak.Execution
 
         public ExecutorState State { get; private set; }
 
-        private ExecutionContext _context;
+        private readonly ExecutionContext _context;
         private bool _stopRequested;
         private bool _pauseRequested;
 

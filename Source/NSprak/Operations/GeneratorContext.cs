@@ -7,7 +7,7 @@ using NSprak.Exceptions;
 using NSprak.Execution;
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
-using NSprak.Language.Builtins;
+using NSprak.Functions.Signatures;
 using NSprak.Operations.Creation;
 using NSprak.Operations.Types;
 using NSprak.Tokens;
@@ -21,12 +21,12 @@ namespace NSprak.Operations
         public List<Op> Operations { get; }
         public List<OpDebugInfo> DebugInfo { get; }
 
-        private Dictionary<FunctionSignature, int> _entryPoints;
+        private readonly Dictionary<FunctionSignature, int> _entryPoints;
 
-        private Dictionary<string, int> _labels;
+        private readonly Dictionary<string, int> _labels;
         private int _indexDepth;
 
-        private Stack<Expression> _sources;
+        private readonly Stack<Expression> _sources;
 
         public Stack<string> BreakLabels { get; }
         public Stack<string> ContinueLabels { get; }
@@ -56,13 +56,13 @@ namespace NSprak.Operations
             switch (expression)
             {
                 case Command x: Commands.GenerateCode(x, this); break;
-                case FunctionCall x: Functions.GenerateCode(x, this); break;
-                case FunctionHeader x: Functions.GenerateCode(x, this); break;
+                case FunctionCall x: Creation.Functions.GenerateCode(x, this); break;
+                case FunctionHeader x: Creation.Functions.GenerateCode(x, this); break;
                 case IfHeader x: Conditional.GenerateCode(x, this); break;
                 case LiteralArrayGet x: Literals.GenerateCode(x, this); break;
                 case LiteralGet x: Literals.GenerateCode(x, this); break;
                 case LoopHeader x: Conditional.GenerateCode(x, this); break;
-                case OperatorCall x: Functions.GenerateCode(x, this); break;
+                case OperatorCall x: Creation.Functions.GenerateCode(x, this); break;
                 case ReturnE x: Commands.GenerateCode(x, this); break;
                 case VariableAssignment x: Variables.GenerateCode(x, this); break;
                 case VariableReference x: Variables.GenerateCode(x, this); break;

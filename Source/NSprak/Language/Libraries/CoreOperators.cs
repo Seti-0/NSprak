@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using NSprak.Functions;
+using NSprak.Functions.Signatures;
 using NSprak.Language.Values;
 
 namespace NSprak.Language.Libraries
@@ -29,6 +31,9 @@ namespace NSprak.Language.Libraries
             SelfOver
 
             Not
+            And
+            Or
+
             EqualTo
             NotEqualTo
 
@@ -39,7 +44,12 @@ namespace NSprak.Language.Libraries
 
         */
 
-        #region Numeric Arithmetic
+        /*
+
+            Arithmetic (Numbers and strings)
+        
+        */
+
         [SprakOperator(Operator.Names.Add)]
         public static SprakNumber Add(SprakNumber left, SprakNumber right)
         {
@@ -64,104 +74,60 @@ namespace NSprak.Language.Libraries
             return new SprakNumber(left.Value / right.Value);
         }
 
-        [SprakOperator(Operator.Names.SelfPlus)]
-        public static SprakNumber SelfPlus(SprakNumber left, SprakNumber right)
-        {
-            return Add(left, right);
-        }
-
-        [SprakOperator(Operator.Names.SelfLess)]
-        public static SprakNumber SelfLess(SprakNumber left, SprakNumber right)
-        {
-            return Subtract(left, right);
-        }
-
-        [SprakOperator(Operator.Names.SelfTimes)]
-        public static SprakNumber SelfTimes(SprakNumber left, SprakNumber right)
-        {
-            return Multiply(left, right);
-        }
-
-        [SprakOperator(Operator.Names.SelfOver)]
-        public static SprakNumber SelfOver(SprakNumber left, SprakNumber right)
-        {
-            return Divide(left, right);
-        }
-
-        [SprakOperator(Operator.Names.Increment)]
+        [SprakOperator(Operator.Names.Increment, InputSides.Left)]
         public static SprakNumber Increment(SprakNumber left)
         {
             return new SprakNumber(left.Value + 1);
         }
 
-        [SprakOperator(Operator.Names.Decrement)]
+        [SprakOperator(Operator.Names.Decrement, InputSides.Left)]
         public static SprakNumber Decrement(SprakNumber left)
         {
             return new SprakNumber(left.Value - 1);
         }
-        #endregion
 
-        #region String Arithmetic
         [SprakOperator(Operator.Names.Add)]
         public static SprakString Add(SprakString left, SprakString right)
         {
             return new SprakString(left.Value + right.Value);
         }
 
-        [SprakOperator(Operator.Names.SelfPlus)]
-        public static SprakString SelfPlus(SprakString left, SprakString right)
+        [SprakOperator(Operator.Names.Subtract, InputSides.Right)]
+        public static SprakNumber Add(SprakNumber right)
         {
-            return Add(left, right);
-        }
-        #endregion
-
-        #region Set
-        [SprakOperator(Operator.Names.Set)]
-        public static SprakBoolean Set(SprakBoolean right)
-        {
-            return right;
+            return new SprakNumber(-right.Value);
         }
 
-        [SprakOperator(Operator.Names.Set)]
-        public static SprakNumber Set(SprakNumber right)
-        {
-            return right;
-        }
+        /*
 
-        [SprakOperator(Operator.Names.Set)]
-        public static SprakString Set(SprakString right)
-        {
-            return right;
-        }
+            Boolean ops - Not, And, Or
+        
+        */
 
-        [SprakOperator(Operator.Names.Set)]
-        public static SprakArray Set(SprakArray right)
-        {
-            return right;
-        }
-
-        [SprakOperator(Operator.Names.Set)]
-        public static SprakConnection Set(SprakConnection right)
-        {
-            return right;
-        }
-
-        [SprakOperator(Operator.Names.Set)]
-        public static Value Set(Value right)
-        {
-            return right;
-        }
-        #endregion
-
-        #region Boolean
-        [SprakOperator(Operator.Names.Not)]
+        [SprakOperator(Operator.Names.Not, InputSides.Right)]
         public static SprakBoolean Not(SprakBoolean right)
         {
             return new SprakBoolean(!right.Value);
         }
-        #endregion
 
-        #region General Comparison
+        [SprakOperator(Operator.Names.And)]
+        public static SprakBoolean And(SprakBoolean left, SprakBoolean right)
+        {
+            return new SprakBoolean(left.Value && right.Value);
+        }
+
+        [SprakOperator(Operator.Names.Or)]
+        public static SprakBoolean Or(SprakBoolean left, SprakBoolean right)
+        {
+            return new SprakBoolean(left.Value || right.Value);
+        }
+
+        /*
+
+            General Comparison - Equals
+
+        */
+
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakBoolean left, SprakBoolean right)
         {
@@ -171,25 +137,25 @@ namespace NSprak.Language.Libraries
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left.Value == right.Value);
+            return new SprakBoolean(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakString left, SprakString right)
         {
-            return new SprakBoolean(left.Value == right.Value);
+            return new SprakBoolean(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakArray left, SprakArray right)
         {
-            return new SprakBoolean(left.Value == right.Value);
+            return new SprakBoolean(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakConnection left, SprakConnection right)
         {
-            return new SprakBoolean(left.ConnectionString == right.ConnectionString);
+            return new SprakBoolean(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
@@ -201,25 +167,25 @@ namespace NSprak.Language.Libraries
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakBoolean left, SprakBoolean right)
         {
-            return new SprakBoolean(left.Value != right.Value);
+            return new SprakBoolean(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left.Value != right.Value);
+            return new SprakBoolean(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakString left, SprakString right)
         {
-            return new SprakBoolean(left.Value != right.Value);
+            return new SprakBoolean(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakArray left, SprakArray right)
         {
-            return new SprakBoolean(left.Value != right.Value);
+            return new SprakBoolean(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
@@ -233,9 +199,13 @@ namespace NSprak.Language.Libraries
         {
             return new SprakBoolean(left != right);
         }
-        #endregion
 
-        #region Numeric Comparison
+        /*
+
+            Numeric Comparison - GreatherThan, LessThan, etc
+
+        */
+
         [SprakOperator(Operator.Names.GreaterThan)]
         public static SprakBoolean GreaterThan(SprakNumber left, SprakNumber right)
         {
@@ -259,6 +229,5 @@ namespace NSprak.Language.Libraries
         {
             return new SprakBoolean(left.Value <= right.Value);
         }
-        #endregion
     }
 }

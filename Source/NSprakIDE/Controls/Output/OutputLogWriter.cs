@@ -11,27 +11,26 @@ namespace NSprakIDE.Controls.Output
     {
         public static Color GetColor(ConsoleColor color)
         {
-            switch (color)
+            return color switch
             {
-                case ConsoleColor.Black: return Color.FromRgb(0, 0, 0);
-                case ConsoleColor.Blue: return Color.FromRgb(22, 128, 255);
-                case ConsoleColor.Cyan: return Color.FromRgb(79, 244, 244);
-                case ConsoleColor.DarkBlue: return Color.FromRgb(29, 34, 211);
-                case ConsoleColor.DarkCyan: return Color.FromRgb(71, 179, 171);
-                case ConsoleColor.DarkGray: return Color.FromRgb(100, 100, 100);
-                case ConsoleColor.DarkGreen: return Color.FromRgb(0, 100, 0);
-                case ConsoleColor.DarkMagenta: return Color.FromRgb(138, 0, 138);
-                case ConsoleColor.DarkRed: return Color.FromRgb(138, 0, 0);
-                case ConsoleColor.DarkYellow: return Color.FromRgb(189, 164, 12);
-                case ConsoleColor.Gray: return Color.FromRgb(128, 128, 128);
-                case ConsoleColor.Green: return Color.FromRgb(51, 204, 51);
-                case ConsoleColor.Magenta: return Color.FromRgb(255, 0, 255);
-                case ConsoleColor.Red: return Color.FromRgb(255, 0, 0);
-                case ConsoleColor.White: return Color.FromRgb(255, 255, 255);
-                case ConsoleColor.Yellow: return Color.FromRgb(255, 230, 77);
-
-                default: return Color.FromRgb(255, 0, 255);
-            }
+                ConsoleColor.Black => Color.FromRgb(0, 0, 0),
+                ConsoleColor.Blue => Color.FromRgb(22, 128, 255),
+                ConsoleColor.Cyan => Color.FromRgb(79, 244, 244),
+                ConsoleColor.DarkBlue => Color.FromRgb(29, 34, 211),
+                ConsoleColor.DarkCyan => Color.FromRgb(71, 179, 171),
+                ConsoleColor.DarkGray => Color.FromRgb(100, 100, 100),
+                ConsoleColor.DarkGreen => Color.FromRgb(0, 100, 0),
+                ConsoleColor.DarkMagenta => Color.FromRgb(138, 0, 138),
+                ConsoleColor.DarkRed => Color.FromRgb(138, 0, 0),
+                ConsoleColor.DarkYellow => Color.FromRgb(189, 164, 12),
+                ConsoleColor.Gray => Color.FromRgb(128, 128, 128),
+                ConsoleColor.Green => Color.FromRgb(51, 204, 51),
+                ConsoleColor.Magenta => Color.FromRgb(255, 0, 255),
+                ConsoleColor.Red => Color.FromRgb(255, 0, 0),
+                ConsoleColor.White => Color.FromRgb(255, 255, 255),
+                ConsoleColor.Yellow => Color.FromRgb(255, 230, 77),
+                _ => Color.FromRgb(255, 0, 255),
+            };
         }
     }
 

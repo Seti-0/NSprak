@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using NSprak.Functions;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 using NSprak.Tokens;
 
 namespace NSprak.Expressions.Types

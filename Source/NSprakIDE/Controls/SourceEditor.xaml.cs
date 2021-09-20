@@ -30,14 +30,14 @@ namespace NSprakIDE.Controls
     /// </summary>
     public partial class SourceEditor : UserControl
     {
-        private DelayHelper _editAwaitor = new DelayHelper();
+        private readonly DelayHelper _editAwaitor = new DelayHelper();
 
-        private TokenColorizer _tokenColorizer;
-        private ExpressionColorizer _expressionColorizer;
-        private DiffMargin _diffMargin;
+        private readonly TokenColorizer _tokenColorizer;
+        private readonly ExpressionColorizer _expressionColorizer;
+        private readonly DiffMargin _diffMargin;
         private string _originalSource;
 
-        private RuntimeHighlighter _runtimeHighlighter;
+        private readonly RuntimeHighlighter _runtimeHighlighter;
 
         public event EventHandler<EventArgs> FinishedEditing;
 
@@ -104,7 +104,7 @@ namespace NSprakIDE.Controls
             MainEditor.Options.ShowColumnRuler = true;
 
             _diffMargin = new DiffMargin();
-            _diffMargin.HasChangesChanged += _diffMargin_HasChangesChanged;
+            _diffMargin.HasChangesChanged += DiffMargin_HasChangesChanged;
             MainEditor.TextArea.LeftMargins.Add(_diffMargin);
 
             LineNumberMargin margin = new LineNumberMargin()
@@ -180,7 +180,7 @@ namespace NSprakIDE.Controls
         }
         */
 
-        private void _diffMargin_HasChangesChanged(object sender, EventArgs e)
+        private void DiffMargin_HasChangesChanged(object sender, EventArgs e)
         {
             // This is silly, and the diff/change tracker itself should really 
             // be made separate from the margin.

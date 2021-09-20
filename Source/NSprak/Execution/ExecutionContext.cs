@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using NSprak.Exceptions;
+using NSprak.Functions;
+using NSprak.Functions.Resolution;
+using NSprak.Functions.Signatures;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 
 namespace NSprak.Execution
 {

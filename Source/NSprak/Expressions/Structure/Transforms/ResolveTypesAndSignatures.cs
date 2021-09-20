@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 
 using NSprak.Expressions.Types;
+using NSprak.Functions.Resolution;
+using NSprak.Functions.Signatures;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 using NSprak.Messaging;
 
 namespace NSprak.Expressions.Structure.Transforms
@@ -145,6 +146,13 @@ namespace NSprak.Expressions.Structure.Transforms
 
         private void ResolveCallAndTypeHint(OperatorCall call, CompilationEnvironment env)
         {
+            if (call.Operator.IsAssignment)
+            {
+                env.Messages.AtToken(call.OperatorToken, 
+                    Messages.IncorrectUseOfAssignment, call.Operator.Text);
+                return;
+            }
+
             call.TypeHint = null;
 
             if (call.LeftInput != null && call.LeftInput.TypeHint == null)
@@ -153,8 +161,21 @@ namespace NSprak.Expressions.Structure.Transforms
             if (call.RightInput != null && call.RightInput.TypeHint == null)
                 return;
 
+            SprakType left = call.LeftInput?.TypeHint;
+            SprakType right = call.RightInput?.TypeHint;
+            InputSides inputs;
+
+            if (left != null && right != null)
+                inputs = InputSides.Both;
+
+            else if (left != null)
+                inputs = InputSides.Left;
+
+            else
+                inputs = InputSides.Right;
+
             OperatorTypeSignature signature
-                = new OperatorTypeSignature(call.LeftInput?.TypeHint, call.RightInput?.TypeHint);
+                = new OperatorTypeSignature(left, right, inputs);
 
             SignatureLookupResult lookupResult;
             lookupResult = env.SignatureLookup
@@ -167,9 +188,9 @@ namespace NSprak.Expressions.Structure.Transforms
             }
             else
             {
-                string operation = $"({call.LeftInput.TypeHint.Text})"
+                string operation = $"({call.LeftInput?.TypeHint?.Text})"
                     + $" {call.OperatorToken.Content}"
-                    + $" ({call.RightInput.TypeHint.Text})";
+                    + $" ({call.RightInput?.TypeHint?.Text})";
 
                 env.Messages.AtToken(call.OperatorToken, 
                     Messages.UnresolvedOperation, operation);
@@ -178,9 +199,28 @@ namespace NSprak.Expressions.Structure.Transforms
 
         private void ResolveAssignmentOperator(VariableAssignment call, CompilationEnvironment env)
         {
-            if (call.Value != null && call.Value.TypeHint == null)
+            if (call.IsDeclaration)
+                // The name and type were determined in the call constructor,
+                // nothing more to determine here.
                 return;
 
+            if (!call.Operator.IsAssignment)
+            {
+                env.Messages.AtToken(call.OperatorToken, 
+                    Messages.ExpectedAssignmentOperator, call.Operator.Text);
+                return;
+            }
+
+            if (call.Operator.AssignmentOperation == null)
+                // Straight forward variable set, nothing to resolve here.
+                return;
+
+            if (call.Value != null && call.Value.TypeHint == null)
+                // No need to raise an error, the value will already have
+                // one explaining why it's type could not be determined.
+                return;
+
+            // Variable not recognized.
             if (!call.ParentBlockHint
                 .TryGetVariableInfo(call.Name, out VariableInfo nameInfo))
             {
@@ -189,46 +229,49 @@ namespace NSprak.Expressions.Structure.Transforms
                 return;
             }
 
-            bool both = call.Operator.Inputs == OperatorSide.Both;
-            bool requiresLeft = both || call.Operator.Inputs == OperatorSide.Left;
-            bool requiresRight = both || call.Operator.Inputs == OperatorSide.Right;
+            if (nameInfo.DeclaredType == null)
+                // I don't think this should be possible, but this is all
+                // very convoluted. I wish C# was more nullable-aware.
+                throw new Exception("Declaration with Declaration Type");
 
-            SprakType left;
+            // Ignoring left assignments for now, they aren't really needed 
+            // anyways. (Statements like --i)
 
-            if (!requiresLeft)
-                left = null;
+            InputSides inputs;
 
-            else if (call.IsDeclaration)
-                left = call.DeclarationType;
-
+            if (!call.HasValue)
+                inputs = InputSides.Left;
             else
-                left = nameInfo.DeclaredType;
+                inputs = InputSides.Both;
 
-            SprakType right = null;
+            SprakType left = nameInfo.DeclaredType;
+            SprakType right = call.Value?.TypeHint;
 
-            if (requiresRight)
-            {
-                if (!requiresLeft)
-                    right = nameInfo.DeclaredType;
-                else
-                {
-                    right = call.Value?.TypeHint;
-                    if (right == null) return;
-                }
-            }
+            // We need the name of the function to called before assignment.
+            // That may or may not be the same name as that of the operator.
+            string name = call.Operator.AssignmentOperation;
 
             OperatorTypeSignature signature
-                = new OperatorTypeSignature(left, right);
-
-            string name = call.Operator.Name;
+                = new OperatorTypeSignature(left, right, inputs);
 
             SignatureLookupResult lookupResult = env.SignatureLookup
                 .TryFindMatch(name, signature);
 
             if (lookupResult.Success)
             {
-                call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
-                call.OpHint = lookupResult.OpBuilder;
+                SprakType src = lookupResult.BuiltInFunction.ReturnType;
+                SprakType dst = nameInfo.DeclaredType;
+
+                if (env.AssignmentLookup.IsAssignable(src, dst))
+                {
+                    call.BuiltInFunctionHint = lookupResult.BuiltInFunction;
+                    call.OpHint = lookupResult.OpBuilder;
+                }
+                else
+                {
+                    env.Messages.AtExpression(
+                        call, Messages.AssignmentTypeMismatch, src, dst);
+                }
             }
             else
             {

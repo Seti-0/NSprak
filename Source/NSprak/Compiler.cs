@@ -5,7 +5,7 @@ using System.Text;
 
 using NSprak.Execution;
 using NSprak.Expressions;
-using NSprak.Language;
+using NSprak.Functions.Resolution;
 using NSprak.Messaging;
 using NSprak.Operations;
 using NSprak.Tokens;

@@ -16,12 +16,12 @@ namespace NSprakIDE.Themes
         {
             IRootObjectProvider provider = (IRootObjectProvider) serviceProvider.GetService(typeof(IRootObjectProvider));
 
-            switch (provider?.RootObject)
+            return (provider?.RootObject) switch
             {
-                case FrameworkElement element: return element.TryFindResource(Resource);
-                case IDictionary dictionary: return dictionary[Resource];
-                default: return null;
-            }
+                FrameworkElement element => element.TryFindResource(Resource),
+                IDictionary dictionary => dictionary[Resource],
+                _ => null,
+            };
         }
     }
 }

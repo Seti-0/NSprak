@@ -26,5 +26,30 @@ namespace NSprak.Language.Values
         {
             return new SprakNumber(Value);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SprakNumber other)
+                return other.Value == Value;
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(SprakNumber a, SprakNumber b)
+        {
+            if (a is null) return b is null;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(SprakNumber a, SprakNumber b)
+        {
+            if (a is null) return !(b is null);
+            return !a.Equals(b);
+        }
     }
 }

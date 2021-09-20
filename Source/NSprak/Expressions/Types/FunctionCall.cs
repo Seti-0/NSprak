@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using NSprak.Operations.Types;
 using NSprak.Expressions.Patterns;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 using NSprak.Tokens;
 using NSprak.Operations;
+using NSprak.Functions.Signatures;
+using NSprak.Functions;
 
 namespace NSprak.Expressions.Types
 {

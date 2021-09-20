@@ -8,7 +8,7 @@ namespace NSprak.Language.Values
 {
     public class SprakArray : Value
     {
-        public List<Value> Value { get; private set; }
+        public List<Value> Value { get; }
 
         public override SprakType Type => SprakType.Array;
 
@@ -32,6 +32,31 @@ namespace NSprak.Language.Values
                 .ToList();
 
             return new SprakArray(newValues);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SprakArray other)
+                return other.Value.SequenceEqual(Value);
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(SprakArray a, SprakArray b)
+        {
+            if (a is null) return b is null;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(SprakArray a, SprakArray b)
+        {
+            if (a is null) return !(b is null);
+            return !a.Equals(b);
         }
     }
 }

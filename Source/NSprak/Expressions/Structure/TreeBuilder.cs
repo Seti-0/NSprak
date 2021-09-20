@@ -40,7 +40,11 @@ namespace NSprak.Expressions.Structure
                         {
                             ifHeader.NextConditionalComponentHint = subcomponent;
 
-                            Token endToken = statementStack.Peek()[^1].EndToken;
+                            Token endToken = null;
+                            List<Expression> ifStatements = statementStack.Peek();
+                            if (ifStatements.Count > 0)
+                                endToken = ifStatements[^1].EndToken;
+
                             EndBlock(endToken);
                             valid = true;
                         }
@@ -48,7 +52,11 @@ namespace NSprak.Expressions.Structure
                         {
                             elseIfHeader.NextConditionalComponentHint = subcomponent;
 
-                            Token endToken = statementStack.Peek()[^1].EndToken;
+                            Token endToken = null;
+                            List<Expression> ifStatements = statementStack.Peek();
+                            if (ifStatements.Count > 0)
+                                endToken = ifStatements[^1].EndToken;
+
                             EndBlock(endToken);
                             valid = true;
                         }

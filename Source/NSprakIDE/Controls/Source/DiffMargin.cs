@@ -172,8 +172,10 @@ namespace NSprakIDE.Controls.Source
 
         private List<DiffMarginElement> GetMargin(List<DiffPathAction> diffPath)
         {
-            List<DiffMarginElement> margin = new List<DiffMarginElement>();
-            margin.Add(new DiffMarginElement(DiffMarginKind.Start));
+            List<DiffMarginElement> margin = new List<DiffMarginElement>
+            {
+                new DiffMarginElement(DiffMarginKind.Start)
+            };
 
             // The most recent element with removals is being tracked
             // for the sake of converting insertions to changes.
@@ -244,9 +246,11 @@ namespace NSprakIDE.Controls.Source
 
             int D = 0;
             int k = 0;
-            
-            Dictionary<int, int> positions = new Dictionary<int, int>();
-            positions[1] = -1;
+
+            Dictionary<int, int> positions = new Dictionary<int, int>
+            {
+                [1] = -1
+            };
 
             Dictionary<int, Dictionary<int, List<DiffPathAction>>> steps 
                 = new Dictionary<int, Dictionary<int, List<DiffPathAction>>>();

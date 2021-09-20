@@ -38,28 +38,15 @@ namespace NSprak.Operations.Creation
             }
             else
             {
+                if (assignment.Value != null) builder.AddCode(assignment.Value);
+
                 if (assignment.BuiltInFunctionHint != null)
                 {
-                    switch (assignment.Operator.Inputs)
-                    {
-                        case OperatorSide.Both:
-                            if (assignment.Value != null) builder.AddCode(assignment.Value);
-                            builder.AddOp(new VariableGet(assignment.Name), assignment.NameToken);
-                            break;
-
-                        case OperatorSide.Left:
-                            builder.AddOp(new VariableGet(assignment.Name), assignment.NameToken);
-                            break;
-
-                        case OperatorSide.Right:
-                            if (assignment.Value != null) builder.AddCode(assignment.Value);
-                            break;
-                    }
-
+                    builder.AddOp(new VariableGet(assignment.Name), assignment.NameToken);
                     builder.AddOp(new CallBuiltIn(assignment.BuiltInFunctionHint), assignment.OperatorToken);
-
-                    builder.AddOp(new VariableSet(assignment.Name), assignment.NameToken);
                 }
+
+                builder.AddOp(new VariableSet(assignment.Name), assignment.NameToken);
             }
         }
     }

@@ -6,12 +6,13 @@ using System.Text;
 using System.Windows.Markup;
 using Microsoft.VisualBasic;
 using NSprak.Expressions.Types;
-using NSprak.Language.Builtins;
+using NSprak.Functions.Signatures;
+using NSprak.Language;
 using NSprak.Language.Libraries;
 
-namespace NSprak.Language
+namespace NSprak.Functions
 {
-    public class SprakConversionAttribute : Attribute 
+    public class SprakConversionAttribute : Attribute
     {
         public bool IsPerfect { get; }
 
@@ -21,13 +22,17 @@ namespace NSprak.Language
         }
     }
 
-    public class SprakOperatorAttribute : Attribute 
+    public class SprakOperatorAttribute : Attribute
     {
         public string OperatorName;
 
-        public SprakOperatorAttribute(string opName)
+        public InputSides InputsHint;
+
+        public SprakOperatorAttribute(string opName, 
+            InputSides inputHint = InputSides.Both)
         {
             OperatorName = opName;
+            InputsHint = inputHint;
         }
     }
 
@@ -40,9 +45,9 @@ namespace NSprak.Language
 
         public string UniqueID => Name;
 
-        private Dictionary<FunctionSignature, BuiltInFunction> _functions = new Dictionary<FunctionSignature, BuiltInFunction>();
-        private Dictionary<OperatorSignature, BuiltInFunction> _operators = new Dictionary<OperatorSignature, BuiltInFunction>();
-        private Dictionary<ConversionTypeSignature, BuiltInFunction> _conversions = new Dictionary<ConversionTypeSignature, BuiltInFunction>();
+        private readonly Dictionary<FunctionSignature, BuiltInFunction> _functions = new Dictionary<FunctionSignature, BuiltInFunction>();
+        private readonly Dictionary<OperatorSignature, BuiltInFunction> _operators = new Dictionary<OperatorSignature, BuiltInFunction>();
+        private readonly Dictionary<ConversionTypeSignature, BuiltInFunction> _conversions = new Dictionary<ConversionTypeSignature, BuiltInFunction>();
 
         public IReadOnlyDictionary<FunctionSignature, BuiltInFunction> Functions => _functions;
         public IReadOnlyDictionary<OperatorSignature, BuiltInFunction> Operators => _operators;
@@ -112,7 +117,7 @@ namespace NSprak.Language
                 AddConversion(methodInfo, conversionAttribute.IsPerfect);
 
             else if (isOperator)
-                AddOperator(methodInfo, opAttribute.OperatorName);
+                AddOperator(methodInfo, opAttribute);
 
             else AddFunction(methodInfo);
         }
@@ -133,55 +138,61 @@ namespace NSprak.Language
                 throw new ArgumentException(message);
             }
 
-            ConversionTypeSignature signature 
+            ConversionTypeSignature signature
                 = new ConversionTypeSignature(function.Parameters[0], function.ReturnType, perfect);
 
             _conversions.Add(signature, function);
         }
 
-        private void AddOperator(MethodInfo methodInfo, string opName)
+        private void AddOperator(MethodInfo methodInfo, SprakOperatorAttribute meta)
         {
             BuiltInFunction function = new BuiltInFunction(methodInfo, this);
 
-            if (!Operator.TryParse(out Operator op, name: opName))
+            if (!Operator.TryParse(out Operator op, name: meta.OperatorName))
             {
-                string message = $"{MethodName(methodInfo)} is declared to be an unrecognized operator: \"{opName}\"";
+                string message = $"{MethodName(methodInfo)} is declared to be an unrecognized operator: \"{meta.OperatorName}\"";
                 throw new ArgumentException(message);
             }
 
-            SprakType left = null;
-            SprakType right = null;
+            int paramCount = function.Parameters.Count;
 
-            bool binary = op.Inputs == OperatorSide.Both;
-            int requiredParams = binary ? 2 : 1;
+            bool binary = meta.InputsHint == InputSides.Both;
+            int requiredCount = binary ? 2 : 1;
 
-            if (function.Parameters.Count != requiredParams)
+            if (paramCount != requiredCount)
             {
                 string desc = binary ? "binary" : "unary";
 
-                string message = $"{MethodName(methodInfo)} was declared to be the {desc} operator {opName}, " +
+                string message = $"{MethodName(methodInfo)} was declared to be the {desc} operator \"{meta.OperatorName}\", " +
                     $"but has {function.Parameters.Count} Sprak arguments";
 
                 throw new ArgumentException(message);
             }
 
-            switch (op.Inputs)
+            InputSides inputs = meta.InputsHint;
+
+            SprakType left = null;
+            SprakType right = null;
+
+            switch (inputs)
             {
-                case OperatorSide.Both:
+                case InputSides.Both:
                     left = function.Parameters[0];
                     right = function.Parameters[1];
                     break;
 
-                case OperatorSide.Left:
+                case InputSides.Left:
                     left = function.Parameters[0];
                     break;
 
-                case OperatorSide.Right:
+                case InputSides.Right:
                     right = function.Parameters[0];
                     break;
             }
 
-            OperatorTypeSignature typeSignature = new OperatorTypeSignature(left, right);
+            OperatorTypeSignature typeSignature 
+                = new OperatorTypeSignature(left, right, inputs);
+
             OperatorSignature signature = new OperatorSignature(op.Name, typeSignature);
 
             _operators.Add(signature, function);

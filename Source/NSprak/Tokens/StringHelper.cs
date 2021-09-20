@@ -25,7 +25,7 @@ namespace NSprak.Tokens
 
                 if (nextIndex == -1)
                 {
-                    elements.Add(source.Substring(index));
+                    elements.Add(source[index..]);
                     break;
                 }
 

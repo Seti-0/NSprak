@@ -13,14 +13,14 @@ namespace NSprak.Expressions
 {
     public class ExpressionTree
     {
-        private List<ITreeTransform> _transforms = new List<ITreeTransform>
+        private readonly List<ITreeTransform> _transforms = new List<ITreeTransform>
         {
             new UpdateParentHints(),
             new CollectDeclarations(),
             new ResolveTypesAndSignatures()
         };
 
-        private List<Expression> _flatStatements = new List<Expression>();
+        private readonly List<Expression> _flatStatements = new List<Expression>();
 
         public Block Root { get; private set; }
 

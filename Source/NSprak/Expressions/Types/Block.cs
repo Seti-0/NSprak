@@ -10,8 +10,8 @@ namespace NSprak.Expressions.Types
 {
     public class Block : Expression
     {
-        private Token _startToken;
-        private Token _endToken;
+        private readonly Token _startToken;
+        private readonly Token _endToken;
 
         public Header Header { get; }
 

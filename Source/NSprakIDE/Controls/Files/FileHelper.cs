@@ -69,7 +69,7 @@ namespace NSprakIDE.Controls.Files
         {
             // Does something like this exist in the system libraries?
 
-            bool Exists(string path)
+            static bool Exists(string path)
             {
                 return Directory.Exists(path) || File.Exists(path);
             }

@@ -10,7 +10,7 @@ namespace NSprakIDE.Controls.Screen.Layers
 {
     public class TextLayer : ScreenLayer
     {
-        private List<FormattedText> _lines = new List<FormattedText>();
+        private readonly List<FormattedText> _lines = new List<FormattedText>();
         private string _lastLine = "";
 
         public void Print(string text)

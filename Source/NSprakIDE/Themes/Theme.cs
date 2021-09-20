@@ -91,7 +91,8 @@ namespace NSprakIDE.Themes
                 Text = "NSprakIDE.Screen.Text";
         }
 
-        private static Dictionary<string, Brush> _brushes = new Dictionary<string, Brush>();
+        private static readonly Dictionary<string, Brush> _brushes 
+            = new Dictionary<string, Brush>();
 
         public static Brush GetBrush(string name)
         {

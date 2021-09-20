@@ -14,16 +14,34 @@ namespace NSprak.Messaging
                 Summary = "Only an array can be indexed. Found: {Type}"
             },
 
+            ExpectedAssignmentOperator = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "'{Operator}' is an expression operator, and cannot be used for assignment"
+            },
+
             ExtraEndStatement = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Found extra end statement that does not seem to close anything"
             },
 
+            IncorrectUseOfAssignment = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "'{Operator}' is an assignment operator, and cannot be used as an expression"
+            },
+
             IndexShouldBeNumber = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
                 Summary = "An index should be a number. Found: {Type}"
+            },
+
+            AssignmentTypeMismatch = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A value of type {Src} cannot be assigned to a variable of type {Dest}"
             },
 
             UnrecognizedSymbols = new MessageTemplate

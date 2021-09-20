@@ -9,8 +9,10 @@ using System.Text;
 using NSprak.Exceptions;
 using NSprak.Execution;
 using NSprak.Expressions.Types;
+using NSprak.Functions.Signatures;
+using NSprak.Language;
 
-namespace NSprak.Language.Builtins
+namespace NSprak.Functions
 {
     public class SprakNameOverride : Attribute
     {
@@ -26,9 +28,9 @@ namespace NSprak.Language.Builtins
 
     public class BuiltInFunction
     {
-        private MethodInfo _methodInfo;
+        private readonly MethodInfo _methodInfo;
 
-        private bool _acceptsContext;
+        private readonly bool _acceptsContext;
 
         public FunctionSignature Signature { get; }
 
@@ -65,6 +67,55 @@ namespace NSprak.Language.Builtins
 
             ParseReturnType(methodInfo, out SprakType returnType);
             ReturnType = returnType;
+        }
+
+        public Value Call(Value[] arguments, ExecutionContext context)
+        {
+            if (arguments.Length != Parameters.Count)
+            {
+                string message = $"Expected {Parameters.Count} parameter(s) for builtin {FullName}, " +
+                    $"found {arguments.Length}";
+
+                throw new SprakInternalRuntimeException(message);
+            }
+
+            for (int i = 0; i < arguments.Length; i++)
+            {
+                if (Parameters[i] == SprakType.Any)
+                    continue;
+
+                if (arguments[i].Type == Parameters[i])
+                    continue;
+
+                // Note that any attempted conversion will have happened before the call.
+                // This means that this should never happen, ideally, since the error
+                // would have been raised at the attempted conversion.
+
+                string expected = Parameters[i].InternalName;
+                string given = arguments[i].Type.InternalName;
+                string name = ParameterNames[i];
+
+                string message = $"Expected {expected} as argument {i} ({name}) for" +
+                    $" builtin {FullName}, found {given}. Cannot convert from found to expected";
+
+                throw new SprakInternalRuntimeException(message);
+            }
+
+            List<object> netArguments = new List<object>(arguments.Length + 1);
+            if (_acceptsContext) netArguments.Add(context);
+            netArguments.AddRange(arguments);
+
+            Value result = (Value)_methodInfo.Invoke(null, netArguments.ToArray());
+
+            if (result.Type != ReturnType)
+            {
+                string message = $"Expected action for {FullName}" +
+                    $" to return {ReturnType.InternalName}, found {result.Type.InternalName}";
+
+                throw new SprakInternalRuntimeException(message);
+            }
+
+            return result;
         }
 
         public override string ToString()
@@ -122,55 +173,6 @@ namespace NSprak.Language.Builtins
 
                 throw new ArgumentException(message);
             }
-        }
-
-        public Value Call(Value[] arguments, ExecutionContext context)
-        {
-            if (arguments.Length != Parameters.Count)
-            {
-                string message = $"Expected {Parameters.Count} parameter(s) for builtin {FullName}, " +
-                    $"found {arguments.Length}";
-
-                throw new SprakInternalRuntimeException(message);
-            }
-
-            for (int i = 0; i < arguments.Length; i++)
-            {
-                if (Parameters[i] == SprakType.Any)
-                    continue;
-
-                if (arguments[i].Type == Parameters[i])
-                    continue;
-
-                // Note that any attempted conversion will have happened before the call.
-                // This means that this should never happen, ideally, since the error
-                // would have been raised at the attempted conversion.
-
-                string expected = Parameters[i].InternalName;
-                string given = arguments[i].Type.InternalName;
-                string name = ParameterNames[i];
-
-                string message = $"Expected {expected} as argument {i} ({name}) for" +
-                    $" builtin {FullName}, found {given}. Cannot convert from found to expected";
-
-                throw new SprakInternalRuntimeException(message);
-            }
-
-            List<object> netArguments = new List<object>(arguments.Length + 1);
-            if (_acceptsContext) netArguments.Add(context);
-            netArguments.AddRange(arguments);
-
-            Value result = (Value)_methodInfo.Invoke(null, netArguments.ToArray());
-
-            if (result.Type != ReturnType)
-            {
-                string message = $"Expected action for {FullName}" +
-                    $" to return {ReturnType.InternalName}, found {result.Type.InternalName}";
-
-                throw new SprakInternalRuntimeException(message);
-            }
-
-            return result;
         }
     }
 }

@@ -31,7 +31,7 @@
     <SolidColorBrush x:Key="NSprakIDE.Source.LibraryFunction" Color="#FFB363EA"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.Name" Color="Black"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.Number" Color="Black"/>
-    <SolidColorBrush x:Key="NSprakIDE.Source.Operator" Color="Black"/>
+    <SolidColorBrush x:Key="NSprakIDE.Source.Operator" Color="#FF2A84F1"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.String" Color="#FFF94949"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.Type" Color="#FF2A84F1"/>
     <SolidColorBrush x:Key="NSprakIDE.Source.UserFunction" Color="#FFB363EA"/>

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 using NSprak.Expressions.Types;
+using NSprak.Functions;
+using NSprak.Functions.Signatures;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 using NSprak.Messaging;
 
 namespace NSprak.Expressions.Structure.Transforms

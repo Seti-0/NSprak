@@ -12,7 +12,7 @@
             {
                 bool? hint = ParentBlockHint?.VariableDeclarationsHint?.Count > 0;
 
-                bool result = hint.HasValue ? hint.Value : true;
+                bool result = hint ?? true;
                 result |= CombinedScopeHint;
 
                 return result;

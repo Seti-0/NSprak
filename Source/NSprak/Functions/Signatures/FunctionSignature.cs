@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
-namespace NSprak.Language.Builtins
+namespace NSprak.Functions.Signatures
 {
-    public class OperatorSignature
+    public class FunctionSignature
     {
+        public string Namespace { get; }
+
         public string Name { get; }
 
-        public string FullName => $"{Name}";
+        public string FullName => $"{Namespace}.{Name}";
 
-        public OperatorTypeSignature TypeSignature { get; }
+        public FunctionTypeSignature TypeSignature { get; }
 
         public string UniqueID
         {
-            get => $"{Name}({TypeSignature.UniqueID})";
+            get => $"{Namespace}.{Name}({TypeSignature.UniqueID})";
         }
 
-        public OperatorSignature(string name, OperatorTypeSignature typeSignature)
+        public FunctionSignature(string libraryID, string name, FunctionTypeSignature typeSignature)
         {
+            Namespace = libraryID;
             Name = name;
             TypeSignature = typeSignature;
         }
@@ -30,13 +34,21 @@ namespace NSprak.Language.Builtins
         }
 
         #region Equals
-
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name, TypeSignature);
+            // This is very particular. 
+
+            // The name of a function is "almost" its unique key, in that
+            // most functions will only have one overload, and it is likely
+            // that none will have very many.
+
+            // So the name alone seems a fine (and cheap) hashcode, even as
+            // equality requires checking the full type signature.
+
+            return Name.GetHashCode();
         }
 
-        public bool Equals([AllowNull] OperatorSignature other)
+        public bool Equals([AllowNull] FunctionSignature other)
         {
             if (other is null)
                 return false;
@@ -61,12 +73,12 @@ namespace NSprak.Language.Builtins
             return false;
         }
 
-        public static bool operator ==(OperatorSignature one, OperatorSignature two)
+        public static bool operator ==(FunctionSignature one, FunctionSignature two)
         {
             return Equals(one, two);
         }
 
-        public static bool operator !=(OperatorSignature one, OperatorSignature two)
+        public static bool operator !=(FunctionSignature one, FunctionSignature two)
         {
             return !Equals(one, two);
         }

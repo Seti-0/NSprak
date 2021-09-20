@@ -63,7 +63,7 @@ namespace NSprak.Language
                 & KeySymbol.OpenBracket
                 & Allow(ExpressionTuple)
                 & KeySymbol.CloseBracket
-                & EndWith(Functions.Call);
+                & EndWith(Expressions.Creation.Functions.Call);
 
             Index.Value = KeySymbol.OpenSquareBracket
                 & Expression
@@ -106,7 +106,7 @@ namespace NSprak.Language
                 & Loopback;
 
             Statement.Value =
-                
+
                 // Allow an empty file
 
                 Empty & EndWith(_ => null)
@@ -132,7 +132,7 @@ namespace NSprak.Language
                         | KeySymbol.OpenBracket
                             & Allow(ExpressionTuple)
                             & KeySymbol.CloseBracket
-                            & EndWith(Functions.Call)
+                            & EndWith(Expressions.Creation.Functions.Call)
                     )
 
                 // If, Else and Else If statements.
@@ -160,13 +160,13 @@ namespace NSprak.Language
 
                 // Declarations of variables and functions
 
-                | Type & Name 
+                | Type & Name
                     & (
                         OperatorToken & Expression & EndWith(Variables.Assignment)
                         | KeySymbol.OpenBracket
                             & Allow(DeclarationTuple)
                             & KeySymbol.CloseBracket
-                            & EndWith(Functions.Header)
+                            & EndWith(Expressions.Creation.Functions.Header)
                     );
 
             return Statement;

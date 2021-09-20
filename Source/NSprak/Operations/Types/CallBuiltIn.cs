@@ -5,8 +5,8 @@ using System.Text;
 
 using NSprak.Exceptions;
 using NSprak.Execution;
+using NSprak.Functions;
 using NSprak.Language;
-using NSprak.Language.Builtins;
 
 namespace NSprak.Operations.Types
 {

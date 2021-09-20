@@ -46,7 +46,8 @@ namespace NSprakIDE.Logging
             public int Count;
         }
 
-        private Queue<RecentMemory> _recentMemories = new Queue<RecentMemory>();
+        private readonly Queue<RecentMemory> _recentMemories
+            = new Queue<RecentMemory>();
 
         public Output(IWriter writer)
         {

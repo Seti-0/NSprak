@@ -8,7 +8,7 @@ using NSprak.Language.Values;
 
 namespace NSprak.Language
 {
-    public partial class Value
+    public abstract class Value
     {
         public static bool IsBoolean(string text)
         {
@@ -19,10 +19,7 @@ namespace NSprak.Language
         {
             return double.TryParse(text, out _);
         }
-    }
 
-    public abstract partial class Value
-    {
         public SprakString ToSprakString()
         {
             return new SprakString(ToFriendlyString());
@@ -44,6 +41,22 @@ namespace NSprak.Language
         public override string ToString()
         {
             return ToFriendlyString();
+        }
+
+        public abstract override bool Equals(object obj);
+
+        public abstract override int GetHashCode();
+
+        public static bool operator ==(Value a, Value b)
+        {
+            if (a is null) return b is null;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Value a, Value b)
+        {
+            if (a is null) return !(b is null);
+            return !a.Equals(b);
         }
     }
 }
