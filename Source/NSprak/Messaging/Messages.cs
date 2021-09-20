@@ -44,16 +44,22 @@ namespace NSprak.Messaging
                 Summary = "Only the '=' operator may be used to declare variables"
             },
 
+            IndexerNotSupported = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Sprak only supports indexing of variable names"
+            },
+
             InvalidIndexDeclaration = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "A single index cannot be declared on its own."
+                Summary = "A single index cannot be declared on its own"
             },
 
-            MultipleIndicesNotSupported = new MessageTemplate
+            MultipleIndices = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Currently only one layer of indexing is supported"
+                Summary = "Sprak only allows one layer of indexing"
             },
 
             AssignmentTypeMismatch = new MessageTemplate

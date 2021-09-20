@@ -42,6 +42,10 @@ namespace NSprak.Expressions.Structure.Transforms
 
                 case Indexer indexer:
 
+                    if (!(indexer.SourceExpression is VariableReference))
+                        env.Messages.AtExpression(indexer.SourceExpression,
+                            Messages.IndexerNotSupported);
+
                     SprakType sourceType = indexer.SourceExpression.TypeHint;
 
                     // The source should be an array
@@ -202,7 +206,7 @@ namespace NSprak.Expressions.Structure.Transforms
             if (call.Indices.Count > 1)
             {
                 env.Messages.AtExpression(call.Indices.Last().Index,
-                    Messages.MultipleIndicesNotSupported);
+                    Messages.MultipleIndices);
             }
 
             if (!call.ParentBlockHint
