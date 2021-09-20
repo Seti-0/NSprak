@@ -38,19 +38,8 @@ namespace NSprak.Operations.Creation
 
                     if (builder.ContinueLabels.Count == 0)
                         builder.ThrowError("Encountered continue statement outside of loop");
+                    
                     label = builder.ContinueLabels.Peek();
-
-                    Header ancestor = command.ParentBlockHint.Header;
-                    while (ancestor != null && !(ancestor is LoopHeader))
-                        ancestor = ancestor.ParentBlockHint.Header;
-
-                    if (ancestor == null)
-                        throw new Exception("Unable to locate continue command loop header");
-
-                    LoopHeader loopHeader = (LoopHeader)ancestor;
-                    if (loopHeader.IsRange)
-                        builder.AddOp(new Increment(loopHeader.IndexNameHint), command.Token);
-
                     break;
 
                 default:
@@ -59,13 +48,48 @@ namespace NSprak.Operations.Creation
                     break;
             }
 
-            if (label != null)
+            if (label == null)
+                throw new Exception("Missing label");
+
+
+            Header ancestor = command.ParentBlockHint.Header;
+            while (true)
             {
-                if (command.ParentBlockHint.Header.RequiresScopeHint)
+                // There might be intermediate if blocks that have scopes that
+                // need ending. Also, the loop iteration we are breaking/skipping
+                // might have one too.
+
+                if (ancestor.RequiresScopeHint)
                     builder.AddOp(new ScopeEnd(), command.Token);
 
-                builder.AddOp(new JumpLabel(label), command.Token);
+                if (ancestor is LoopHeader loopHeader)
+                { 
+                    if (command.Keyword == Keywords.Continue
+                        && loopHeader.IsRange)
+                    {
+                        // For from-to loops, the increment is done at the end 
+                        // of the loop, and needs to be done here too. (loop-in
+                        // loops do the incrementing at the beginning)
+                        builder.AddOp(new Increment(loopHeader.IndexNameHint), 
+                            command.Token);
+                    }
+
+                    break;
+                }
+
+                // The parent of a header is the block it is a header of 
+                // (confusing, when one puts it that way)
+
+                // So to get the parent block of the current block we need
+                // the parent of the parent
+
+                ancestor = command.ParentBlockHint.ParentBlockHint?.Header;
             }
+
+            if (ancestor == null)
+                throw new Exception("Unable to locate continue command loop header");
+
+            builder.AddOp(new JumpLabel(label), command.Token);
         }
     }
 }
