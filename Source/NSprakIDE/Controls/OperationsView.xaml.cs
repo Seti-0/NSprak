@@ -54,6 +54,7 @@ namespace NSprakIDE.Controls
         }
 
         private Executable _target;
+        private Dictionary<int, string> _labelLookup;
 
         private FlowDocument _document;
         private Paragraph _paragraph;
@@ -75,6 +76,11 @@ namespace NSprakIDE.Controls
             set
             {
                 _target = value;
+
+                _labelLookup = new Dictionary<int, string>();
+                foreach ((string label, int index) in _target.Labels)
+                    _labelLookup.Add(index, label);
+
                 Update();
             }
         }
@@ -239,7 +245,14 @@ namespace NSprakIDE.Controls
             {
                 Op op = _target.Instructions[i];
                 OpDebugInfo info = _target.DebugInfo[i];
-                Write(op, info, i);
+
+                if (_labelLookup.TryGetValue(i, out string labelName))
+                    WriteLabel(labelName);
+
+                if (op is Pass)
+                    WritePass(op, info, i);
+                else
+                    Write(op, info, i);
             }
 
             RefreshVisual();
@@ -342,26 +355,43 @@ namespace NSprakIDE.Controls
             return -1;
         }
 
+        private void WriteLabel(string name)
+        {
+            _alternateLineColors = false;
+
+            NewParagraph();
+
+            StartInstructionLine();
+
+            Write(Theme.Operations.Label,  new string(' ', _indexWidth) + "Label: " + name );
+
+            SaveInstructionLine();
+
+            LineBreak();
+            NewParagraph();
+            return;
+        }
+
+        private void WritePass(Op op, OpDebugInfo info, int index)
+        {
+            _alternateLineColors = false;
+
+            NewParagraph();
+
+            StartInstructionLine();
+
+            WriteIndex(index);
+            Write(Theme.Operations.Comment, " # " + info.Comment + " ");
+
+            SaveInstructionLine();
+
+            LineBreak();
+            NewParagraph();
+            return;
+        }
+
         private void Write(Op op, OpDebugInfo info, int index)
         {
-            if (op is Pass)
-            {
-                _alternateLineColors = false;
-
-                NewParagraph();
-
-                StartInstructionLine();
-
-                WriteIndex(index);
-                Write(Theme.Operations.Comment, " # "+ info.Comment + " ");
-                
-                SaveInstructionLine();
-
-                LineBreak();
-                NewParagraph();
-                return;
-            }
-
             _alternateLineColors = true;
 
             StartInstructionLine();

@@ -76,6 +76,7 @@ namespace NSprakIDE.Themes
 
                 Error = "NSprakIDE.Operations.Error",
                 Comment = "NSprakIDE.Operations.Comment",
+                Label = "NSprakIDE.Operations.Label",
 
                 Next = "NSprakIDE.Runtime.Next",
                 NextText = "NSprakIDE.Runtime.NextText",

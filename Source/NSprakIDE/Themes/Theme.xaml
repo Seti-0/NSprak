@@ -69,6 +69,7 @@
 
     <SolidColorBrush x:Key="NSprakIDE.Operations.Error" Color="#FFFF2300"/>
     <SolidColorBrush x:Key="NSprakIDE.Operations.Comment" Color="#FF538544"/>
+    <SolidColorBrush x:Key="NSprakIDE.Operations.Label" Color="#FFB4B4B4"/>
     
     <!-- Screen View -->
 
