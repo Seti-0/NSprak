@@ -28,8 +28,6 @@ namespace NSprakIDE.Controls
 
         public string FilePath;
 
-        public OutputLogSupplier Output;
-
         public LocalsView LocalsView;
 
         public CallStackView CallStackView;
@@ -52,6 +50,10 @@ namespace NSprakIDE.Controls
 
         public Computer Computer { get; }
 
+        public string EditorName { get; }
+
+        public string GivenID { get; }
+
         private readonly Executor _executor;
 
         private readonly string _filePath;
@@ -68,9 +70,17 @@ namespace NSprakIDE.Controls
         public event EventHandler<EventArgs> HasChangesChanged;
         public event EventHandler<EventArgs> CommandContextChanged;
 
+        public event EventHandler<EventArgs> Closing;
+        public event EventHandler<EventArgs> Compiled;
+        public event EventHandler<EventArgs> DebuggerPaused;
+        public event EventHandler<EventArgs> DebuggerStopped;
+
         public ComputerEditor(ComputerEditorEnviroment environment)
         {
             InitializeComponent();
+
+            GivenID = environment.GivenID;
+            EditorName = environment.Name;
 
             Environment = environment;
 
@@ -85,14 +95,14 @@ namespace NSprakIDE.Controls
                 Screen = screen
             };
 
-            _executor = Computer.CreateExecutor();
-
             Environment.MessageView.Supplier.Start(
                 Computer.Messenger,
                 environment.GivenID,
                 environment.Name,
                 MainWindow.ComputerLogCategory
             );
+
+            _executor = Computer.CreateExecutor();
 
             environment.LocalsView.Supplier.Start(
                 _executor,
@@ -142,6 +152,12 @@ namespace NSprakIDE.Controls
             Environment.ScreenView.Supplier.End(Environment.GivenID);
             Environment.MessageView.Supplier.End(Environment.GivenID);
             Environment.LocalsView.Supplier.End(Environment.GivenID);
+            OnClosing();
+        }
+
+        protected virtual void OnClosing()
+        {
+            Closing?.Invoke(this, EventArgs.Empty);
         }
 
         public void Compile()
@@ -169,6 +185,13 @@ namespace NSprakIDE.Controls
                 .Executable;
 
             _executor.Reset();
+
+            OnCompiled();
+        }
+
+        protected virtual void OnCompiled()
+        {
+            Compiled?.Invoke(this, EventArgs.Empty);
         }
 
         private void SetupBindings()
@@ -287,9 +310,16 @@ namespace NSprakIDE.Controls
 
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
                 InvalidateVisual();
+
+                OnDebuggerPaused();
             }
 
             Dispatcher.Invoke(Action);
+        }
+
+        protected virtual void OnDebuggerPaused()
+        {
+            DebuggerPaused?.Invoke(this, EventArgs.Empty);
         }
 
         private void Executor_OnStopped(object sender, EventArgs e)
@@ -301,9 +331,16 @@ namespace NSprakIDE.Controls
                 _sourceEditor.Redraw();
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
                 InvalidateVisual();
+
+                OnDebuggerStopped();
             }
 
             Dispatcher.Invoke(Action);
+        }
+
+        protected virtual void OnDebuggerStopped()
+        {
+            DebuggerStopped?.Invoke(this, EventArgs.Empty);
         }
 
         private void ToggleBreakpoint()

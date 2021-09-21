@@ -11,9 +11,6 @@ using NSprakIDE.Controls.General;
 
 namespace NSprakIDE
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public static MainWindow Instance { get; private set; }
@@ -72,7 +69,6 @@ namespace NSprakIDE
             {
                 Name = name,
                 GivenID = id,
-                Output = OutputView.Supplier,
                 FilePath = filePath,
                 LocalsView = LocalsView,
                 MessageView = MessageView,
