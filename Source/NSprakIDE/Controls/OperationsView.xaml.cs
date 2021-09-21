@@ -15,9 +15,6 @@ using NSprakIDE.Themes;
 
 namespace NSprakIDE.Controls
 {
-    /// <summary>
-    /// Interaction logic for OperationsView.xaml
-    /// </summary>
     public partial class OperationsView : UserControl
     {
         private class InstructionLine
@@ -270,6 +267,8 @@ namespace NSprakIDE.Controls
             Brush background = Theme.GetBrush(key);
 
             _lines.Add(new InstructionLine(_currentLine, background));
+
+            _currentLine = new List<Run>();
         }
 
         private void NewDocument()
@@ -357,15 +356,9 @@ namespace NSprakIDE.Controls
 
         private void WriteLabel(string name)
         {
-            _alternateLineColors = false;
-
             NewParagraph();
 
-            StartInstructionLine();
-
             Write(Theme.Operations.Label,  new string(' ', _indexWidth) + "Label: " + name );
-
-            SaveInstructionLine();
 
             LineBreak();
             NewParagraph();
