@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.IO;
+using System.Linq;
 
 using NSprakIDE.Controls;
 using NSprakIDE.Logging;
@@ -30,10 +31,15 @@ namespace NSprakIDE
             OutputLog debug = OutputView.Supplier.Start(
                 "MainWindow_Output", "Debug", ViewSupplier.Category_Main);
 
+            StatusView.Source = debug;
+
             ILogEventSink output = new Output(new OutputLogWriter(debug));
             Logs.AddSink(output);
 
             FileView.FileOpened += OnOpenFile;
+
+            SetupViewHiding(ScreenView, ScreenTab, OutputTabs);
+            SetupViewHiding(LocalsView, LocalsTab, InfoTabs);
         }
 
         private void OnOpenFile(object sender, FileOpenedEventArgs e)
@@ -121,6 +127,31 @@ namespace NSprakIDE
                     break;
                 }
             }
+        }
+
+        private void SetupViewHiding<T>(
+            IViewSupplierView<T> view, 
+            TabItem tab, TabControl tabs)
+        {
+            bool available = false;
+
+            tabs.Items.Remove(tab);
+
+            view.Supplier.ItemsChanged += (obj, e) =>
+            {
+                bool newValue = view.Supplier.Values.Any();
+                if (newValue != available)
+                {
+                    available = newValue;
+                    if (available)
+                    {
+                        tabs.Items.Add(tab);
+                        tabs.SelectedItem = tab;
+                    }
+                    else
+                        tabs.Items.Remove(tab);
+                }
+            };
         }
     }
 }

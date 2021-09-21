@@ -29,9 +29,12 @@ namespace NSprakIDE.Controls
     }
 
 
-    public partial class ScreenView : UserControl
+    public partial class ScreenView : UserControl, IViewSupplierView<ComputerScreen>
     {
         public ScreenSupplier Supplier { get; }
+
+        ViewSupplier<ComputerScreen> IViewSupplierView<ComputerScreen>.Supplier 
+            => Supplier; 
 
         public ScreenView()
         {

@@ -43,10 +43,19 @@ namespace NSprakIDE.Controls.General
         public object GetValue() => Value;
     }
 
-    public class ViewSupplier
+    public abstract class ViewSupplier
     {
         public const string Category_Main = "Main";
         public const string ID_All = "All";
+
+        public event EventHandler<EventArgs> ItemsChanged;
+
+        public abstract bool Any { get; }
+
+        protected virtual void OnItemsChanged(EventArgs e)
+        {
+            ItemsChanged?.Invoke(this, e);
+        }
     }
 
     public class ViewSupplier<T> : ViewSupplier
@@ -75,6 +84,8 @@ namespace NSprakIDE.Controls.General
             .Select(x => x.Value)
             .Where(x => x != null);
 
+        public override bool Any => Values.Any();
+
         public ViewSelect View => _view;
 
         public ViewSupplier(ViewSelect view)
@@ -83,24 +94,39 @@ namespace NSprakIDE.Controls.General
             _items.Add(ID_All, new ViewItem<T>("All", Category_Main, true, default)); ;
         }
 
+        public bool ContainsKey(string id)
+        {
+            return _items.ContainsKey(id);
+        }
+
         public void Start(T value, string id, string name, string category)
         {
             _items.Add(id, new ViewItem<T>(name, category, false, value));
             UpdateView();
+
+            OnItemsChanged(EventArgs.Empty);
         }
 
         public void Select(string id)
         {
             if (id == null)
                 _view.Select(_items[ID_All]);
-            else
-                _view.Select(_items[id]);
+            else if (_items.TryGetValue(id, out ViewItem<T> value))
+                _view.Select(value);
+
         }
 
-        public void End(string id)
+        public bool End(string id)
         {
-            _items.Remove(id);
-            UpdateView();
+            bool change = _items.Remove(id);
+
+            if (change)
+            {
+                UpdateView();
+                OnItemsChanged(EventArgs.Empty);
+            }
+
+            return change;
         }
 
         private void UpdateView()
@@ -125,6 +151,11 @@ namespace NSprakIDE.Controls.General
             Start(value, id, name, category);
             return value;
         }
+    }
+
+    public interface IViewSupplierView<T>
+    {
+        public ViewSupplier<T> Supplier { get; }
     }
 
     public class ValueSelectedEventArgs : EventArgs

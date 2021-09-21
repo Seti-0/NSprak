@@ -104,13 +104,6 @@ namespace NSprakIDE.Controls
 
             _executor = Computer.CreateExecutor();
 
-            environment.LocalsView.Supplier.Start(
-                _executor,
-                environment.GivenID,
-                environment.Name,
-                MainWindow.ComputerLogCategory
-            );
-
             _sourceEditor = new SourceEditor(Computer.Messenger);
             _expressionView = new ExpressionView();
             _operationsView = new OperationsView();
@@ -262,6 +255,8 @@ namespace NSprakIDE.Controls
                     _executor.StepMode = ExecutorStepMode.Operation;
                     break;
             }
+
+            Environment.LocalsView.Update();
         }
 
         public void StartOrContinue()
@@ -297,6 +292,7 @@ namespace NSprakIDE.Controls
             void Action()
             {
                 _operationsView.Highlight(_executor.Instructions.Index);
+                ShowLocalsView();
                 Environment.LocalsView.Update();
 
                 Token token = _executor.Instructions.CurrentInfo.FocusToken;
@@ -331,6 +327,8 @@ namespace NSprakIDE.Controls
                 _sourceEditor.Redraw();
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
                 InvalidateVisual();
+
+                HideLocalsView();
 
                 OnDebuggerStopped();
             }
@@ -407,6 +405,27 @@ namespace NSprakIDE.Controls
 
             Expression root = Computer.Compiler.ExpressionTree.Root;
             return FindExpression(root);
+        }
+
+        private void ShowLocalsView()
+        {
+            ViewSupplier<Executor> supplier = Environment.LocalsView.Supplier;
+            string key = Environment.GivenID;
+
+            if (supplier.ContainsKey(key))
+                return;
+
+            Environment.LocalsView.Supplier.Start(
+                _executor,
+                Environment.GivenID,
+                Environment.Name,
+                MainWindow.ComputerLogCategory
+            );
+        }
+
+        private void HideLocalsView()
+        {
+            Environment.LocalsView.Supplier.End(Environment.GivenID);
         }
     }
 }

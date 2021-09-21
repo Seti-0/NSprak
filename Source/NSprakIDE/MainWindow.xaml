@@ -122,7 +122,10 @@
     <!-- Structure -->
     
     <Grid Background="#777777">
-        <Grid Margin="2,2,2,2" Background="{StaticResource NSprakIDE.Background}">
+
+        <Grid Margin="2,2,2,2" 
+                   Background="{StaticResource NSprakIDE.Background}">
+            
             <Grid Margin="2,2,2,2">
 
                 <Grid.ColumnDefinitions>
@@ -132,7 +135,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Documents, Locals and Messages -->
-                
+
                 <Grid>
 
                     <Grid.RowDefinitions>
@@ -142,7 +145,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Documents -->
-                    
+
                     <TabControl Name="DocumentView" Grid.Row="0">
                         <TabItem Header="File View">
                             <Controls:FileView x:Name="FileView"/>
@@ -155,15 +158,21 @@
                         Background="{StaticResource NSprakIDE.Background}"/>
 
                     <!-- Locals and Messages -->
-                    
-                    <TabControl Grid.Row="2">
-                        <TabItem Header="Messages">
-                            <Controls:MessageView x:Name="MessageView"/>
-                        </TabItem>
-                        <TabItem Header="Locals">
-                            <Controls:LocalsView x:Name="LocalsView"/>
-                        </TabItem>
-                    </TabControl>
+
+                    <DockPanel LastChildFill="True" Grid.Row="2">
+
+                        <Controls:StatusBar x:Name="StatusView" DockPanel.Dock="Bottom"/>
+
+                        <TabControl Name="InfoTabs">
+                            <TabItem Name="MessageTab" Header="Messages">
+                                <Controls:MessageView x:Name="MessageView"/>
+                            </TabItem>
+                            <TabItem Name="LocalsTab" Header="Locals">
+                                <Controls:LocalsView x:Name="LocalsView"/>
+                            </TabItem>
+                        </TabControl>
+
+                    </DockPanel>
 
                 </Grid>
 
@@ -174,9 +183,9 @@
                 />
 
                 <!-- Ouput -->
-                
-                <TabControl Grid.Column="2">
-                    <TabItem Header="Computer Screen">
+
+                <TabControl Name="OutputTabs" Grid.Column="2">
+                    <TabItem Name="ScreenTab" Header="Computer Screen">
                         <Controls:ScreenView x:Name="ScreenView"/>
                     </TabItem>
                     <TabItem Header="Log">

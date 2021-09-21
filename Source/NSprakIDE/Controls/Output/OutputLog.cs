@@ -7,6 +7,16 @@ using System.Windows.Media;
 
 namespace NSprakIDE.Controls.Output
 {
+    public class OutputLogEvent : EventArgs
+    {
+        public string Text { get; }
+
+        public OutputLogEvent(string text)
+        {
+            Text = text;
+        }
+    }
+
     public class OutputLog
     {
         public string Name { get; set; }
@@ -23,6 +33,10 @@ namespace NSprakIDE.Controls.Output
             = new Dictionary<int, Run>();
         private int _markerID;
 
+        private string _currentItem;
+
+        public event EventHandler<OutputLogEvent> ItemAdded;
+
         public OutputLog(string name, string category)
         {
             Name = name;
@@ -34,12 +48,16 @@ namespace NSprakIDE.Controls.Output
 
         public void Write(string text)
         {
+            _currentItem += text;
             Document.Dispatcher.Invoke(() => WriteUnsafe(text));
         }
 
         public void WriteLine(string text)
         {
             Write(text + "\n");
+
+            OnItemAdded(new OutputLogEvent(_currentItem));
+            _currentItem = "";
         }
 
         public int Mark(string text = "")
@@ -86,6 +104,11 @@ namespace NSprakIDE.Controls.Output
             }
 
             return false;
+        }
+
+        protected virtual void OnItemAdded(OutputLogEvent e)
+        {
+            ItemAdded?.Invoke(this, e);
         }
 
         private void WriteUnsafe(string text)

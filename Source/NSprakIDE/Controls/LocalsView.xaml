@@ -15,7 +15,9 @@
         <!-- There are two grids -->
         <!-- First: the "values" grid. This is usually hidden -->
         <DataGrid x:Name="ValuesGrid" DockPanel.Dock="Left" Width="200" 
-                AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="{StaticResource NSprakIDE.Data.VerticalLines}">
+                AutoGenerateColumns="False" GridLinesVisibility="Vertical" 
+                  VerticalGridLinesBrush="{StaticResource NSprakIDE.Data.VerticalLines}"
+                  Visibility="Collapsed">
             <DataGrid.Columns>
                 <!-- Coumn for the Sprak Type -->
                 <DataGridTemplateColumn Header="Type">

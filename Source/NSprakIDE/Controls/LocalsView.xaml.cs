@@ -44,9 +44,9 @@ namespace NSprakIDE.Controls
     /// <summary>
     /// Interaction logic for LocalsView.xaml
     /// </summary>
-    public partial class LocalsView : UserControl
+    public partial class LocalsView : UserControl, IViewSupplierView<Executor>
     {
-        public ViewSupplier<Executor> Supplier;
+        public ViewSupplier<Executor> Supplier { get; }
 
         public LocalsView()
         {
@@ -66,11 +66,6 @@ namespace NSprakIDE.Controls
             ValuesGrid.Items.Clear();
         }
 
-        private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
-        {
-            Update();
-        }
-
         public void Update()
         {
             ViewItem<Executor> item = (ViewItem<Executor>)ViewSelect
@@ -78,12 +73,17 @@ namespace NSprakIDE.Controls
 
             if (item == null)
             {
+                ValuesGrid.Visibility = Visibility.Collapsed;
                 Clear();
                 return;
             }
             else
             {
                 Executor executor = item.Value;
+
+                bool opMode = executor.StepMode == ExecutorStepMode.Operation;
+                ValuesGrid.Visibility = opMode ? 
+                    Visibility.Visible : Visibility.Collapsed;
 
                 List<LocalWrapper> locals;
                 List<ValueWrapper> stack;
@@ -105,6 +105,11 @@ namespace NSprakIDE.Controls
                 LocalsGrid.ItemsSource = locals;
                 ValuesGrid.ItemsSource = stack;
             }
+        }
+
+        private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
+        {
+            Update();
         }
     }
 }
