@@ -17,24 +17,21 @@ namespace NSprakIDE.Controls
     /// </summary>
     public partial class ExpressionView : UserControl
     {
-        private static readonly DependencyProperty ShowDebugProperty
-            = DependencyProperty.Register("ShowDebug", typeof(bool), typeof(ExpressionView), new PropertyMetadata(OnShowDebugChanged));
-
-        private static void OnShowDebugChanged(DependencyObject changed, DependencyPropertyChangedEventArgs args)
-        {
-            ((ExpressionView)changed).Update();
-        }
-
         private NSprakBlock _root;
+        private bool _showDebugInfo = false;
 
         public bool ShowDebug
         {
-            get => (bool) GetValue(ShowDebugProperty);
+            get => _showDebugInfo;
 
             set
             {
-                SetValue(ShowDebugProperty, value);
-                Update();
+                if (value != _showDebugInfo)
+                {
+                    _showDebugInfo = value;
+                    Update();
+                    UpdateToggleButtonText();
+                }
             }
         }
 
@@ -52,6 +49,7 @@ namespace NSprakIDE.Controls
         public ExpressionView()
         {
             InitializeComponent();
+            UpdateToggleButtonText();
         }
 
         private void Update()
@@ -63,6 +61,14 @@ namespace NSprakIDE.Controls
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
             ShowDebug = !ShowDebug;
+        }
+
+        private void UpdateToggleButtonText()
+        {
+            if (ShowDebug)
+                ShowDebugButton.Content = "Hide Debug Info";
+            else
+                ShowDebugButton.Content = "Show Debug Info";
         }
     }
 }

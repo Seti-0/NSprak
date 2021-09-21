@@ -11,6 +11,14 @@
     <local:Icon x:Key="Icon_Refresh" IconName="restart"/>
     <local:Icon x:Key="LargeIcon_Refresh" IconName="restart" Large="true"/>
 
+    <!-- Messages -->
+
+    <local:Icon x:Key="Icon_Warning" IconName="error"/>
+    <local:Icon x:Key="LargeIcon_Warning" IconName="error" Large="true"/>
+
+    <local:Icon x:Key="Icon_Error" IconName="spam"/>
+    <local:Icon x:Key="LargeIcon_Error" IconName="spam" Large="true"/>
+
     <!-- Code Editor View -->
 
     <local:Icon x:Key="Icon_Save" IconName="save"/>

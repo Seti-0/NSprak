@@ -109,7 +109,6 @@ namespace NSprakIDE.Controls
             _operationsView = new OperationsView();
 
             _sourceEditor.Executor = _executor;
-            _expressionView.ShowDebug = true;
 
             MainContent.Content = _sourceEditor;
 

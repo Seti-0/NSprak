@@ -8,9 +8,12 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel Name="MainDockPanel">
         <Button 
-            Content="Show Debug" 
-            Click="ToggleButton_Click" Name="ShowDebugButton"
-            DockPanel.Dock="Top" BorderBrush="#FFEC6C6C" Background="#FFE6E6E6"/>
+            Name="ShowDebugButton"
+            DockPanel.Dock="Top" 
+            Content="Show Debug Info" 
+            Click="ToggleButton_Click"
+            BorderBrush="{StaticResource NSprakIDE.Accent}" 
+            Background="{StaticResource NSprakIDE.Toolbar}"/>
         <TreeView Name="MainTree">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">

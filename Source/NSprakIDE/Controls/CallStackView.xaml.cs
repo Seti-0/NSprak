@@ -13,9 +13,6 @@ using System.Windows.Shapes;
 
 namespace NSprakIDE.Controls
 {
-    /// <summary>
-    /// Interaction logic for CallStackView.xaml
-    /// </summary>
     public partial class CallStackView : UserControl
     {
         public CallStackView()
