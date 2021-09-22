@@ -77,4 +77,9 @@
     <SolidColorBrush x:Key="NSprakIDE.Screen.Background" Color="Black"/>
     <SolidColorBrush x:Key="NSprakIDE.Screen.Text" Color="White"/>
 
+    <!-- Callstack -->
+
+    <SolidColorBrush x:Key="NSprakIDE.Callstack.Accent" Color="#FF357CF7"/>
+    <SolidColorBrush x:Key="NSprakIDE.Callstack.Light" Color="#777777"/>
+
 </ResourceDictionary>

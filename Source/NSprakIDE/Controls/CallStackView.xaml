@@ -6,4 +6,19 @@
              xmlns:local="clr-namespace:NSprakIDE.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <ListBox Name="ListView">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Foreground="{StaticResource NSprakIDE.Callstack.Light}">
+                        <!-- Is there a way to have new lines without introducing unwanted spacing here? -->
+                        <Run Text="{Binding Namespace}" Foreground="{StaticResource NSprakIDE.Callstack.Accent}"/>
+                        <Run>.</Run>
+                        <Run Text="{Binding Name}" Foreground="{StaticResource NSprakIDE.Callstack.Accent}"/>
+                        <Run Text="{Binding Params}"/>
+                    </TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
 </UserControl>

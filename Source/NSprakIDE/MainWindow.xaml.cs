@@ -78,7 +78,8 @@ namespace NSprakIDE
                 FilePath = filePath,
                 LocalsView = LocalsView,
                 MessageView = MessageView,
-                ScreenView = ScreenView
+                ScreenView = ScreenView,
+                CallStackView = CallstackView
             };
 
             ComputerEditor editor = new ComputerEditor(enviroment);

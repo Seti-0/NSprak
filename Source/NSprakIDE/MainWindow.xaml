@@ -170,6 +170,9 @@
                             <TabItem Name="LocalsTab" Header="Locals">
                                 <Controls:LocalsView x:Name="LocalsView"/>
                             </TabItem>
+                            <TabItem Name="CallstackTab" Header="Callstack">
+                                <Controls:CallStackView x:Name="CallstackView"/>
+                            </TabItem>
                         </TabControl>
 
                     </DockPanel>

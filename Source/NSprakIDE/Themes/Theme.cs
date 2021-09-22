@@ -92,6 +92,13 @@ namespace NSprakIDE.Themes
                 Text = "NSprakIDE.Screen.Text";
         }
 
+        public static class Callstack
+        {
+            public const string
+                Border = "NSprakIDE.Callstack.Accent",
+                Background = "NSprakIDE.Callstack.Light";
+        }
+
         private static readonly Dictionary<string, Brush> _brushes 
             = new Dictionary<string, Brush>();
 
