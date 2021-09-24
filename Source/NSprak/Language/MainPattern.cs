@@ -91,7 +91,8 @@ namespace NSprak.Language
                 & Allow(Index)
                 & Allow(EndWith(ExpressionGroups.Create))
                 & OperatorToken
-                & Allow(EndWith(ExpressionGroups.Create))
+                // Not allowing postfix expression operators at the moment.
+                // & Allow(EndWith(ExpressionGroups.Create))
                 & Loopback;
 
             /*
