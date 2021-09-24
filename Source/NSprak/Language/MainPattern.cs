@@ -76,15 +76,18 @@ namespace NSprak.Language
                 & KeySymbol.Comma
                 & Loopback;
 
-            Expression.Value = (
-                    OperatorToken & Expression
-                    | Literal
+            // Separate into values (lit, arr, get, etc, with indexing)
+            // and operators.
+            Expression.Value = 
+                Allow(OperatorToken)
+                & (
+                    Literal
                     | ArrayLiteral
                     | Get
                     | KeySymbol.OpenBracket
                         & Expression
                         & KeySymbol.CloseBracket
-                    )
+                )
                 & Allow(Index)
                 & Allow(EndWith(ExpressionGroups.Create))
                 & OperatorToken

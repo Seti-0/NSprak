@@ -91,6 +91,34 @@ namespace NSprak.Language
                GreaterThan = new Operator(Names.GreaterThan, ">"),
                GreaterThanOrEquals = new Operator(Names.GreaterThanOrEquals, ">=");
 
+        public static Operator[][] OperatorPrecedenceGroups = new Operator[][]
+        {
+            // Precedence only applies to binary non-assignment operators
+            // Unary operators take precendence over all of these
+            // Assignments happen after the rest of the expression is evaluated.
+
+            new Operator[] { 
+                Multiply, Divide
+            },
+            new Operator[]
+            {
+                Add, Subtract
+            },
+            new Operator[]
+            {
+                GreaterThan, LessThan,
+                GreaterThanOrEquals, LessThanOrEquals
+            },
+            new Operator[]
+            {
+                EqualTo, NotEqualTo
+            },
+            new Operator[]
+            {
+                And, Or
+            }
+        };
+
         public static readonly IReadOnlyCollection<Operator> All;
 
         private readonly static Dictionary<string, Operator> operatorsByName;

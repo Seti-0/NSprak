@@ -103,7 +103,9 @@ namespace NSprakIDE.Controls
             );
 
             _executor = Computer.CreateExecutor();
-            Environment.CallStackView.Target = _executor;
+
+            if (Environment.CallStackView != null)
+                Environment.CallStackView.Target = _executor;
 
             _sourceEditor = new SourceEditor(Computer.Messenger);
             _expressionView = new ExpressionView();
@@ -294,7 +296,9 @@ namespace NSprakIDE.Controls
                 _operationsView.Highlight(_executor.Instructions.Index);
                 ShowLocalsView();
                 Environment.LocalsView.Update();
-                Environment.CallStackView.Update();
+                // The callstack view could do this itself by listening to
+                // its executor.
+                Environment.CallStackView?.Update();
 
                 Token token = _executor.Instructions.CurrentInfo.FocusToken;
                 if (token != null)

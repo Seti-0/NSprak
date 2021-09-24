@@ -170,9 +170,20 @@
                             <TabItem Name="LocalsTab" Header="Locals">
                                 <Controls:LocalsView x:Name="LocalsView"/>
                             </TabItem>
+                            <!--
+                            
+                            This is done in the sense that it shows the stack,
+                            but currently selecting an item does not have 
+                            any effect on the other views, like the locals
+                            (That would be the important part)
+                            
+                            That'll probably be for the next iteration, so
+                            leaving this commented out for now.
+                            
                             <TabItem Name="CallstackTab" Header="Callstack">
                                 <Controls:CallStackView x:Name="CallstackView"/>
                             </TabItem>
+                            -->
                         </TabControl>
 
                     </DockPanel>

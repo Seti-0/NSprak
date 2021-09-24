@@ -14,6 +14,11 @@ namespace NSprak.Language.Values
 
         public SprakNumber(double value = 0)
         {
+            // This might seem nonsensical, but C# double seems to have
+            // -0 separate from 0, and I'd prefer they were the same as far
+            // as Sprak is concerned.
+            if (value == 0) value = Math.Abs(value);
+            
             Value = value;
         }
 
