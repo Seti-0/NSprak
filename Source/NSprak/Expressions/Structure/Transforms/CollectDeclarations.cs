@@ -51,13 +51,25 @@ namespace NSprak.Expressions.Structure.Transforms
 
                     break;
 
-                case LoopHeader loop when loop.HasName:
+                case LoopHeader loop:
 
-                    // we need an "undetermined" type here
-                    scope.VariableDeclarations
-                        .Add(loop.Name, new VariableInfo(SprakType.Any, -1, block));
+                    string loopVarName = null;
+
+                    if (loop.HasName)
+                        loopVarName = loop.Name;
+
+                    else if (loop.IsForeach)
+                        loopVarName = "@";
+
+                    if (loopVarName != null)
+                    {
+                        // we need an "undetermined" type here
+                        scope.VariableDeclarations
+                            .Add(loopVarName, new VariableInfo(SprakType.Any, -1, block));
+                    }
 
                     break;
+
             }
 
             // Second: check if variables or functions have been declared in the statements of the block.

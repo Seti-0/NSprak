@@ -42,13 +42,16 @@ namespace NSprak.Language
 
         public static bool IsWordStart(char symbol)
         {
-            return char.IsLetter(symbol);
+            return char.IsLetter(symbol) 
+                || symbol == '@'
+                || symbol == '_';
         }
 
         public static bool IsWordCharacter(char symbol)
         {
-            // Question: does Sprak support other symbols like underscores in words?
-            return char.IsLetterOrDigit(symbol);
+            return char.IsLetterOrDigit(symbol) 
+                || symbol == '@'
+                || symbol == '_';
         }
 
         public static bool IsStringStart(char symbol)
