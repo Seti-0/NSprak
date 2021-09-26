@@ -77,7 +77,42 @@ namespace NSprak.Expressions.Structure.Transforms
 
                     if (ret.HasValue) 
                         ret.TypeHint = ret.Value.TypeHint;
-                    
+
+                    Block parent = ret.ParentBlockHint;
+                    while (parent != null && !(parent.Header is FunctionHeader))
+                        parent = parent.ParentBlockHint;
+
+                    if (parent == null)
+                        env.Messages.AtToken(ret.ReturnToken, 
+                            Messages.ReturnOutsideFunction);
+
+                    else
+                    {
+                        SprakType src = ret.TypeHint;
+                        SprakType dst = ((FunctionHeader)parent.Header).ReturnType;
+
+                        if (ret.HasValue)
+                        {
+                            if (dst == SprakType.Unit)
+                                env.Messages.AtExpression(ret.Value,
+                                    Messages.ReturnValueFromVoid);
+
+                            else if (src != null)
+                            {
+                                if (!env.AssignmentLookup.IsAssignable(src, dst))
+                                    env.Messages.AtExpression(ret.Value,
+                                        Messages.IncompatibleReturnValue, 
+                                        src.Text, dst.Text);
+                            }
+                        }
+                        else
+                        {
+                            if (dst != SprakType.Unit)
+                                env.Messages.AtToken(ret.ReturnToken,
+                                    Messages.MissingReturnValue);
+                        }
+                    }
+
                     break;
 
                 case VariableAssignment assignment:

@@ -36,6 +36,12 @@ namespace NSprak.Messaging
             {
                 Severity = MessageSeverity.Error,
                 Summary = "This variable was declared in the same scope but in a disconnected block, and cannot be used here"
+            },          
+            
+            IncompatibleReturnValue = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Return value of type '{Src}' is not assignable to declared function type '{Dst}'"
             },
 
             IndexShouldBeNumber = new MessageTemplate
@@ -56,6 +62,12 @@ namespace NSprak.Messaging
                 Summary = "Sprak only supports indexing of variable names"
             },
 
+            MissingReturnValue = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A return statement in a function that is not void must have a value"
+            },
+
             InvalidIndexDeclaration = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
@@ -66,6 +78,18 @@ namespace NSprak.Messaging
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Sprak only allows one layer of indexing"
+            },
+
+            ReturnOutsideFunction = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A return statement is only valid within a function"
+            },
+
+            ReturnValueFromVoid = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A return statement in a void function cannot have a value"
             },
 
             AssignmentTypeMismatch = new MessageTemplate
