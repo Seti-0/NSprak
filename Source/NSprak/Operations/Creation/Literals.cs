@@ -23,5 +23,10 @@ namespace NSprak.Operations.Creation
         {
             builder.AddOp(new LiteralValue(literal.Value), literal.Token);
         }
+
+        public static void GenerateCode(Group group, GeneratorContext builder)
+        {
+            builder.AddCode(group.Value);
+        }
     }
 }

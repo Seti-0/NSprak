@@ -36,6 +36,10 @@ namespace NSprak.Expressions.Structure.Transforms
                     ResolveCallAndTypeHint(function, env);
                     break;
 
+                case Group group:
+                    group.TypeHint = group.Value.TypeHint;
+                    break;
+
                 case LiteralArrayGet array:
                     array.TypeHint = SprakType.Array;
                     break;

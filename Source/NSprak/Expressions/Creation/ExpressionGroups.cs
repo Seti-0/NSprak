@@ -103,10 +103,12 @@ namespace NSprak.Expressions.Creation
             // concerned, there are either expressions or expressions wrapped 
             // in brackets.
 
-            if (iterator.NextIsKeySymbol(Symbols.OpenBracket))
+            if (iterator.NextIsKeySymbol(Symbols.OpenBracket, out Token open))
             {
-                iterator.AssertExpression(out expression);
-                iterator.AssertKeySymbol(Symbols.CloseBracket, out _);
+                iterator.AssertExpression(out Expression value);
+                iterator.AssertKeySymbol(Symbols.CloseBracket, out Token close);
+
+                expression = new Group(open, value, close);
             }
             else iterator.AssertExpression(out expression);
 

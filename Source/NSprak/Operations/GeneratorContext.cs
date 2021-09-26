@@ -70,6 +70,7 @@ namespace NSprak.Operations
                 case Indexer indexer: Variables.GenerateCode(indexer, this); break;
                 case ElseHeader elseHeader: Conditional.GenerateCode(elseHeader, this); break;
                 case ElseIfHeader elseIfHeader: Conditional.GenerateCode(elseIfHeader, this); break;
+                case Group group: Literals.GenerateCode(group, this); break;
                 case MainHeader _: break;
 
                 case null: throw new ArgumentNullException(nameof(expression));

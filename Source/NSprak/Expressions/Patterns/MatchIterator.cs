@@ -194,7 +194,12 @@ namespace NSprak.Expressions.Patterns
 
         public bool NextIsKeySymbol(char keySymbol)
         {
-            if (Next(out Token token) && token.IsKeySymbol(keySymbol))
+            return NextIsKeySymbol(keySymbol, out _);
+        }
+
+        public bool NextIsKeySymbol(char keySymbol, out Token token)
+        {
+            if (Next(out token) && token.IsKeySymbol(keySymbol))
             {
                 MoveNext();
                 return true;
