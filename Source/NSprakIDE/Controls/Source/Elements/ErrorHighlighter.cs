@@ -27,9 +27,9 @@ namespace NSprakIDE.Controls.Source
                 return;
 
             SolidColorBrush brush = new SolidColorBrush(Color.FromRgb(255, 100, 100));
-            var pen = new Pen(brush, 1);
+            Pen pen = new Pen(brush, 1);
 
-            var decoration = new TextDecoration()
+            TextDecoration decoration = new TextDecoration()
             {
                 Location = TextDecorationLocation.Underline,
                 Pen = pen,

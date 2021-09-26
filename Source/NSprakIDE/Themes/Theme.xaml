@@ -17,6 +17,8 @@
 
     <SolidColorBrush x:Key="NSprakIDE.Syntax.SprakType" Color="#FF0A9E10"/>
 
+    <SolidColorBrush x:Key="NSprakIDE.Status.Text" Color="#FFD6D6D6"/>
+
     <!-- Source Editor Highlighting-->
 
     <SolidColorBrush x:Key="NSprakIDE.Source.Boolean" Color="#FFF94949"/>

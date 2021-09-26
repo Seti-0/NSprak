@@ -31,10 +31,11 @@ namespace NSprakIDE
             OutputLog debug = OutputView.Supplier.Start(
                 "MainWindow_Output", "Debug", ViewSupplier.Category_Main);
 
-            StatusView.Source = debug;
-
             ILogEventSink output = new Output(new OutputLogWriter(debug));
             Logs.AddSink(output);
+
+            ILogEventSink status = new StatusOutput(StatusView);
+            Logs.AddSink(status);
 
             FileView.FileOpened += OnOpenFile;
 

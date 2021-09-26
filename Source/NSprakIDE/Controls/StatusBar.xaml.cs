@@ -1,5 +1,6 @@
 ﻿using NSprakIDE.Controls.General;
 using NSprakIDE.Controls.Output;
+using NSprakIDE.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,31 +16,12 @@ using System.Windows.Shapes;
 
 namespace NSprakIDE.Controls
 {
-    public partial class StatusBar : UserControl
+    public partial class StatusBar : UserControl, ISimpleWriter
     {
-        private OutputLog _source;
-
         private readonly DelayHelper _delay 
             = new DelayHelper(TimeSpan.FromSeconds(2));
 
-        public OutputLog Source
-        {
-            get => _source;
-
-            set
-            {
-                if (value != _source)
-                {
-                    if (_source != null)
-                        _source.ItemAdded -= _source_ItemAdded;
-
-                    _source = value;
-
-                    if (_source != null)
-                        _source.ItemAdded += _source_ItemAdded;
-                }
-            }
-        }
+        private bool _startNewLine = false; 
 
         public StatusBar()
         {
@@ -51,17 +33,30 @@ namespace NSprakIDE.Controls
                 TextView.Dispatcher.Invoke(Clear);
         }
 
-        private void _source_ItemAdded(object sender, OutputLogEvent e)
+        public void Write(string text)
         {
-            string item = e.Text.Split("\n")[0];
+            Write(text, false);
+        }
 
+        public void WriteLine(string text = "")
+        {
+            Write(text, true);
+        }
+
+        private void Write(string text, bool end)
+        {
             void Action()
             {
-                TextView.Text = item;
+                if (_startNewLine)
+                    TextView.Text = "";
+
+                TextView.Text += text;
+
+                _startNewLine = end;
                 _delay.Poke();
             }
 
-            TextView.Dispatcher.Invoke(Action);
+            Dispatcher.Invoke(Action);
         }
     }
 }

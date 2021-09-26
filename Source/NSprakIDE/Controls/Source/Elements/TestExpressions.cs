@@ -4,21 +4,35 @@ using NSprak.Expressions.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Windows;
 using System.Windows.Media;
 
 namespace NSprakIDE.Controls.Source
 {
-    public class TestExpressions : IColorizerElement<Expression>
-    {
-        public bool CanApply(Expression item) => true;
+    using SprakExpression = NSprak.Expressions.Expression;
 
-        public void Apply(VisualLineElement element, Expression item)
-        {            
+    public class TestExpressions : IColorizerElement<SprakExpression>
+    {
+        public bool CanApply(SprakExpression item) => true;
+
+        public void Apply(VisualLineElement element, SprakExpression item)
+        {
+            SolidColorBrush brush = new SolidColorBrush(GetColor(item));
+            Pen pen = new Pen(brush, 1);
+
+            TextDecoration decoration = new TextDecoration()
+            {
+                Location = TextDecorationLocation.Underline,
+                Pen = pen,
+                PenThicknessUnit = TextDecorationUnit.FontRecommended
+            };
+
+            element.TextRunProperties.SetTextDecorations(new TextDecorationCollection());
+            element.TextRunProperties.TextDecorations.Add(decoration);
             element.BackgroundBrush = new SolidColorBrush(GetColor(item));
         }
 
-        private Color GetColor(Expression item)
+        private Color GetColor(SprakExpression item)
         {
             return item switch
             {
