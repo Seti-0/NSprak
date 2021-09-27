@@ -59,7 +59,7 @@ namespace NSprak.Expressions.Structure.Transforms
 
                     // The index should be a number
                     SprakType indexType = indexer.IndexExpression.TypeHint;
-                    if (indexType != null && indexType != SprakType.Number && sourceType != SprakType.Any)
+                    if (indexType != null && indexType != SprakType.Number && indexType != SprakType.Any)
                         env.Messages.AtExpression(indexer.IndexExpression,
                             Messages.IndexShouldBeNumber, indexType.Text);
 

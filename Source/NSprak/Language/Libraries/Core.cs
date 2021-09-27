@@ -46,14 +46,18 @@ namespace NSprak.Language.Libraries
         public static SprakUnit Color(
             ExecutionContext context, SprakNumber r, SprakNumber g, SprakNumber b)
         {
-            context.Computer?.Screen.SetColor(
-                new Color((byte)r.Value, (byte)g.Value, (byte)b.Value));
+            context.Computer?.Screen.SetColor(new Color(
+                (byte)(r.Value*255), 
+                (byte)(g.Value*255), 
+                (byte)(b.Value*255)
+            ));
+
             return SprakUnit.Value;
         }
 
-        public static SprakNumber Cos(SprakNumber x)
+        public static SprakNumber Cos(SprakNumber radians)
         {
-            return new SprakNumber(Math.Cos(x.Value));
+            return new SprakNumber(Math.Cos(radians.Value));
         }
 
         public static SprakNumber Count(SprakArray array)
@@ -81,6 +85,78 @@ namespace NSprak.Language.Libraries
                 .Any();
 
             return new SprakBoolean(exists);
+        }
+
+        public static SprakArray HSVToRGB(
+            SprakNumber h, SprakNumber s, SprakNumber v)
+        {
+            // All sprak color values are in [0, 1]
+            double H = h.Value * 360;
+            double S = s.Value;
+            double V = v.Value;
+
+            double C = V * S;
+            double Hn = H / 60;
+            double X = C * (1 - Math.Abs((Hn % 2) - 1));
+
+            double R, G, B;
+
+            if (Hn < 1) 
+            {
+                R = C; 
+                G = X; 
+                B = 0;
+            }
+            else if (Hn < 2)
+            {
+                R = X;
+                G = C;
+                B = 0;
+            }
+            else if (Hn < 3)
+            {
+                R = 0;
+                G = C;
+                B = X;
+            }
+            else if (Hn < 4)
+            {
+                R = 0;
+                G = X;
+                B = C;
+            }
+            else if (Hn < 5)
+            {
+                R = X;
+                G = 0;
+                B = C;
+            }
+            else if (Hn < 6)
+            {
+                R = C;
+                G = 0;
+                B = X;
+            }
+            else
+            {
+                // I'm not sure if this else case
+                // is possible.
+                R = 0;
+                G = 0;
+                B = 0;
+            }
+
+            double m = V - C;
+            R += m; G += m; B += m;
+
+            R = Math.Clamp(R, 0, 1);
+            G = Math.Clamp(G, 0, 1);
+            B = Math.Clamp(B, 0, 1);
+
+            SprakNumber r = new SprakNumber(R);
+            SprakNumber g = new SprakNumber(G);
+            SprakNumber b = new SprakNumber(B);
+            return new SprakArray(new List<Value>() { r, g, b });
         }
 
         // L
@@ -137,6 +213,51 @@ namespace NSprak.Language.Libraries
             return SprakUnit.Value;
         }
 
+        public static SprakArray RGBToHSV(
+            SprakNumber r, SprakNumber g, SprakNumber b)
+        {
+            // Note: all colours in sprak are normalized to [0, 1]
+            double R = r.Value;
+            double G = g.Value;
+            double B = b.Value;
+
+            double V = Math.Max(Math.Max(R, G), B);
+            double C = V - Math.Min(Math.Min(R, G), B);
+
+            double H;
+
+            // Remember that V is max(R, G, B), and so should be
+            // exactly R or G or B. (i.e. no need to worry about
+            // floating point tolerance or an else case)
+
+            if (C == 0)
+                H = 0;
+            else if (V == R)
+                H = 60 * ((G - B) / C);
+            else if (V == G)
+                H = 60 * (2 + ((B - R) / C));
+            else if (V == B)
+                H = 60 * (4 + ((R - G) / C));
+            else
+                // This should never happen.
+                H = 0;
+
+            double S;
+            if (V == 0)
+                S = 0;
+            else
+                S = C / V;
+
+            H = (H % 360) / 360;
+            S = Math.Clamp(S, 0, 1);
+            V = Math.Clamp(V, 0, 1);
+
+            SprakNumber h = new SprakNumber(H);
+            SprakNumber s = new SprakNumber(S);
+            SprakNumber v = new SprakNumber(V);
+            return new SprakArray(new List<Value>() { h, s, v });
+        }
+
         public static SprakNumber Round(SprakNumber a)
         {
             return new SprakNumber(Math.Round(a.Value));
@@ -144,16 +265,20 @@ namespace NSprak.Language.Libraries
 
         // S
 
-        public static SprakNumber Sqrt(SprakNumber a)
+        public static SprakNumber Sin(SprakNumber radians)
         {
-            return new SprakNumber(Math.Sqrt(a.Value));
+            return new SprakNumber(Math.Sin(radians.Value));
         }
-
 
         public static SprakUnit Sleep(SprakNumber seconds)
         {
             System.Threading.Thread.Sleep((int)(seconds.Value * 1000));
             return SprakUnit.Value;
+        }
+
+        public static SprakNumber Sqrt(SprakNumber a)
+        {
+            return new SprakNumber(Math.Sqrt(a.Value));
         }
 
         // T

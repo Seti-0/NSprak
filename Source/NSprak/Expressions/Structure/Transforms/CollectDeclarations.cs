@@ -63,9 +63,15 @@ namespace NSprak.Expressions.Structure.Transforms
 
                     if (loopVarName != null)
                     {
+                        SprakType loopVarType;
+                        if (loop.IsRange)
+                            loopVarType = SprakType.Number;
+                        else
+                            loopVarType = SprakType.Any;
+
                         // we need an "undetermined" type here
                         scope.VariableDeclarations
-                            .Add(loopVarName, new VariableInfo(SprakType.Any, -1, block));
+                            .Add(loopVarName, new VariableInfo(loopVarType, -1, block));
                     }
 
                     break;

@@ -35,7 +35,11 @@ namespace NSprak.Execution
 
         public bool TryDeclareVariable(string name, Value initialValue)
         {
-            if (TryFindVariable(name, out _))
+            // This means that a duplicate variable cannot be defined in the same
+            // scope, but duplicate variables *can* be declared in nested scopes.
+            // This is more flexible than Sprak, and the precise limitations
+            // are for the static checker to pick up.
+            if (_locals.ContainsKey(name))
                 return false;
 
             _locals.Add(name, initialValue);

@@ -38,20 +38,28 @@ namespace NSprak.Operations.Creation
             }
             else
             {
-                if (assignment.Value != null) builder.AddCode(assignment.Value);
+                if (assignment.Indices.Count > 1)
+                    throw new NotImplementedException("Only one level of indexing is supported at the moment");
 
                 if (assignment.BuiltInFunctionHint != null)
                 {
-                    builder.AddOp(new VariableGet(assignment.Name), assignment.NameToken);
-                    builder.AddOp(new CallBuiltIn(assignment.BuiltInFunctionHint), assignment.OperatorToken);
+                    if (assignment.Indices.Count == 0)
+                        builder.AddOp(new VariableGet(assignment.Name), assignment.NameToken);
+                    else
+                    {
+                        builder.AddOp(new VariableGet(assignment.Name));
+                        builder.AddCode(assignment.Indices[0].Index);
+                        builder.AddOp(new ArrayElementGet());
+                    }
                 }
+
+                if (assignment.Value != null) builder.AddCode(assignment.Value);
+
+                if (assignment.BuiltInFunctionHint != null)
+                    builder.AddOp(new CallBuiltIn(assignment.BuiltInFunctionHint), assignment.OperatorToken);
 
                 if (assignment.Indices.Count == 0)
                     builder.AddOp(new VariableSet(assignment.Name), assignment.NameToken);
-
-                else if (assignment.Indices.Count > 1)
-                    throw new NotImplementedException("Only one level of indexing is supported at the moment");
-
                 else
                 {
                     builder.AddCode(assignment.Indices[0].Index);
