@@ -31,5 +31,9 @@ namespace NSprak
         public void Text(string text, double x, double y);
 
         public void DisplayGraphics();
+
+        // Clipboard
+
+        public void CopyToClipboard(string content);
     }
 }

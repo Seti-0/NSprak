@@ -8,7 +8,20 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel LastChildFill="True">
-        <General:ViewSelect x:Name="ViewSelect" DockPanel.Dock="Top"/>
+        <DockPanel DockPanel.Dock="Top" 
+                   Background="{StaticResource NSprakIDE.Toolbar}">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <General:ViewSelect x:Name="ViewSelect"/>
+                <Button Name="Clear" Click="Button_Click" Margin="5">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                    <TextBlock Margin="7,0,7,0">Clear</TextBlock>
+                </Button>
+            </StackPanel>
+        </DockPanel>
         <Screen:FixedSizeScreen x:Name="Screen"/>
     </DockPanel>
 </UserControl>

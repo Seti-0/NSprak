@@ -47,13 +47,44 @@ namespace NSprakIDE.Controls
 
         private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
         {
-            ComputerScreen item = (ComputerScreen)e.NewValue;
+            ComputerScreen newScreen = (ComputerScreen)e.NewValue;
+            ComputerScreen oldScreen = (ComputerScreen)e.OldValue;
 
-            if (item == null)
+            UpdateClearButton();
+
+            if (oldScreen != null)
+                oldScreen.HasContentChanged -= Screen_OnHasContentChanged;
+
+            if (newScreen == null)
                 Screen.ClearLayers();
 
             else
-                Screen.SetLayers(item.Layers);
+            {
+                newScreen.HasContentChanged += Screen_OnHasContentChanged;
+                Screen.SetLayers(newScreen.Layers);
+            }  
+        }
+
+        private void Screen_OnHasContentChanged(object sender, EventArgs e)
+        {
+            UpdateClearButton();
+        }
+
+        private void UpdateClearButton()
+        {
+            ViewItem<ComputerScreen> screen = ViewSelect
+                .SelectedItem as ViewItem<ComputerScreen>;
+
+            Clear.Visibility = screen.Value.HasContent ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ViewItem<ComputerScreen> screen = ViewSelect
+                .SelectedItem as ViewItem<ComputerScreen>;
+
+            screen?.Value.ClearText();
         }
     }
 }

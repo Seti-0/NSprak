@@ -11,9 +11,17 @@ namespace NSprakIDE.Controls.Screen
     {
         public FixedSizeScreen Screen { get; set; }
 
+        public event EventHandler<EventArgs> Invalidated;
+
         protected void Invalidate()
         {
             Screen.InvalidateVisual();
+            OnInvalidated(EventArgs.Empty);
+        }
+
+        protected virtual void OnInvalidated(EventArgs e)
+        {
+            Invalidated?.Invoke(this, e);
         }
 
         public abstract void Render(DrawingContext context, Rect targetRect);

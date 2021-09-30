@@ -53,6 +53,8 @@ namespace NSprakIDE.Controls.Screen.Layers
             }
         }
 
+        public bool HasContent => _currentEntries.Count > 0;
+
         public void AddLine(double x1, double y1, double x2, double y2)
         {
             LineEntry entry = new LineEntry

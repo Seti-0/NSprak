@@ -27,6 +27,9 @@ namespace NSprakIDE.Controls.Screen.Layers
         private bool _cursorVisible = true;
         private readonly DispatcherTimer _blinkTimer = new DispatcherTimer();
 
+        public bool HasContent => _lines.Count > 0
+            || _lastLine.Length > 0 || _inputText.Length > 0;
+
         public TextLayer()
         {
             _blinkTimer.Interval = TimeSpan.FromSeconds(0.5);

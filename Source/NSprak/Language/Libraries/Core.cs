@@ -55,6 +55,13 @@ namespace NSprak.Language.Libraries
             return SprakUnit.Value;
         }
 
+        public static SprakUnit CopyToClipboard(
+            ExecutionContext context, SprakString content)
+        {
+            context.Computer.Screen?.CopyToClipboard(content.Value);
+            return SprakUnit.Value;
+        }
+
         public static SprakNumber Cos(SprakNumber radians)
         {
             return new SprakNumber(Math.Cos(radians.Value));

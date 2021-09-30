@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 using System.Windows.Threading;
 using NSprak;
 
@@ -17,7 +18,13 @@ namespace NSprakIDE.Controls.Screen
         private readonly GraphicalLayer _graphics = new GraphicalLayer();
         private readonly Dispatcher _dispatcher;
 
+        private bool _previousHasContent = false;
+
         public IEnumerable<ScreenLayer> Layers { get; }
+
+        public bool HasContent => _text.HasContent || _graphics.HasContent;
+
+        public event EventHandler<EventArgs> HasContentChanged;
 
         public ComputerScreen(Dispatcher dispatcher)
         {
@@ -27,6 +34,19 @@ namespace NSprakIDE.Controls.Screen
             {
                 _text, _graphics
             };
+
+            _previousHasContent = HasContent;
+            void OnInvalidate(object sender, EventArgs e)
+            {
+                if (_previousHasContent != HasContent)
+                {
+                    _previousHasContent = HasContent;
+                    OnHasContentChanged(EventArgs.Empty);
+                }   
+            }
+
+            _text.Invalidated += OnInvalidate;
+            _graphics.Invalidated += OnInvalidate;
         }
 
         private void Invoke(Action action)
@@ -53,6 +73,12 @@ namespace NSprakIDE.Controls.Screen
         public void CancelInput()
         {
             _text.CancelInput();
+        }
+
+        public void CopyToClipboard(string content)
+        {
+            Application.Current.Dispatcher
+                .Invoke(() => Clipboard.SetText(content));
         }
 
         public string Input(string promt)
@@ -91,6 +117,11 @@ namespace NSprakIDE.Controls.Screen
         public void Text(string text, double x, double y)
         {
             Invoke(() => _graphics.AddText(text, x, y));
+        }
+
+        protected virtual void OnHasContentChanged(EventArgs e)
+        {
+            HasContentChanged?.Invoke(this, e);
         }
     }
 }
