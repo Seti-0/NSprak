@@ -50,6 +50,16 @@ namespace NSprakIDE.Controls.Screen
             return new SprakColor(color.R, color.G, color.B);
         }
 
+        public void CancelInput()
+        {
+            _text.CancelInput();
+        }
+
+        public string Input(string promt)
+        {
+            return _text.Input(promt, _dispatcher);
+        }
+
         public void Line(double x1, double y1, double x2, double y2)
         {
             Invoke(() => _graphics.AddLine(x1, y1, x2, y2));

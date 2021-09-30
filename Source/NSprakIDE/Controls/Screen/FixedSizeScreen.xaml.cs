@@ -49,6 +49,9 @@ namespace NSprakIDE.Controls.Screen
             _em = GetFormattedText("M", Foreground);
 
             SizeChanged += FixedSizeScreen_SizeChanged;
+
+            Focusable = true;
+            IsTabStop = true;
         }
 
         private void FixedSizeScreen_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -69,6 +72,29 @@ namespace NSprakIDE.Controls.Screen
                 layer.Screen = this;
 
             InvalidateVisual();
+        }
+
+        protected override void OnTextInput(TextCompositionEventArgs e)
+        {
+            base.OnTextInput(e);
+
+            foreach (ScreenLayer layer in _layers)
+                layer.OnTextInput(e);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+
+            foreach (ScreenLayer layer in _layers)
+                layer.OnKeyUp(e);
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            Focus();
         }
 
         protected override void OnRender(DrawingContext drawingContext)

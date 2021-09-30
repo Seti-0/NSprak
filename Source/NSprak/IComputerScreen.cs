@@ -18,6 +18,10 @@ namespace NSprak
 
         public void ClearText();
 
+        public string Input(string promt);
+
+        public void CancelInput();
+
         // Graphical Layer
 
         public void Line(double x1, double y1, double x2, double y2);

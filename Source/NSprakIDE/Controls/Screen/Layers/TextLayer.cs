@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace NSprakIDE.Controls.Screen.Layers
 {
@@ -12,6 +15,45 @@ namespace NSprakIDE.Controls.Screen.Layers
     {
         private readonly List<FormattedText> _lines = new List<FormattedText>();
         private string _lastLine = "";
+
+        private readonly AutoResetEvent _inputIdleEvent
+            = new AutoResetEvent(true);
+        private readonly AutoResetEvent _inputReadyEvent 
+            = new AutoResetEvent(false);
+
+        private bool _input = false;
+        private string _inputText = "";
+
+        private bool _cursorVisible = true;
+        private readonly DispatcherTimer _blinkTimer = new DispatcherTimer();
+
+        public TextLayer()
+        {
+            _blinkTimer.Interval = TimeSpan.FromSeconds(0.5);
+
+            _blinkTimer.Tick += (obj, e) =>
+            {
+                _cursorVisible = !_cursorVisible;
+                Invalidate();
+            };
+        }
+
+        public void CancelInput()
+        {
+            if (_input)
+                EndInput();
+        }
+
+        public string Input(string promt, Dispatcher dispatcher)
+        {
+            _inputIdleEvent.WaitOne();
+
+            dispatcher.Invoke(() => StartInput(promt));
+
+            _inputReadyEvent.WaitOne();
+
+            return CollectInput();
+        }
 
         public void Print(string text)
         {
@@ -72,13 +114,81 @@ namespace NSprakIDE.Controls.Screen.Layers
                 context.DrawText(_lines[i], cursor);
                 cursor.Y += _lines[i].Height;
             }
-            
-            if (_lastLine.Length > 0)
+
+            Brush brush = Theme.GetBrush(Theme.Screen.Text);
+
+            string text = _lastLine;
+            if (_input)
+                text += _inputText;
+
+            if (text.Length > 0)
             {
-                Brush brush = Theme.GetBrush(Theme.Screen.Text);
-                FormattedText temp = Screen.GetFormattedText(_lastLine, brush);
+                FormattedText temp = Screen.GetFormattedText(text, brush);
                 context.DrawText(temp, cursor);
+                cursor.X += temp.WidthIncludingTrailingWhitespace;
             }
+
+            if (_input && _cursorVisible && Screen.IsFocused)
+            {
+                context.DrawRectangle(brush, null, new Rect(cursor,
+                    new Size(Screen.CharWidth, Screen.CharHeight)));
+            }
+        }
+
+        public override void OnTextInput(TextCompositionEventArgs e)
+        {
+            if (e.Text.Length == 0 || !_input)
+                return;
+
+            if (e.Text[0] == '\r')
+                EndInput();
+
+            else if (e.Text[0] == '\b' & _inputText.Length > 0)
+            {
+                _inputText = _inputText[0..^1];
+                Invalidate();
+            }
+            else
+            {
+                _inputText += e.Text;
+                Invalidate();
+            }
+        }
+
+        private void StartInput(string promt)
+        {
+            _inputIdleEvent.Reset();
+
+            _input = true;
+            _inputText = "";
+
+            PrintS(promt);
+
+            _cursorVisible = true;
+            Invalidate();
+            _blinkTimer.Start();
+
+            Screen.Focus();
+        }
+
+        private void EndInput()
+        {
+            _input = false;
+            Print(_inputText);
+
+            _inputReadyEvent.Set();
+            _blinkTimer.Stop();
+        }
+
+        private string CollectInput()
+        {
+            string result = _inputText;
+            _inputText = "";
+
+            _inputReadyEvent.Reset();
+            _inputIdleEvent.Set();
+
+            return result;
         }
     }
 }

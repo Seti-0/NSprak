@@ -159,6 +159,15 @@ namespace NSprak.Language.Libraries
             return new SprakArray(new List<Value>() { r, g, b });
         }
 
+        // I
+
+        public static SprakString Input(
+            ExecutionContext context, SprakString promt)
+        {
+            string result = context.Computer.Screen?.Input(promt.Value);
+            return new SprakString(result);
+        }
+
         // L
 
         public static SprakUnit Line(ExecutionContext context,

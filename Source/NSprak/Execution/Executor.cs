@@ -81,7 +81,10 @@ namespace NSprak.Execution
         public void RequestPause()
         {
             if (State == ExecutorState.Running)
+            {
+                _context.Computer.Screen.CancelInput();
                 _pauseRequested = true;
+            }
         }
 
         public void RequestStop()
@@ -89,6 +92,7 @@ namespace NSprak.Execution
             switch (State)
             {
                 case ExecutorState.Running:
+                    _context.Computer.Screen.CancelInput();
                     _stopRequested = true;
                     break;
 
