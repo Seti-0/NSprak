@@ -6,6 +6,10 @@ namespace NSprak
 {
     public interface IComputerScreen
     {
+        public double Height { get; }
+
+        public double Width { get; }
+
         public void SetColor(Color color);
 
         public Color GetColor();

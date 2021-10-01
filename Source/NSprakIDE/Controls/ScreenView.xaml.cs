@@ -18,11 +18,17 @@ namespace NSprakIDE.Controls
 {
     public class ScreenSupplier : ViewSupplier<ComputerScreen>
     {
-        public ScreenSupplier(ViewSelect view) : base(view) { }
+        private FixedSizeScreen _screen;
+
+        public ScreenSupplier(ViewSelect view, FixedSizeScreen screen) 
+            : base(view) 
+        {
+            _screen = screen;
+        }
 
         public ComputerScreen Start(string id, string name, string category)
         {
-            ComputerScreen value = new ComputerScreen(View.Dispatcher);
+            ComputerScreen value = new ComputerScreen(View.Dispatcher, _screen);
             Start(value, id, name, category);
             return value;
         }
@@ -40,7 +46,7 @@ namespace NSprakIDE.Controls
         {
             InitializeComponent();
 
-            Supplier = new ScreenSupplier(ViewSelect);
+            Supplier = new ScreenSupplier(ViewSelect, Screen);
 
             ViewSelect.Selected += ViewSelect_Selected;
         }
@@ -75,8 +81,9 @@ namespace NSprakIDE.Controls
             ViewItem<ComputerScreen> screen = ViewSelect
                 .SelectedItem as ViewItem<ComputerScreen>;
 
-            Clear.Visibility = screen.Value.HasContent ? Visibility.Visible
-                : Visibility.Collapsed;
+            bool content = screen?.Value.HasContent ?? false;
+
+            Clear.Visibility = content ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -84,7 +91,7 @@ namespace NSprakIDE.Controls
             ViewItem<ComputerScreen> screen = ViewSelect
                 .SelectedItem as ViewItem<ComputerScreen>;
 
-            screen?.Value.ClearText();
+            screen?.Value.Clear();
         }
     }
 }

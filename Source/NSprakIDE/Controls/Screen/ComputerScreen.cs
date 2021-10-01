@@ -14,6 +14,8 @@ namespace NSprakIDE.Controls.Screen
 
     public class ComputerScreen : IComputerScreen
     {
+        private readonly FixedSizeScreen _view;
+
         private readonly TextLayer _text = new TextLayer();
         private readonly GraphicalLayer _graphics = new GraphicalLayer();
         private readonly Dispatcher _dispatcher;
@@ -22,17 +24,22 @@ namespace NSprakIDE.Controls.Screen
 
         public IEnumerable<ScreenLayer> Layers { get; }
 
+        public double Width => _view.WidthPixels;
+
+        public double Height => _view.HeightPixels;
+
         public bool HasContent => _text.HasContent || _graphics.HasContent;
 
         public event EventHandler<EventArgs> HasContentChanged;
 
-        public ComputerScreen(Dispatcher dispatcher)
+        public ComputerScreen(Dispatcher dispatcher, FixedSizeScreen view)
         {
             _dispatcher = dispatcher;
+            _view = view;
 
             Layers = new ScreenLayer[]
             {
-                _text, _graphics
+                _graphics, _text
             };
 
             _previousHasContent = HasContent;
@@ -52,6 +59,17 @@ namespace NSprakIDE.Controls.Screen
         private void Invoke(Action action)
         {
             _dispatcher.Invoke(action, DispatcherPriority.ApplicationIdle);
+        }
+
+        public void Clear()
+        {
+            void Action()
+            {
+                _text.ClearText();
+                _graphics.ClearGraphics();
+            }
+
+            Invoke(Action);
         }
 
         public void ClearText()

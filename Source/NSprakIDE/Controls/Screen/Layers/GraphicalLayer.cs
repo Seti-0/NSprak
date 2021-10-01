@@ -101,31 +101,39 @@ namespace NSprakIDE.Controls.Screen.Layers
             Invalidate();
         }
 
+        public void ClearGraphics()
+        {
+            _nextEntries.Clear();
+            DisplayGraphics();
+        }
+
         public override void Render(DrawingContext context, Rect targetRect)
         {
+            double pixelScale = Screen.PixelScale;
+
             foreach (Entry entry in _currentEntries)
             {
                 switch (entry)
                 {
                     case LineEntry line:
-                        line.ScreenStart.X = targetRect.X + line.Start.X;
-                        line.ScreenStart.Y = targetRect.Y + line.Start.Y;
-                        line.ScreenEnd.X = targetRect.X + line.End.X;
-                        line.ScreenEnd.Y = targetRect.Y + line.End.Y;
+                        line.ScreenStart.X = targetRect.X + (line.Start.X * pixelScale);
+                        line.ScreenStart.Y = targetRect.Y + (line.Start.Y * pixelScale);
+                        line.ScreenEnd.X = targetRect.X + (line.End.X * pixelScale);
+                        line.ScreenEnd.Y = targetRect.Y + (line.End.Y * pixelScale);
                         context.DrawLine(line.Pen, line.ScreenStart, line.ScreenEnd);
                         break;
 
                     case RectEntry rect:
-                        rect.ScreenRect.X = targetRect.X + rect.Content.X;
-                        rect.ScreenRect.Y = targetRect.Y + rect.Content.Y;
-                        rect.ScreenRect.Width = rect.Content.Width;
-                        rect.ScreenRect.Height = rect.Content.Height;
+                        rect.ScreenRect.X = targetRect.X + (rect.Content.X * pixelScale);
+                        rect.ScreenRect.Y = targetRect.Y + (rect.Content.Y * pixelScale);
+                        rect.ScreenRect.Width = rect.Content.Width * pixelScale;
+                        rect.ScreenRect.Height = rect.Content.Height * pixelScale;
                         context.DrawRectangle(rect.Brush, null, rect.ScreenRect);
                         break;
 
                     case TextEntry text:
-                        text.ScreenOrigin.X = targetRect.X + text.Origin.X;
-                        text.ScreenOrigin.Y = targetRect.Y + text.Origin.Y;
+                        text.ScreenOrigin.X = targetRect.X + (text.Origin.X * pixelScale);
+                        text.ScreenOrigin.Y = targetRect.Y + (text.Origin.Y * pixelScale);
                         text.Content.SetFontSize(Screen.TerminalFontSize);
                         context.DrawText(text.Content, text.ScreenOrigin);
                         break;

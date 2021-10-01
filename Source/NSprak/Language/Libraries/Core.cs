@@ -47,9 +47,9 @@ namespace NSprak.Language.Libraries
             ExecutionContext context, SprakNumber r, SprakNumber g, SprakNumber b)
         {
             context.Computer?.Screen.SetColor(new Color(
-                (byte)(r.Value*255), 
-                (byte)(g.Value*255), 
-                (byte)(b.Value*255)
+                r.Value,
+                g.Value,
+                b.Value
             ));
 
             return SprakUnit.Value;
@@ -92,6 +92,11 @@ namespace NSprak.Language.Libraries
                 .Any();
 
             return new SprakBoolean(exists);
+        }
+
+        public static SprakNumber Height(ExecutionContext context)
+        {
+            return new SprakNumber(context.Computer.Screen?.Height ?? 0);
         }
 
         public static SprakArray HSVToRGB(
@@ -306,5 +311,11 @@ namespace NSprak.Language.Libraries
             return SprakUnit.Value;
         }
 
+        // W
+
+        public static SprakNumber Width(ExecutionContext context)
+        {
+            return new SprakNumber(context.Computer.Screen?.Width ?? 0);
+        }
     }
 }

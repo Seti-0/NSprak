@@ -1,4 +1,6 @@
-﻿namespace NSprak
+﻿using System;
+
+namespace NSprak
 {
     public struct Color
     {
@@ -13,6 +15,17 @@
             R = r;
             G = g;
             B = b;
+        }
+
+        public Color(double r, double g, double b)
+        {
+            r = Math.Clamp(r, 0, 1);
+            g = Math.Clamp(g, 0, 1);
+            b = Math.Clamp(b, 0, 1);
+
+            R = (byte)(r * 255);
+            G = (byte)(g * 255);
+            B = (byte)(b * 255);
         }
     }
 }

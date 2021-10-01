@@ -27,9 +27,14 @@ namespace NSprakIDE.Controls.Screen
         private readonly DpiScale _dpi = new DpiScale(1, 1);
         private readonly Typeface _face = new Typeface("Consolas");
 
+        // TODO: Ideally the char width & height should be adjustable per computer
+        // but that is not a priority right now.
+
         public int WidthChars { get; set; } = 65;
 
         public int HeightChars { get; set; } = 30;
+
+        public double TextScaleFactor { get; set; } = 10;
 
         public double TerminalFontSize => _fontSize;
 
@@ -40,6 +45,13 @@ namespace NSprakIDE.Controls.Screen
         public double TerminalWidth => _em.Width * WidthChars;
 
         public double TerminalHeight => _em.Height * HeightChars;
+
+        public double PixelScale => _em.Height / TextScaleFactor;
+
+        public double WidthPixels 
+            => WidthChars * (TextScaleFactor * _em.Width / _em.Height);
+
+        public double HeightPixels => HeightChars * TextScaleFactor;
 
         public FixedSizeScreen()
         {
