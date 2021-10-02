@@ -18,6 +18,7 @@ namespace NSprakIDE.Controls.Screen
 
         private readonly TextLayer _text = new TextLayer();
         private readonly GraphicalLayer _graphics = new GraphicalLayer();
+        private readonly InputLayer _input = new InputLayer();
         private readonly Dispatcher _dispatcher;
 
         private bool _previousHasContent = false;
@@ -39,7 +40,7 @@ namespace NSprakIDE.Controls.Screen
 
             Layers = new ScreenLayer[]
             {
-                _graphics, _text
+                _graphics, _text, _input
             };
 
             _previousHasContent = HasContent;
@@ -102,6 +103,13 @@ namespace NSprakIDE.Controls.Screen
         public string Input(string promt)
         {
             return _text.Input(promt, _dispatcher);
+        }
+
+        public bool IsKeyPressed(string key)
+        {
+            // In contrast to most other screen layer operations, this one
+            // is thread-safe.
+            return _input.IsKeyPressed(key);
         }
 
         public void Line(double x1, double y1, double x2, double y2)

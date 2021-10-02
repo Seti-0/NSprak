@@ -180,6 +180,13 @@ namespace NSprak.Language.Libraries
             return new SprakString(result);
         }
 
+        public static SprakBoolean IsKeyPressed(
+            ExecutionContext context, SprakString key)
+        {
+            bool result = context.Computer?.Screen.IsKeyPressed(key.Value) ?? false;
+            return new SprakBoolean(result);
+        }
+
         // L
 
         public static SprakUnit Line(ExecutionContext context,
@@ -309,6 +316,17 @@ namespace NSprak.Language.Libraries
         {
             context.Computer.Screen?.Text(text.Value, x.Value, y.Value);
             return SprakUnit.Value;
+        }
+
+        public static SprakString Type(Value value)
+        {
+            string result;
+            if (value.Type == SprakType.Connection)
+                result = SprakType.Number.Text;
+            else
+                result = value.Type.Text;
+
+            return new SprakString(result);
         }
 
         // W

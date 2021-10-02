@@ -14,6 +14,8 @@ namespace NSprak
 
         public Color GetColor();
 
+        public bool IsKeyPressed(string key);
+
         // Text Layer
 
         public void Print(string line);
