@@ -7,12 +7,15 @@ using NSprak.Expressions;
 using NSprak.Expressions.Types;
 using NSprak.Execution;
 using NSprak.Operations.Creation;
+using NSprak.Functions.Signatures;
+using NSprak.Functions;
 
 namespace NSprak.Operations
 {
     public class CodeGenerator
     {
-        public static Executable Create(ExpressionTree source)
+        public static Executable Create(ExpressionTree source, 
+            Dictionary<FunctionSignature, FunctionInfo> userDeclarations)
         {
             GeneratorContext builder = new GeneratorContext();
 
@@ -49,7 +52,7 @@ namespace NSprak.Operations
                 builder.AddCode(function);
             }
 
-            return builder.GetResult();
+            return builder.GetResult(userDeclarations);
         }
     }
 }

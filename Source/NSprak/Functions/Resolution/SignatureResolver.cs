@@ -14,6 +14,7 @@ namespace NSprak.Functions.Resolution
     public class SignatureResolver
     {
         private AssignmentResolver _assignmentResolver;
+        private Dictionary<FunctionSignature, FunctionInfo> _userDeclarations;
 
         private TwoStepLookup<FunctionTypeSignature, FunctionInfo> _userFunctionsLookup;
         private TwoStepLookup<FunctionTypeSignature, Func<Op>> _functionBindingLookup;
@@ -24,6 +25,9 @@ namespace NSprak.Functions.Resolution
 
         private Dictionary<ConversionTypeSignature, Func<Op>> _conversionBindingLookup;
         private Dictionary<ConversionTypeSignature, BuiltInFunction> _builtinConversionLookup;
+
+        public Dictionary<FunctionSignature, FunctionInfo> UserDeclarations
+            => _userDeclarations;
 
         public SignatureResolver(List<Library> libraries, AssignmentResolver assignmentLookup)
         {
@@ -85,6 +89,7 @@ namespace NSprak.Functions.Resolution
 
         public void SpecifyUserFunctions(Dictionary<FunctionSignature, FunctionInfo> userDeclarations)
         {
+            _userDeclarations = userDeclarations;
             _userFunctionsLookup = userDeclarations
                 .ToLookup(x => x.Key.Name, x => x.Key.TypeSignature, x => x.Value);
         }

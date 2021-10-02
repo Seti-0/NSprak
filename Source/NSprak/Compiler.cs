@@ -5,6 +5,7 @@ using System.Text;
 
 using NSprak.Execution;
 using NSprak.Expressions;
+using NSprak.Functions;
 using NSprak.Functions.Resolution;
 using NSprak.Messaging;
 using NSprak.Operations;
@@ -16,9 +17,9 @@ namespace NSprak
     {
         public Messenger Messages { get; }
 
-        public SignatureResolver SignatureLookup { get; }
+        public SignatureResolver SignatureLookup { get; set; }
 
-        public AssignmentResolver AssignmentLookup { get; }
+        public AssignmentResolver AssignmentLookup { get; set; }
 
         public CompilationEnvironment(Messenger messages, SignatureResolver signatureLookup, AssignmentResolver assignmentLookup)
         {
@@ -30,6 +31,9 @@ namespace NSprak
 
     public class Compiler
     {
+        private readonly SignatureResolver _signatureLookup;
+        private readonly AssignmentResolver _assignmentLookup;
+
         public bool IsCompiled { get; }
 
         public bool IsLatest { get; }
@@ -38,13 +42,30 @@ namespace NSprak
 
         public ExpressionTree ExpressionTree { get; } = new ExpressionTree();
 
-        public Executable Compile(string source, CompilationEnvironment environment)
+        public Compiler()
         {
-            Tokens.Update(source, environment.Messages);
-            ExpressionTree.Update(Tokens, environment);
+            // At some point this should be configurable.
+            List<Library> libraries = new List<Library>
+            {
+                Library.Core
+            };
 
-            if (!environment.Messages.HasErrors)
-                return CodeGenerator.Create(ExpressionTree);
+            _assignmentLookup = new AssignmentResolver(libraries);
+            _signatureLookup = new SignatureResolver(libraries, _assignmentLookup);
+
+            _signatureLookup.SpecifyOperationBindings(new List<OperationBinding>());
+        }
+
+        public Executable Compile(string source, Messenger messenger)
+        {
+            CompilationEnvironment env = new CompilationEnvironment(
+                messenger, _signatureLookup, _assignmentLookup);
+
+            Tokens.Update(source, messenger);
+            ExpressionTree.Update(Tokens, env);
+
+            if (!env.Messages.HasErrors)
+                return CodeGenerator.Create(ExpressionTree, _signatureLookup.UserDeclarations);
 
             else return null;
         }

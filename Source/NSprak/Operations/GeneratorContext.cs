@@ -7,6 +7,8 @@ using NSprak.Exceptions;
 using NSprak.Execution;
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
+using NSprak.Functions;
+using NSprak.Functions.Resolution;
 using NSprak.Functions.Signatures;
 using NSprak.Operations.Creation;
 using NSprak.Operations.Types;
@@ -94,9 +96,11 @@ namespace NSprak.Operations
             throw new CodeBuildingException(message);
         }
 
-        public Executable GetResult()
+        public Executable GetResult(
+            Dictionary<FunctionSignature, FunctionInfo> userDeclarations)
         {
-            return new Executable(Operations, DebugInfo, _entryPoints, _labels);
+            return new Executable(Operations, DebugInfo, 
+                _entryPoints, _labels, userDeclarations);
         }
 
         public void AddEntryPoint(FunctionSignature signature, int index)

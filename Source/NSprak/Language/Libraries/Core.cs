@@ -87,7 +87,7 @@ namespace NSprak.Language.Libraries
         public static SprakBoolean HasFunction(ExecutionContext context,
             SprakString name)
         {
-            bool exists = context.Computer.Resolver
+            bool exists = context.SignatureResolver
                 .FindFunctions(name.Value)
                 .Any();
 

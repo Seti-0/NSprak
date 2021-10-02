@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
+using NSprak.Functions;
 using NSprak.Functions.Resolution;
 using NSprak.Operations;
 using NSprak.Operations.Types;
@@ -49,9 +50,21 @@ namespace NSprak.Execution
         public event EventHandler Stopped;
         public event EventHandler Paused;
 
-        public Executor(Computer computer, SignatureResolver resolver)
+        public Executor(Computer computer)
         {
-            _context = new ExecutionContext(computer, resolver);
+            // At some point the list of library names should be stored
+            // in the executable... but there is only one library at the moment.
+            List<Library> libraries = new List<Library>
+            {
+                Library.Core
+            };
+
+            AssignmentResolver assignments = new AssignmentResolver(libraries);
+            SignatureResolver signatures = new SignatureResolver(libraries, assignments);
+
+            signatures.SpecifyUserFunctions(computer.Executable.FunctionDeclarations);
+
+            _context = new ExecutionContext(computer, signatures);
 
             _context.Reset();
             State = ExecutorState.Idle;

@@ -15,6 +15,8 @@ namespace NSprak.Execution
 
         public Executable Executable { get; private set; }
 
+        public SignatureResolver SignatureResolver { get; }
+
         public Memory Memory { get; } 
 
         public InstructionEnumerator Instructions { get; } = new InstructionEnumerator();
@@ -25,6 +27,7 @@ namespace NSprak.Execution
         {
             Computer = computer;
             Memory = new Memory(new SprakConverter(resolver, this));
+            SignatureResolver = resolver;
         }
 
         public void Reset()

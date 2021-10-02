@@ -11,15 +11,7 @@ namespace NSprak
 {
     public class Computer
     {
-        private readonly SignatureResolver _signatureLookup;
-        private readonly AssignmentResolver _assignmentLookup;
-
-        // This should not be visible. Actually, the resolvers shouldn't
-        // be fields of the computer at all. This is to be revisited at some 
-        // point.
-        public SignatureResolver Resolver => _signatureLookup;
-
-        public Compiler Compiler { get; }
+        public Compiler Compiler { get; } = new Compiler();
 
         public Executable Executable { get; private set; } = new Executable();
 
@@ -29,29 +21,11 @@ namespace NSprak
 
         public string Source { get; set; }
 
-        public List<Library> Libraries = new List<Library>
-        {
-            Library.Core
-        };
-
-        public Computer()
-        {
-            Compiler = new Compiler();
-
-            _assignmentLookup = new AssignmentResolver(Libraries);
-            _signatureLookup = new SignatureResolver(Libraries, _assignmentLookup);
-
-            _signatureLookup.SpecifyOperationBindings(new List<OperationBinding>());
-        }
-
         public bool Compile()
         {
             Messenger.Clear();
 
-            CompilationEnvironment environment = new CompilationEnvironment(
-                Messenger, _signatureLookup, _assignmentLookup);
-
-            Executable exe = Compiler.Compile(Source, environment);
+            Executable exe = Compiler.Compile(Source, Messenger);
             
             if (exe == null)
                 return false;
@@ -65,7 +39,7 @@ namespace NSprak
 
         public Executor CreateExecutor()
         {
-            return new Executor(this, _signatureLookup);
+            return new Executor(this);
         }
     }
 }
