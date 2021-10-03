@@ -66,10 +66,12 @@ namespace NSprak.Operations.Creation
             if (finalEndLabel == null)
                 throw new Exception("Encountered ElseIf Header without an end label!");
 
-            if (header.NextConditionalComponentHint == null && header.RequiresScopeHint)
+            if (header.NextConditionalComponentHint == null)
             {
                 builder.SetLabelToNext(finalEndLabel);
-                builder.AddOp(new ScopeEnd(), header.ParentBlockHint.EndToken);
+                
+                if (header.RequiresScopeHint)
+                    builder.AddOp(new ScopeEnd(), header.ParentBlockHint.EndToken);
             }
             else
                 builder.AddOp(new JumpLabel(finalEndLabel));

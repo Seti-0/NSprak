@@ -94,20 +94,24 @@ namespace NSprakIDE.Controls.Screen
                 layer.OnTextInput(e);
         }
 
-        protected override void OnKeyDown(KeyEventArgs e)
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
+            base.OnPreviewKeyDown(e);
 
             foreach (ScreenLayer layer in _layers)
                 layer.OnKeyDown(e);
+
+            e.Handled = true;
         }
 
-        protected override void OnKeyUp(KeyEventArgs e)
+        protected override void OnPreviewKeyUp(KeyEventArgs e)
         {
-            base.OnKeyUp(e);
+            base.OnPreviewKeyUp(e);
 
             foreach (ScreenLayer layer in _layers)
                 layer.OnKeyUp(e);
+
+            e.Handled = true;
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)

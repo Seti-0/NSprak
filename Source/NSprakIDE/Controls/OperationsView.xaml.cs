@@ -51,7 +51,7 @@ namespace NSprakIDE.Controls
         }
 
         private Executable _target;
-        private Dictionary<int, string> _labelLookup;
+        private Dictionary<int, HashSet<string>> _labelLookup;
 
         private FlowDocument _document;
         private Paragraph _paragraph;
@@ -74,9 +74,17 @@ namespace NSprakIDE.Controls
             {
                 _target = value;
 
-                _labelLookup = new Dictionary<int, string>();
+                _labelLookup = new Dictionary<int, HashSet<string>>();
                 foreach ((string label, int index) in _target.Labels)
-                    _labelLookup.Add(index, label);
+                {
+                    if (!_labelLookup.TryGetValue(index, out HashSet<string> labels))
+                    {
+                        labels = new HashSet<string>();
+                        _labelLookup.Add(index, labels);
+                    }
+
+                    labels.Add(label);
+                }
 
                 Update();
             }
@@ -237,20 +245,25 @@ namespace NSprakIDE.Controls
 
             int n = _target.Instructions.Count;
             _indexWidth = (int)Math.Log10(n) + 1;
-            
+
+
+            HashSet<string> labels;
             for (int i = 0; i < n; i++)
             {
                 Op op = _target.Instructions[i];
                 OpDebugInfo info = _target.DebugInfo[i];
 
-                if (_labelLookup.TryGetValue(i, out string labelName))
-                    WriteLabel(labelName);
+                if (_labelLookup.TryGetValue(i, out labels))
+                    WriteLabels(labels);
 
                 if (op is Pass)
                     WritePass(op, info, i);
                 else
                     Write(op, info, i);
             }
+
+            if (_labelLookup.TryGetValue(n, out labels))
+                WriteLabels(labels);
 
             RefreshVisual();
         }
@@ -354,11 +367,13 @@ namespace NSprakIDE.Controls
             return -1;
         }
 
-        private void WriteLabel(string name)
+        private void WriteLabels(IEnumerable<string> labels)
         {
             NewParagraph();
 
-            Write(Theme.Operations.Label,  new string(' ', _indexWidth) + "Label: " + name );
+            string indent = new string(' ', _indexWidth);
+            foreach (string label in labels)
+                Write(Theme.Operations.Label,  indent + "Label: " + label );
 
             LineBreak();
             NewParagraph();
