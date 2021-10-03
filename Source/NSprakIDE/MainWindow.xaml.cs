@@ -41,6 +41,7 @@ namespace NSprakIDE
 
             SetupViewHiding(ScreenView, ScreenTab, OutputTabs);
             SetupViewHiding(LocalsView, LocalsTab, InfoTabs);
+            SetupViewHiding(CallstackView, CallstackTab, InfoTabs);
         }
 
         private void OnOpenFile(object sender, FileOpenedEventArgs e)
@@ -79,7 +80,8 @@ namespace NSprakIDE
                 FilePath = filePath,
                 LocalsView = LocalsView,
                 MessageView = MessageView,
-                ScreenView = ScreenView
+                ScreenView = ScreenView,
+                CallStackView = CallstackView
             };
 
             ComputerEditor editor = new ComputerEditor(enviroment);

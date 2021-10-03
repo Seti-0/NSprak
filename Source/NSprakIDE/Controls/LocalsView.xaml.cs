@@ -41,9 +41,6 @@ namespace NSprakIDE.Controls
         }
     }
 
-    /// <summary>
-    /// Interaction logic for LocalsView.xaml
-    /// </summary>
     public partial class LocalsView : UserControl, IViewSupplierView<Executor>
     {
         public ViewSupplier<Executor> Supplier { get; }

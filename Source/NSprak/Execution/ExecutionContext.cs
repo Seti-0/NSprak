@@ -39,8 +39,13 @@ namespace NSprak.Execution
             Instructions.Reset(Executable);
         }
 
-        public void BeginFrame(int index, FunctionSignature debugInfo)
+        public void BeginFrame(int index, FunctionSignature debugSignature)
         {
+            int debugIndex = Instructions.Index;
+            ExecutionScope debugScope = Memory.CurrentScope;
+            FrameDebugInfo debugInfo = new FrameDebugInfo(
+                debugSignature, debugIndex, debugScope);
+
             Memory.Frames.Push(Instructions.Index + 1);
             Instructions.Jump(index);
 

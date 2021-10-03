@@ -16,7 +16,7 @@ namespace NSprakIDE.Controls.Source
 {
     public class RuntimeHighlighter : IColorizerElement<Expression>
     {
-        public Executor Executor { get; set; }
+        public int HighlightedOpLocation { get; set; }
 
         private bool TryGetKeys(Expression item, 
             out string background, out string text)
@@ -27,7 +27,7 @@ namespace NSprakIDE.Controls.Source
 
             foreach (OpDebugInfo op in item.OperatorsHint)
             {
-                if (Executor != null && op.Index == Executor.Instructions.Index)
+                if (HighlightedOpLocation != -1 && op.Index == HighlightedOpLocation)
                 {
                     background = Theme.Runtime.Next;
                     text = Theme.Runtime.NextText;

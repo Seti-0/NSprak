@@ -59,12 +59,6 @@ namespace NSprakIDE.Controls
             get => MainEditor.CaretOffset;
         }
 
-        public Executor Executor
-        {
-            get => _runtimeHighlighter.Executor;
-            set => _runtimeHighlighter.Executor = value;
-        }
-
         public event EventHandler<EventArgs> HasChangesChanged;
 
         public SourceEditor(Messenger messenger)
@@ -118,6 +112,16 @@ namespace NSprakIDE.Controls
 
             //MainEditor.TextArea.TextEntering += TextArea_TextEntering;
             //MainEditor.TextArea.TextEntered += TextArea_TextEntered;
+        }
+
+        public void Highlight(int index)
+        {
+            _runtimeHighlighter.HighlightedOpLocation = index;
+        }
+
+        public void ClearHighlight()
+        {
+            _runtimeHighlighter.HighlightedOpLocation = -1;
         }
 
         /*
@@ -195,6 +199,11 @@ namespace NSprakIDE.Controls
         public void EnsureLineIsVisible(int lineNumber, int columnNumber)
         {
             MainEditor.ScrollTo(lineNumber, columnNumber);
+        }
+
+        public void ScrollToEnd()
+        {
+            MainEditor.ScrollToEnd();
         }
 
         public void Update(Compiler compiler)

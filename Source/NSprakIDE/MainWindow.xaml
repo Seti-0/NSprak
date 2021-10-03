@@ -180,10 +180,12 @@
                             That'll probably be for the next iteration, so
                             leaving this commented out for now.
                             
-                            <TabItem Name="CallstackTab" Header="Callstack">
+                            --> 
+                            
+                            <TabItem Name="CallstackTab" Header="Call Stack">
                                 <Controls:CallStackView x:Name="CallstackView"/>
                             </TabItem>
-                            -->
+                        
                         </TabControl>
 
                     </DockPanel>

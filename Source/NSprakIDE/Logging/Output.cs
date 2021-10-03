@@ -117,15 +117,18 @@ namespace NSprakIDE.Logging
                 if (!match.Success)
                     break;
 
-                WriteLight(text[currentIndex..match.Index]);
-                currentIndex = match.Index;
+                // Matching is done in a substring starting with currentIndex,
+                // so match.Index is relative to currentIndex!
+
+                WriteLight(text[currentIndex..(match.Index + currentIndex)]);
+                currentIndex += match.Index;
 
                 match = Regex.Match(text[currentIndex..], end);
                 if (!match.Success)
                     break;
 
-                WriteDark(text[currentIndex..(match.Index + 1)]);
-                currentIndex = match.Index + 1;
+                WriteDark(text[currentIndex..(currentIndex + match.Index + 1)]);
+                currentIndex += match.Index + 1;
             }
 
             WriteLight(text[currentIndex..]);

@@ -113,6 +113,9 @@ namespace NSprakIDE.Controls.Output
 
         private void WriteUnsafe(string text)
         {
+            if (text.Length == 0)
+                return;
+
             WriteUnsafe(new Run(text));
         }
 

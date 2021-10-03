@@ -13,6 +13,23 @@ using NSprak.Language.Values;
 
 namespace NSprak.Execution
 {
+    public class FrameDebugInfo
+    {
+        public FunctionSignature FunctionSignature { get; }
+
+        public int Origin { get; }
+
+        public ExecutionScope Scope { get; set; }
+
+        public FrameDebugInfo(
+            FunctionSignature signature, int location, ExecutionScope scope)
+        {
+            FunctionSignature = signature;
+            Origin = location;
+            Scope = scope;
+        }
+    }
+
     public class ExecutionScope
     {
         private readonly bool _inherit;
@@ -88,7 +105,8 @@ namespace NSprak.Execution
 
         public Stack<int> Frames { get; } = new Stack<int>();
 
-        public Stack<FunctionSignature> FrameDebugInfo { get; } = new Stack<FunctionSignature>();
+        public Stack<FrameDebugInfo> FrameDebugInfo { get; } 
+            = new Stack<FrameDebugInfo>();
 
         public ExecutionScope CurrentScope { get; private set; } = new ExecutionScope();
 
@@ -108,6 +126,9 @@ namespace NSprak.Execution
         public void BeginScope(bool inherit)
         {
             CurrentScope = new ExecutionScope(CurrentScope, inherit);
+
+            if (FrameDebugInfo.Count > 0)
+                FrameDebugInfo.Peek().Scope = CurrentScope;
         }
 
         public void EndScope()

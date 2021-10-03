@@ -55,6 +55,7 @@ namespace NSprakIDE.Controls
         public string GivenID { get; }
 
         private readonly Executor _executor;
+        private CallStackContext _callstackContext;
 
         private readonly string _filePath;
 
@@ -104,14 +105,12 @@ namespace NSprakIDE.Controls
 
             _executor = Computer.CreateExecutor();
 
-            if (Environment.CallStackView != null)
-                Environment.CallStackView.Target = _executor;
+            _callstackContext = new CallStackContext(_executor);
+            _callstackContext.Changed += CallStackContext_Changed;
 
             _sourceEditor = new SourceEditor(Computer.Messenger);
             _expressionView = new ExpressionView();
             _operationsView = new OperationsView();
-
-            _sourceEditor.Executor = _executor;
 
             MainContent.Content = _sourceEditor;
 
@@ -267,6 +266,8 @@ namespace NSprakIDE.Controls
                 Task.Run(_executor.Start);
             else
                 Task.Run(_executor.Continue);
+
+            ClearRuntimeHighlights();
         }
 
         public void StepInto()
@@ -293,29 +294,66 @@ namespace NSprakIDE.Controls
         {
             void Action()
             {
-                _operationsView.Highlight(_executor.Instructions.Index);
-                ShowLocalsView();
+                ShowDebugViews();
                 Environment.LocalsView.Update();
-                // The callstack view could do this itself by listening to
-                // its executor.
-                Environment.CallStackView?.Update();
-
-                Token token = _executor.Instructions.CurrentInfo.FocusToken;
-                if (token != null)
-                {
-                    int lineNumber = token.LineNumber;
-                    int columnNumber = token.ColumnStart;
-                    _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
-                    _sourceEditor.Redraw();
-                }
+                Environment.CallStackView.Update();
+                UpdateRuntimeHighlights();
 
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
-                InvalidateVisual();
-
                 OnDebuggerPaused();
             }
 
             Dispatcher.Invoke(Action);
+        }
+
+        public void ClearRuntimeHighlights()
+        {
+            _operationsView.ClearHighlight();
+            _sourceEditor.ClearHighlight();
+        }
+
+        private void UpdateRuntimeHighlights()
+        {
+            if (_executor.State != ExecutorState.Paused)
+            {
+                ClearRuntimeHighlights();
+                return;
+            }
+
+            if (_executor.Executable.InstructionCount == 0)
+                return;
+
+            int opIndex = _callstackContext.Location;
+            
+            if (opIndex < 0)
+                opIndex = 0;
+
+            int lineNumber, columnNumber;
+
+            if (opIndex < _executor.Executable.InstructionCount)
+            {
+                _operationsView.Highlight(opIndex);
+
+                _sourceEditor.Highlight(opIndex);
+                _sourceEditor.Redraw();
+
+                Token focus = _executor.Executable.DebugInfo[opIndex].FocusToken;
+                if (focus != null)
+                {
+                    lineNumber = focus.LineNumber;
+                    columnNumber = focus.ColumnStart;
+                    _sourceEditor.EnsureLineIsVisible(lineNumber, columnNumber);
+                }
+            }
+            else
+            {
+                _operationsView.ClearHighlight();
+                _sourceEditor.ClearHighlight();
+                _sourceEditor.ScrollToEnd();
+
+            }
+
+            InvalidateVisual();
         }
 
         protected virtual void OnDebuggerPaused()
@@ -331,9 +369,10 @@ namespace NSprakIDE.Controls
                 _operationsView.ClearHighlight();
                 _sourceEditor.Redraw();
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
+                ClearRuntimeHighlights();
                 InvalidateVisual();
 
-                HideLocalsView();
+                HideDebugViews();
 
                 OnDebuggerStopped();
             }
@@ -412,25 +451,44 @@ namespace NSprakIDE.Controls
             return FindExpression(root);
         }
 
-        private void ShowLocalsView()
+        private void ShowDebugViews()
         {
-            ViewSupplier<Executor> supplier = Environment.LocalsView.Supplier;
             string key = Environment.GivenID;
 
-            if (supplier.ContainsKey(key))
-                return;
+            // Call Stack
 
-            Environment.LocalsView.Supplier.Start(
-                _executor,
-                Environment.GivenID,
-                Environment.Name,
-                MainWindow.ComputerLogCategory
-            );
+            ViewSupplier<CallStackContext> callstack
+                = Environment.CallStackView.Supplier;
+
+            if (!callstack.ContainsKey(key))
+                callstack.Start(
+                    _callstackContext,
+                    key,
+                    Environment.Name,
+                    MainWindow.ComputerLogCategory);
+
+            // Locals
+
+            ViewSupplier<Executor> locals = Environment.LocalsView.Supplier;
+
+            if (!locals.ContainsKey(key))
+                locals.Start(
+                    _executor,
+                    Environment.GivenID,
+                    Environment.Name,
+                    MainWindow.ComputerLogCategory
+                );
         }
 
-        private void HideLocalsView()
+        private void HideDebugViews()
         {
             Environment.LocalsView.Supplier.End(Environment.GivenID);
+            Environment.CallStackView.Supplier.End(Environment.GivenID);
+        }
+
+        private void CallStackContext_Changed(object sender, EventArgs e)
+        {
+            UpdateRuntimeHighlights();
         }
     }
 }
