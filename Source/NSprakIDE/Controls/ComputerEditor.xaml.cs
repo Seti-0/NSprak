@@ -28,10 +28,6 @@ namespace NSprakIDE.Controls
 
         public string FilePath;
 
-        public LocalsView LocalsView;
-
-        public CallStackView CallStackView;
-
         public MessageView MessageView;
 
         public ScreenView ScreenView;
@@ -57,7 +53,6 @@ namespace NSprakIDE.Controls
         public string GivenID { get; }
 
         private readonly Executor _executor;
-        private CallStackContext _callstackContext;
         private MemoryViewContext _memoryContext;
 
         private readonly string _filePath;
@@ -108,8 +103,6 @@ namespace NSprakIDE.Controls
 
             _executor = Computer.CreateExecutor();
 
-            _callstackContext = new CallStackContext(_executor);
-            _callstackContext.Changed += CallStackContext_Changed;
             _memoryContext = new MemoryViewContext(_executor);
             _memoryContext.Changed += MemoryContext_Changed;
 
@@ -150,7 +143,7 @@ namespace NSprakIDE.Controls
         {
             Environment.ScreenView.Supplier.End(Environment.GivenID);
             Environment.MessageView.Supplier.End(Environment.GivenID);
-            Environment.LocalsView.Supplier.End(Environment.GivenID);
+            Environment.MemoryView.Supplier.End(Environment.GivenID);
             OnClosing();
         }
 
@@ -262,7 +255,7 @@ namespace NSprakIDE.Controls
                     break;
             }
 
-            Environment.LocalsView.Update();
+            Environment.MemoryView.Update();
         }
 
         public void StartOrContinue()
@@ -300,8 +293,6 @@ namespace NSprakIDE.Controls
             void Action()
             {
                 ShowDebugViews();
-                Environment.LocalsView.Update();
-                Environment.CallStackView.Update();
                 Environment.MemoryView.Update();
                 UpdateRuntimeHighlights();
 
@@ -371,7 +362,6 @@ namespace NSprakIDE.Controls
         {
             void Action()
             {
-                Environment.LocalsView.Update();
                 _operationsView.ClearHighlight();
                 _sourceEditor.Redraw();
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
@@ -461,8 +451,6 @@ namespace NSprakIDE.Controls
         {
             string key = Environment.GivenID;
 
-           // Memory
-
             ViewSupplier<MemoryViewContext> memory
                 = Environment.MemoryView.Supplier;
 
@@ -472,37 +460,10 @@ namespace NSprakIDE.Controls
                     key,
                     Environment.Name,
                     MainWindow.ComputerLogCategory);
-
-
-            // Call Stack
-
-            ViewSupplier<CallStackContext> callstack
-                = Environment.CallStackView.Supplier;
-
-            if (!callstack.ContainsKey(key))
-                callstack.Start(
-                    _callstackContext,
-                    key,
-                    Environment.Name,
-                    MainWindow.ComputerLogCategory);
-
-            // Locals
-
-            ViewSupplier<Executor> locals = Environment.LocalsView.Supplier;
-
-            if (!locals.ContainsKey(key))
-                locals.Start(
-                    _executor,
-                    Environment.GivenID,
-                    Environment.Name,
-                    MainWindow.ComputerLogCategory
-                );
         }
 
         private void HideDebugViews()
         {
-            Environment.LocalsView.Supplier.End(Environment.GivenID);
-            Environment.CallStackView.Supplier.End(Environment.GivenID);
             Environment.MemoryView.Supplier.End(Environment.GivenID);
         }
 

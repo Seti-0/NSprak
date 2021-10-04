@@ -153,7 +153,7 @@ namespace NSprakIDE.Controls
 
             if (context == null)
             {
-                ValuesList.Visibility = Visibility.Collapsed;
+                ValuesSection.Visibility = Visibility.Collapsed;
                 return;
             }
 

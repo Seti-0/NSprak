@@ -40,8 +40,6 @@ namespace NSprakIDE
             FileView.FileOpened += OnOpenFile;
 
             SetupViewHiding(ScreenView, ScreenTab, OutputTabs);
-            SetupViewHiding(LocalsView, LocalsTab, InfoTabs);
-            SetupViewHiding(CallstackView, CallstackTab, InfoTabs);
             SetupViewHiding(MemoryView, MemoryTab, InfoTabs);
         }
 
@@ -79,10 +77,8 @@ namespace NSprakIDE
                 Name = name,
                 GivenID = id,
                 FilePath = filePath,
-                LocalsView = LocalsView,
                 MessageView = MessageView,
                 ScreenView = ScreenView,
-                CallStackView = CallstackView,
                 MemoryView = MemoryView
             };
 
@@ -107,7 +103,6 @@ namespace NSprakIDE
             {
                 MessageView.Supplier.Select(id);
                 ScreenView.Supplier.Select(id);
-                LocalsView.Supplier.Select(id);
                 MemoryView.Supplier.Select(id);
             }
             newTab.MouseUp += (s, e) => OnTabSelected();
