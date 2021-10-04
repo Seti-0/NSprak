@@ -42,6 +42,7 @@ namespace NSprakIDE
             SetupViewHiding(ScreenView, ScreenTab, OutputTabs);
             SetupViewHiding(LocalsView, LocalsTab, InfoTabs);
             SetupViewHiding(CallstackView, CallstackTab, InfoTabs);
+            SetupViewHiding(MemoryView, MemoryTab, InfoTabs);
         }
 
         private void OnOpenFile(object sender, FileOpenedEventArgs e)
@@ -81,7 +82,8 @@ namespace NSprakIDE
                 LocalsView = LocalsView,
                 MessageView = MessageView,
                 ScreenView = ScreenView,
-                CallStackView = CallstackView
+                CallStackView = CallstackView,
+                MemoryView = MemoryView
             };
 
             ComputerEditor editor = new ComputerEditor(enviroment);
@@ -106,6 +108,7 @@ namespace NSprakIDE
                 MessageView.Supplier.Select(id);
                 ScreenView.Supplier.Select(id);
                 LocalsView.Supplier.Select(id);
+                MemoryView.Supplier.Select(id);
             }
             newTab.MouseUp += (s, e) => OnTabSelected();
             

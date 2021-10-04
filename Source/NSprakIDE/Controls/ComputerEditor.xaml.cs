@@ -35,6 +35,8 @@ namespace NSprakIDE.Controls
         public MessageView MessageView;
 
         public ScreenView ScreenView;
+
+        public MemoryView MemoryView;
     }
 
     public enum ComputerEditorMode
@@ -56,6 +58,7 @@ namespace NSprakIDE.Controls
 
         private readonly Executor _executor;
         private CallStackContext _callstackContext;
+        private MemoryViewContext _memoryContext;
 
         private readonly string _filePath;
 
@@ -107,6 +110,8 @@ namespace NSprakIDE.Controls
 
             _callstackContext = new CallStackContext(_executor);
             _callstackContext.Changed += CallStackContext_Changed;
+            _memoryContext = new MemoryViewContext(_executor);
+            _memoryContext.Changed += MemoryContext_Changed;
 
             _sourceEditor = new SourceEditor(Computer.Messenger);
             _expressionView = new ExpressionView();
@@ -297,6 +302,7 @@ namespace NSprakIDE.Controls
                 ShowDebugViews();
                 Environment.LocalsView.Update();
                 Environment.CallStackView.Update();
+                Environment.MemoryView.Update();
                 UpdateRuntimeHighlights();
 
                 CommandContextChanged?.Invoke(this, EventArgs.Empty);
@@ -323,7 +329,7 @@ namespace NSprakIDE.Controls
             if (_executor.Executable.InstructionCount == 0)
                 return;
 
-            int opIndex = _callstackContext.Location;
+            int opIndex = _memoryContext.Location;
             
             if (opIndex < 0)
                 opIndex = 0;
@@ -455,6 +461,19 @@ namespace NSprakIDE.Controls
         {
             string key = Environment.GivenID;
 
+           // Memory
+
+            ViewSupplier<MemoryViewContext> memory
+                = Environment.MemoryView.Supplier;
+
+            if (!memory.ContainsKey(key))
+                memory.Start(
+                    _memoryContext,
+                    key,
+                    Environment.Name,
+                    MainWindow.ComputerLogCategory);
+
+
             // Call Stack
 
             ViewSupplier<CallStackContext> callstack
@@ -484,9 +503,15 @@ namespace NSprakIDE.Controls
         {
             Environment.LocalsView.Supplier.End(Environment.GivenID);
             Environment.CallStackView.Supplier.End(Environment.GivenID);
+            Environment.MemoryView.Supplier.End(Environment.GivenID);
         }
 
         private void CallStackContext_Changed(object sender, EventArgs e)
+        {
+            UpdateRuntimeHighlights();
+        }
+
+        private void MemoryContext_Changed(object sender, EventArgs e)
         {
             UpdateRuntimeHighlights();
         }

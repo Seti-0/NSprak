@@ -185,6 +185,10 @@
                             <TabItem Name="CallstackTab" Header="Call Stack">
                                 <Controls:CallStackView x:Name="CallstackView"/>
                             </TabItem>
+
+                            <TabItem Name="MemoryTab" Header="Memory">
+                                <Controls:MemoryView x:Name="MemoryView"/>
+                            </TabItem>
                         
                         </TabControl>
 

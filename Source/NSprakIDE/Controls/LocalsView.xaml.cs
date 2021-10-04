@@ -12,34 +12,7 @@ using NSprakIDE.Controls.General;
 
 namespace NSprakIDE.Controls
 {
-    public class LocalWrapper
-    {
-        public string Name { get; }
-
-        public string Value { get; }
-
-        public string SprakType { get; }
-
-        public LocalWrapper(string name, Value value)
-        {
-            Name = name;
-            Value = value?.ToString();
-            SprakType = value?.Type?.InternalName;
-        }
-    }
-
-    public class ValueWrapper
-    {
-        public string Value { get; }
-
-        public string SprakType { get; }
-
-        public ValueWrapper(Value value)
-        {
-            Value = value?.ToString();
-            SprakType = value?.Type?.InternalName;
-        }
-    }
+    
 
     public partial class LocalsView : UserControl, IViewSupplierView<Executor>
     {

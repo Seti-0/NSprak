@@ -57,29 +57,6 @@ namespace NSprakIDE.Controls
         }
     }
 
-    public class CallStackItem
-    {
-        public FunctionSignature Signature { get; set; }
-
-        public int Location { get; set; }
-
-        public string Name { get; set; }
-
-        public string Namespace { get; set; }
-
-        public string Params { get; set; }
-
-        public CallStackItem(FunctionSignature signature, int location)
-        {
-            Signature = signature;
-            Location = location;
-
-            Name = signature.Name;
-            Namespace = signature.Namespace;
-            Params = $"({signature.TypeSignature})";
-        }
-    }
-
     public partial class CallStackView :
         UserControl, IViewSupplierView<CallStackContext>
     {
