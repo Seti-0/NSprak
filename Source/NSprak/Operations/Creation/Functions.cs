@@ -8,6 +8,7 @@ using NSprak.Operations.Types;
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
 using NSprak.Language;
+using NSprak.Tokens;
 
 namespace NSprak.Operations.Creation
 {
@@ -43,7 +44,11 @@ namespace NSprak.Operations.Creation
             // This is hacky, and might be cleaned up someday
             List<Op> sheet = builder.Operations;
             bool returnMissing = sheet.Count == 0 || !(sheet[^1] is Types.Return);
-            if (returnMissing) builder.AddOp(new Types.Return(), header.EndToken);
+            if (returnMissing)
+            {
+                Expression source = header.ParentBlockHint.EndStatement ?? header;
+                builder.AddOp(new Types.Return(), source: source);
+            }
         }
     }
 }

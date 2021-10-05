@@ -114,10 +114,11 @@ namespace NSprak.Operations
             AddOp(pass, null, message);
         }
 
-        public void AddOp(Op op, Token focus = null, string comment = null)
+        public void AddOp(Op op, Token focus = null, 
+            string comment = null, Expression source = null)
         {
-            Expression source = null;
-            if (_sources.Count > 0) source = _sources.Peek();
+            if (source == null && _sources.Count > 0) 
+                source = _sources.Peek();
 
             int index = Operations.Count;
 

@@ -215,6 +215,9 @@ namespace NSprakIDE.Controls.Expressions
 
                     foreach (NSprakExpression statement in block.Statements)
                         AddParameter(null, statement);
+
+                    if (block.EndStatement != null)
+                        AddParameter(null, block.EndStatement);
                     
                     break;
 
@@ -507,7 +510,11 @@ namespace NSprakIDE.Controls.Expressions
             {
                 case NSprakBlock block: RenderHeader(block.Header); break;
 
-                case Command command: RenderKeyword(command.Keyword); break;
+                case Command command:
+                    char[] characters = command.Keyword.ToCharArray();
+                    characters[0] = char.ToUpper(characters[0]);
+                    RenderKeyword(new string(characters)); 
+                    break;
 
                 case Indexer _: RenderKeyword("Array Index"); break;
 

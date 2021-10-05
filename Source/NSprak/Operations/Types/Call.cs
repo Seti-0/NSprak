@@ -31,8 +31,8 @@ namespace NSprak.Operations.Types
                 throw new SprakInternalExecutionException(message);
             }
 
-            context.Memory.BeginScope(inherit: false);
             context.BeginFrame(index, Signature);
+            context.Memory.BeginScope(inherit: false);
         }
     }
 }

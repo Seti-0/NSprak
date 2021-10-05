@@ -10,29 +10,31 @@ namespace NSprak.Expressions.Types
 {
     public class Block : Expression
     {
-        private readonly Token _startToken;
-        private readonly Token _endToken;
-
         public Header Header { get; }
 
-        public Scope ScopeHint { get; set; }
+        public Expression EndStatement { get; }
 
         public IReadOnlyList<Expression> Statements { get; }
 
-        public override Token StartToken => _startToken ?? Header.StartToken;
+        public override Token StartToken { get; }
 
-        public override Token EndToken => _endToken ?? 
-            (Statements.Count != 0 ? Statements[^1].EndToken : Header.EndToken);
+        public override Token EndToken { get; }
 
-        public Block(Header header, List<Expression> body, 
+        public Scope ScopeHint { get; set; }
+
+        public Block(
+            Header header, List<Expression> body, Expression endStatement,
             Token startToken = null, Token endToken = null)
         {
             Header = header;
-            header.ParentBlockHint = this;
-            _startToken = startToken;
-            _endToken = endToken;
-
             Statements = body;
+            EndStatement = endStatement;
+
+            StartToken = startToken ?? Header.StartToken;
+            EndToken = endToken ?? EndStatement?.EndToken
+                ?? (Statements.Count > 0 ? Statements[^1].EndToken : null);
+
+            header.ParentBlockHint = this;
         }
 
         public override string ToString()
@@ -51,6 +53,9 @@ namespace NSprak.Expressions.Types
 
             foreach (Expression statement in Statements)
                 yield return statement;
+
+            if (EndStatement != null)
+                yield return EndStatement;
         }
 
         public bool TryGetVariableInfo(string name, out VariableInfo result)

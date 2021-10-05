@@ -16,7 +16,7 @@ namespace NSprakIDE.Controls.Source
 {
     public class RuntimeHighlighter : IColorizerElement<Expression>
     {
-        public int HighlightedOpLocation { get; set; }
+        public int HighlightedOpLocation { get; set; } = -1;
 
         private bool TryGetKeys(Expression item, 
             out string background, out string text)

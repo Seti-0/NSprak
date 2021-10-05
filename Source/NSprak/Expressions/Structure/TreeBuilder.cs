@@ -16,7 +16,8 @@ namespace NSprak.Expressions.Structure
     {
         public static Block Build(List<Expression> statements, CompilationEnvironment env)
         {
-            Token mainStart = null, mainEnd = null;
+            Token mainStart = null;
+            Token mainEnd = null;
 
             if (statements.Count > 0)
             {
@@ -53,7 +54,7 @@ namespace NSprak.Expressions.Structure
                             if (ifStatements.Count > 0)
                                 endToken = ifStatements[^1].EndToken;
 
-                            EndBlock(endToken);
+                            EndBlock(null);
                             valid = true;
                         }
                         else if (headerStack.Peek() is ElseIfHeader elseIfHeader)
@@ -65,7 +66,7 @@ namespace NSprak.Expressions.Structure
                             if (ifStatements.Count > 0)
                                 endToken = ifStatements[^1].EndToken;
 
-                            EndBlock(endToken);
+                            EndBlock(null);
                             valid = true;
                         }
                     }
@@ -92,18 +93,22 @@ namespace NSprak.Expressions.Structure
                     if (headerStack.Count == 0)
                         env.Messages.AtExpression(command, Messages.ExtraEndStatement);
 
-                    else EndBlock(command.Token);
+                    else EndBlock(command);
                 }
                 else statementStack.Peek().Add(statement);
             }
 
-            void EndBlock(Token endToken)
+            void EndBlock(Expression blockEnd = null,
+                Token startToken = null, Token endToken = null)
             {
                 Header blockHeader = headerStack.Pop();
                 List<Expression> blockStatements = statementStack.Pop();
-                Token blockStart = blockHeader.StartToken;
-                Block block = new Block(
-                    blockHeader, blockStatements, blockStart, endToken);
+
+                startToken ??= blockHeader.StartToken;
+                endToken ??= blockEnd?.EndToken;
+
+                Block block = new Block(blockHeader, blockStatements, blockEnd, 
+                    startToken, endToken);
 
                 statementStack.Peek().Add(block);
             }
@@ -113,7 +118,7 @@ namespace NSprak.Expressions.Structure
                 env.Messages.AtExpression(
                     headerStack.Peek(), Messages.BlockNotClosed);
 
-                EndBlock(mainEnd);
+                EndBlock(null, endToken: mainEnd);
             }
 
             if (statementStack.Count != 1)
@@ -122,7 +127,12 @@ namespace NSprak.Expressions.Structure
 
             Header header = new MainHeader();
             List<Expression> mainStatements = statementStack.Pop();
-            Block mainBlock = new Block(header, mainStatements, mainStart, mainEnd);
+            
+            // The main header has no start/end token, so the start token
+            // has to be explicitly given here.
+            Block mainBlock = new Block(header, mainStatements, null, 
+                startToken: mainStart, endToken: mainEnd);
+
             mainBlock.ScopeHint = new Scope();
             return mainBlock;
         }

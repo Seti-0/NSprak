@@ -26,6 +26,12 @@ namespace NSprak.Operations.Creation
 
             switch (command.Keyword)
             {
+                case Keywords.End:
+                    // End keywords were used to make the tree. They exist as 
+                    // statements beyond that only so that the tree (and editor
+                    // functions that depend on the tree) are aware of them.
+                    return;
+
                 case Keywords.Break:
 
                     if (builder.BreakLabels.Count == 0)
@@ -43,7 +49,6 @@ namespace NSprak.Operations.Creation
                     break;
 
                 default:
-
                     builder.ThrowError("Encountered unexpected command expression");
                     break;
             }

@@ -125,13 +125,18 @@ namespace NSprakIDE.Controls
         {
             FrameList.ItemsSource = null;
             FrameList.Items.Clear();
-            CheckFrameSelection();
-
-            LocalsList.ItemsSource = null;
-            LocalsList.Items.Clear();
+            
+            CheckFrameSelection(SelectedContext);
+            ClearVariablesView();
 
             ValuesList.ItemsSource = null;
             ValuesList.Items.Clear();
+        }
+
+        private void ClearVariablesView()
+        {
+            LocalsList.ItemsSource = null;
+            LocalsList.Items.Clear();
         }
 
         public void Update()
@@ -157,20 +162,8 @@ namespace NSprakIDE.Controls
                 .Select(x => new CallStackItem(x))
                 .ToList();
 
-            CheckFrameSelection();
-
-            // Variables View
-
-            List<LocalWrapper> locals;
-
-            locals = executor
-                .Memory
-                .CurrentScope
-                .ListVariables()
-                .Select(x => new LocalWrapper(x.Key, x.Value))
-                .ToList();
-
-            LocalsList.ItemsSource = locals;
+            // This will also update the variables list.
+            CheckFrameSelection(context);
 
             // Value Stack (Visible for operations view only)
 
@@ -192,6 +185,25 @@ namespace NSprakIDE.Controls
             else ValuesSection.Visibility = Visibility.Collapsed;
         }
 
+        private void UpdateVariablesView(MemoryViewContext context)
+        {
+            ClearVariablesView();
+
+            if (context == null || context.Executor.State != ExecutorState.Paused)
+                return;
+
+            List<LocalWrapper> locals;
+
+            locals = context
+                .Frame
+                .Scope
+                .ListVariables()
+                .Select(x => new LocalWrapper(x.Key, x.Value))
+                .ToList();
+
+            LocalsList.ItemsSource = locals;
+        }
+
         private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
         {
             Update();
@@ -199,13 +211,11 @@ namespace NSprakIDE.Controls
 
         private void FrameList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            CheckFrameSelection();
+            CheckFrameSelection(SelectedContext);
         }
 
-        private void CheckFrameSelection()
+        private void CheckFrameSelection(MemoryViewContext context)
         {
-            MemoryViewContext context = SelectedContext;
-
             if (context == null)
                 return;
 
@@ -220,6 +230,7 @@ namespace NSprakIDE.Controls
                 context.Update(info);
             }
 
+            UpdateVariablesView(context);
         }
     }
 }
