@@ -72,8 +72,12 @@ namespace NSprak.Expressions.Types
 
         public override IEnumerable<Expression> GetSubExpressions()
         {
+            IEnumerable<Expression> result = Indices.Select(x => x.Index);
+            
             if (Value != null)
-                yield return Value;
+                result = result.Append(Value);
+
+            return result;
         }
     }
 }

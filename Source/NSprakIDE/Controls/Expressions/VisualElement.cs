@@ -254,14 +254,19 @@ namespace NSprakIDE.Controls.Expressions
                 case VariableAssignment varAssign:
 
                     AddFunctionHintParameters(null, varAssign.BuiltInFunctionHint, varAssign.OpHint);
-                    
-                    if (varAssign.OpHint != null)
 
+                    if (varAssign.OpHint != null)
+                        AddParameter("OpHint", varAssign.OpHint);
 
                     if (varAssign.IsDeclaration)
                         AddParameter("Declared Type", varAssign.DeclarationType);
 
                     AddParameter("Name", varAssign.Name);
+
+                    if (varAssign.Indices.Count > 0)
+                        AddParameter("Indices", 
+                            varAssign.Indices.Select(x => x.Index).ToList());
+
                     AddParameter("Operator", varAssign.Operator);
                     AddParameter("Value", varAssign.Value);
 
