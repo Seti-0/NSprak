@@ -53,7 +53,7 @@ namespace NSprakIDE.Controls
         public string GivenID { get; }
 
         private readonly Executor _executor;
-        private MemoryViewContext _memoryContext;
+        private readonly MemoryViewContext _memoryContext;
 
         private readonly string _filePath;
 
@@ -320,7 +320,7 @@ namespace NSprakIDE.Controls
             if (_executor.Executable.InstructionCount == 0)
                 return;
 
-            int opIndex = _memoryContext.Location;
+            int opIndex = _memoryContext.Frame.Location;
             
             if (opIndex < 0)
                 opIndex = 0;

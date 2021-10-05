@@ -8,6 +8,11 @@ namespace NSprak.Functions.Signatures
 {
     public class FunctionSignature
     {
+        public const string Local = "";
+
+        public static readonly FunctionSignature Main
+            = new FunctionSignature(Local, "Main", new FunctionTypeSignature());
+
         public string Namespace { get; }
 
         public string Name { get; }

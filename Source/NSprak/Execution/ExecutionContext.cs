@@ -19,15 +19,21 @@ namespace NSprak.Execution
 
         public Memory Memory { get; } 
 
-        public InstructionEnumerator Instructions { get; } = new InstructionEnumerator();
+        public InstructionEnumerator Instructions { get; }
 
         public bool ExitRequested { get; private set; }
 
         public ExecutionContext(Computer computer, SignatureResolver resolver)
         {
             Computer = computer;
-            Memory = new Memory(new SprakConverter(resolver, this));
             SignatureResolver = resolver;
+            Instructions = new InstructionEnumerator();
+
+            FrameDebugInfo mainFrame 
+                = new FrameDebugInfo(Instructions, FunctionSignature.Main);
+            Memory = new Memory(new SprakConverter(resolver, this), mainFrame);
+
+            Reset();
         }
 
         public void Reset()
@@ -35,16 +41,17 @@ namespace NSprak.Execution
             Executable = Computer.Executable;
 
             ExitRequested = false;
-            Memory.Reset();
             Instructions.Reset(Executable);
+
+            Memory.Reset();
         }
 
         public void BeginFrame(int index, FunctionSignature debugSignature)
         {
-            int debugIndex = Instructions.Index;
+            Memory.FrameDebugInfo.Peek().FixLocation();
+
             ExecutionScope debugScope = Memory.CurrentScope;
-            FrameDebugInfo debugInfo = new FrameDebugInfo(
-                debugSignature, debugIndex, debugScope);
+            FrameDebugInfo debugInfo = new FrameDebugInfo(Instructions, debugSignature, debugScope);
 
             Memory.Frames.Push(Instructions.Index + 1);
             Instructions.Jump(index);
@@ -59,6 +66,7 @@ namespace NSprak.Execution
 
             Instructions.Jump(Memory.Frames.Pop());
             Memory.FrameDebugInfo.Pop();
+            Memory.FrameDebugInfo.Peek().ClearFixedLocation();
         }
 
         public void RequestExit()

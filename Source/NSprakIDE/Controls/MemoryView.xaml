@@ -38,11 +38,11 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Foreground="{StaticResource NSprakIDE.Callstack.Light}">
-                        <!-- Is there a way to have new lines without introducing unwanted spacing here? -->
-                        <Run Text="{Binding Namespace}" Foreground="{StaticResource NSprakIDE.Callstack.Accent}"/>
-                        <Run>.</Run>
-                        <Run Text="{Binding Name}" Foreground="{StaticResource NSprakIDE.Callstack.Accent}"/>
-                        <Run Text="{Binding Params}"/>
+                            <!-- Is there a way to have new lines in source without introducing unwanted spacing here? -->
+                            <Run Text="{Binding Namespace}" Foreground="{StaticResource NSprakIDE.Callstack.Accent}"/>
+                            <Run>.</Run>
+                            <Run Text="{Binding Name}" Foreground="{StaticResource NSprakIDE.Callstack.Accent}"/>
+                            <Run Text="{Binding Params}"/>
                         </TextBlock>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -64,7 +64,6 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Foreground="{StaticResource NSprakIDE.Callstack.Light}">
-                            <!-- Is there a way to have new lines without introducing unwanted spacing here? -->
                             <Run Text="{Binding Value}" Foreground="{StaticResource NSprakIDE.Source.Boolean}"/>
                             <Run Text=":" Foreground="{StaticResource NSprakIDE.Source.Operator}"/>
                             <Run Text="{Binding SprakType}" Foreground="{StaticResource NSprakIDE.Source.Type}"/>
@@ -80,13 +79,12 @@
             <TextBlock DockPanel.Dock="Top"
                     Foreground="{StaticResource NSprakIDE.Callstack.Light}"
                     Margin="5">
-                Local Variables
+                Variables
             </TextBlock>
             <ListBox Name="LocalsList">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Foreground="{StaticResource NSprakIDE.Callstack.Light}">
-                            <!-- Is there a way to have new lines without introducing unwanted spacing here? -->
                             <Run Text="{Binding SprakType}" Foreground="{StaticResource NSprakIDE.Source.Type}"/>
                             <Run Text="{Binding Name}" Foreground="{StaticResource NSprakIDE.Source.Name}"/>
                             <Run Text="=" Foreground="{StaticResource NSprakIDE.Source.Operator}"/>

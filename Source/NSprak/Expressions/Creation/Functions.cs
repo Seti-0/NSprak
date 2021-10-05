@@ -56,7 +56,8 @@ namespace NSprak.Expressions.Creation
             iterator.AssertEnd();
 
             FunctionTypeSignature typeSignature = new FunctionTypeSignature(parameters.Types);
-            FunctionSignature signature = new FunctionSignature(null, nameToken.Content, typeSignature);
+            FunctionSignature signature = new FunctionSignature(
+                FunctionSignature.Local, nameToken.Content, typeSignature);
 
             FunctionHeader result = new FunctionHeader(
                 typeToken, nameToken, end, signature, parameters.Names);

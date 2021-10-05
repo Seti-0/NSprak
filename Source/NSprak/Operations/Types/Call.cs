@@ -31,8 +31,7 @@ namespace NSprak.Operations.Types
                 throw new SprakInternalExecutionException(message);
             }
 
-            // inherit true here means that functions can access the global scope
-            context.Memory.BeginScope(inherit: true);
+            context.Memory.BeginScope(inherit: false);
             context.BeginFrame(index, Signature);
         }
     }

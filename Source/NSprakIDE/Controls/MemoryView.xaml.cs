@@ -5,13 +5,6 @@ using System.Linq;
 
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using NSprak.Execution;
 using NSprak.Functions.Signatures;
@@ -25,29 +18,23 @@ namespace NSprakIDE.Controls
     {
         public Executor Executor { get; }
 
-        public FunctionSignature Signature { get; private set; }
-
-        public int Location { get; private set; }
-
-        public bool HasLocation => Location != -1;
+        public FrameDebugInfo Frame { get; private set; }
 
         public event EventHandler<EventArgs> Changed;
 
         public MemoryViewContext(Executor executor)
         {
             Executor = executor;
-            Signature = null;
-            Location = -1;
         }
 
-        public void Update(int location, FunctionSignature signature)
+        public void Update(FrameDebugInfo info)
         {
-            if (location == Location && signature == Signature)
-                return;
+            Frame = info;
 
-            Location = location;
-            Signature = signature;
-
+            // Ideally this would only be triggered if the value of the frame
+            // has changed, but it's a minor detail and requires value equality
+            // for FrameDebugInfo, which is tricky since it depends on the 
+            // InstructionEnumerator.
             OnChanged(EventArgs.Empty);
         }
 
@@ -59,7 +46,7 @@ namespace NSprakIDE.Controls
 
     public class CallStackItem
     {
-        public FunctionSignature Signature { get; set; }
+        public FrameDebugInfo Info { get; }
 
         public int Location { get; set; }
 
@@ -69,14 +56,14 @@ namespace NSprakIDE.Controls
 
         public string Params { get; set; }
 
-        public CallStackItem(FunctionSignature signature, int location)
+        public CallStackItem(FrameDebugInfo info)
         {
-            Signature = signature;
-            Location = location;
+            Info = info;
 
-            Name = signature.Name;
-            Namespace = signature.Namespace;
-            Params = $"({signature.TypeSignature})";
+            Location = info.Location;
+            Name = info.FunctionSignature.Name;
+            Namespace = info.FunctionSignature.Namespace;
+            Params = $"({info.FunctionSignature.TypeSignature})";
         }
     }
 
@@ -116,7 +103,7 @@ namespace NSprakIDE.Controls
 
         public MemoryViewContext SelectedContext
         {
-            get
+             get
             {
                 ViewItem<MemoryViewContext> contextItem
                     = (ViewItem<MemoryViewContext>)ViewSelect.SelectedItem;
@@ -136,6 +123,7 @@ namespace NSprakIDE.Controls
 
         public void Clear()
         {
+            FrameList.ItemsSource = null;
             FrameList.Items.Clear();
             CheckFrameSelection();
 
@@ -163,54 +151,15 @@ namespace NSprakIDE.Controls
 
             // Call Stack
 
-            FunctionSignature main = new FunctionSignature(
-                "", "Main", new FunctionTypeSignature());
-
-            List<FrameDebugInfo> frames = new List<FrameDebugInfo>();
-            List<FunctionSignature> signatures = new List<FunctionSignature>();
-            List<int> locations = new List<int>();
-
-            locations.Add(executor.Instructions.Index);
-
-            frames.AddRange(executor.Memory.FrameDebugInfo);
-            signatures.AddRange(frames.Select(x => x.FunctionSignature));
-            locations.AddRange(executor.Memory.Frames);
-
-            signatures.Add(main);
-
-            for (int i = 0; i < signatures.Count; i++)
-            {
-                FunctionSignature signature = signatures[i];
-                int location = locations[i];
-
-                OpDebugInfo info = executor.Executable.DebugInfo[location];
-
-                FrameList.Items.Add(new CallStackItem(signature, location));
-            }
+            FrameList.ItemsSource = executor
+                .Memory
+                .FrameDebugInfo
+                .Select(x => new CallStackItem(x))
+                .ToList();
 
             CheckFrameSelection();
 
-            // Values Grid
-
-            if (executor.StepMode == ExecutorStepMode.Operation)
-            {
-                ValuesSection.Visibility = Visibility.Visible;
-
-                List <ValueWrapper> stack;
-
-                stack = executor
-                    .Memory
-                    .Values
-                    .Select(x => new ValueWrapper(x))
-                    .Reverse()
-                    .ToList();
-
-                ValuesList.ItemsSource = stack;
-            }
-            else
-            {
-                ValuesSection.Visibility = Visibility.Collapsed;
-            }
+            // Variables View
 
             List<LocalWrapper> locals;
 
@@ -222,6 +171,25 @@ namespace NSprakIDE.Controls
                 .ToList();
 
             LocalsList.ItemsSource = locals;
+
+            // Value Stack (Visible for operations view only)
+
+            if (executor.StepMode == ExecutorStepMode.Operation)
+            {
+                ValuesSection.Visibility = Visibility.Visible;
+
+                List<ValueWrapper> stack;
+
+                stack = executor
+                    .Memory
+                    .Values
+                    .Select(x => new ValueWrapper(x))
+                    .Reverse()
+                    .ToList();
+
+                ValuesList.ItemsSource = stack;
+            }
+            else ValuesSection.Visibility = Visibility.Collapsed;
         }
 
         private void ViewSelect_Selected(object sender, ValueSelectedEventArgs e)
@@ -243,26 +211,15 @@ namespace NSprakIDE.Controls
 
             CallStackItem item = (CallStackItem)FrameList.SelectedItem;
 
-            int location;
-            FunctionSignature signature;
-
             if (item == null)
+                context.Update(context.Executor.Memory.FrameDebugInfo.Peek());
+            
+            else 
             {
-                location = context.Executor.Instructions.Index;
-
-                if (context.Executor.Memory.FrameDebugInfo.Count > 0)
-                    signature = context.Executor.Memory.FrameDebugInfo.Peek().FunctionSignature;
-                else
-                    // This needs to be moved to NSprak
-                    signature = new FunctionSignature("", "Main", new FunctionTypeSignature());
-            }
-            else
-            {
-                location = item.Location;
-                signature = item.Signature;
+                FrameDebugInfo info = item.Info;
+                context.Update(info);
             }
 
-            context.Update(location, signature);
         }
     }
 }

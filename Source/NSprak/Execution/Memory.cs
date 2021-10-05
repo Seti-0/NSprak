@@ -15,18 +15,32 @@ namespace NSprak.Execution
 {
     public class FrameDebugInfo
     {
+        private int? _fixedLocation = null;
+        private readonly InstructionEnumerator _instructions;
+
         public FunctionSignature FunctionSignature { get; }
 
-        public int Origin { get; }
-
+        public int Location => _fixedLocation ?? _instructions.Index;
+  
         public ExecutionScope Scope { get; set; }
 
-        public FrameDebugInfo(
-            FunctionSignature signature, int location, ExecutionScope scope)
+        public FrameDebugInfo(InstructionEnumerator instructions,
+            FunctionSignature signature, ExecutionScope scope = null)
         {
+            _instructions = instructions;
+
             FunctionSignature = signature;
-            Origin = location;
             Scope = scope;
+        }
+
+        public void FixLocation()
+        {
+            _fixedLocation = _instructions.Index;
+        }
+
+        public void ClearFixedLocation()
+        {
+            _fixedLocation = null;
         }
     }
 
@@ -38,15 +52,21 @@ namespace NSprak.Execution
 
         public ExecutionScope Parent { get; }
 
+        public ExecutionScope Global { get; }
+
+        public bool IsGlobal => this == Global;
+
         public ExecutionScope()
         {
             Parent = null;
+            Global = this;
             _inherit = false;
         }
 
         public ExecutionScope(ExecutionScope parent, bool inherit)
         {
             Parent = parent;
+            Global = parent.Global;
             _inherit = inherit;
         }
 
@@ -71,10 +91,13 @@ namespace NSprak.Execution
                 return true;
             }
 
-            if (Parent == null || !_inherit)
+            if (IsGlobal)
                 return false;
 
-            return Parent.TrySetVariable(name, newValue);
+            if (Parent != null || _inherit)
+                return Parent.TrySetVariable(name, newValue);
+
+            return Global.TrySetVariable(name, newValue);
         }
 
         public bool TryFindVariable(string name, out Value result)
@@ -82,18 +105,24 @@ namespace NSprak.Execution
             if (_locals.TryGetValue(name, out result))
                 return true;
 
-            if (Parent == null || !_inherit)
+            if (IsGlobal)
                 return false;
 
-            return Parent.TryFindVariable(name, out result);
+            if (Parent != null && _inherit)
+                return Parent.TryFindVariable(name, out result);
+
+            return Global.TryFindVariable(name, out result);
         }
 
         public IEnumerable<KeyValuePair<string, Value>> ListVariables()
         {
-            if (Parent == null || !_inherit)
+            if (IsGlobal)
                 return _locals;
 
-            return _locals.Concat(Parent.ListVariables());
+            if (Parent != null && _inherit)
+                return _locals.Concat(Parent.ListVariables());
+
+            return _locals.Concat(Global.ListVariables());
         }
     }
 
@@ -105,14 +134,17 @@ namespace NSprak.Execution
 
         public Stack<int> Frames { get; } = new Stack<int>();
 
+        public FrameDebugInfo MainFrame { get; }
+
         public Stack<FrameDebugInfo> FrameDebugInfo { get; } 
             = new Stack<FrameDebugInfo>();
 
         public ExecutionScope CurrentScope { get; private set; } = new ExecutionScope();
 
-        public Memory(SprakConverter converter)
+        public Memory(SprakConverter converter, FrameDebugInfo mainFrame)
         {
             _converter = converter;
+            MainFrame = mainFrame;
         }
 
         public void Reset()
@@ -120,15 +152,18 @@ namespace NSprak.Execution
             Values.Clear();
             Frames.Clear();
             FrameDebugInfo.Clear();
+
             CurrentScope = new ExecutionScope();
+
+            MainFrame.Scope = CurrentScope;
+            FrameDebugInfo.Push(MainFrame);
         }
 
         public void BeginScope(bool inherit)
         {
             CurrentScope = new ExecutionScope(CurrentScope, inherit);
-
-            if (FrameDebugInfo.Count > 0)
-                FrameDebugInfo.Peek().Scope = CurrentScope;
+            
+            FrameDebugInfo.Peek().Scope = CurrentScope;
         }
 
         public void EndScope()
@@ -137,6 +172,8 @@ namespace NSprak.Execution
                 throw new InvalidOperationException("Cannot end root scope");
 
             CurrentScope = CurrentScope.Parent;
+
+            FrameDebugInfo.Peek().Scope = CurrentScope;
         }
 
         public void Declare(string name, Value initialValue)
