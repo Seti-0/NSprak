@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.Files;
+using NSprakIDE.Controls.General;
 
 namespace NSprakIDE.Controls
 {
@@ -205,7 +206,13 @@ namespace NSprakIDE.Controls
 
         public void Delete()
         {
-            PerformFileOp(FileHelper.Delete, "delete", "Deleting");
+            string title = "Confirmation";
+            string message = "Are you sure you wish to delete this file?";
+
+            bool? result = new Dialog(title, message, DialogType.YesNo).ShowDialog();
+
+            if (result.HasValue && result.Value)
+                PerformFileOp(FileHelper.Delete, "delete", "Deleting");                
         }
 
         public void OpenInFileExplorer()

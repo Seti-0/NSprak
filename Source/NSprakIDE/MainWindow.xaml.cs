@@ -28,13 +28,13 @@ namespace NSprakIDE
 
             InitializeComponent();
 
-            OutputLog debug = OutputView.Supplier.Start(
+            OutputLog debug = LogView.Supplier.Start(
                 "MainWindow_Output", "Debug", ViewSupplier.Category_Main);
 
             ILogEventSink output = new Output(new OutputLogWriter(debug));
             Logs.AddSink(output);
 
-            ILogEventSink status = new StatusOutput(StatusView);
+            ILogEventSink status = new StatusOutput(StatusView, this);
             Logs.AddSink(status);
 
             FileView.FileOpened += OnOpenFile;
@@ -43,12 +43,17 @@ namespace NSprakIDE
             SetupViewHiding(MemoryView, MemoryTab, InfoTabs);
         }
 
+        public void ShowLogView()
+        {
+            OutputTabs.SelectedItem = LogTab;
+        }
+
         private void OnOpenFile(object sender, FileOpenedEventArgs e)
         {
             OpenComputerEditor(e.Path);
         }
 
-        public void OpenComputerEditor(string filePath)
+        private void OpenComputerEditor(string filePath)
         {
             // Start at index 1, the tab at index 0 is the FileView!
             for (int i = 1; i < DocumentView.Items.Count; i++)
@@ -104,6 +109,8 @@ namespace NSprakIDE
                 MessageView.Supplier.Select(id);
                 ScreenView.Supplier.Select(id);
                 MemoryView.Supplier.Select(id);
+
+                OutputTabs.SelectedItem = ScreenTab;
             }
             newTab.MouseUp += (s, e) => OnTabSelected();
             

@@ -4,6 +4,7 @@
     <!-- UI Elements-->
 
     <SolidColorBrush x:Key="NSprakIDE.Accent" Color="#FFEC6C6C"/>
+    <SolidColorBrush x:Key="NSprakIDE.AccentLight" Color="#FFFF9E9E"/>
     <SolidColorBrush x:Key="NSprakIDE.Background" Color="#FF564EAE"/>
     <SolidColorBrush x:Key="NSprakIDE.Background2" Color="#343434"/>
     <SolidColorBrush x:Key="NSprakIDE.Toolbar" Color="#FFD6D6D6"/>

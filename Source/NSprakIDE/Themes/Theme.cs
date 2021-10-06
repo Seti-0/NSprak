@@ -12,6 +12,7 @@ namespace NSprakIDE.Themes
         {
             public const string
                 Accent = "NSprakIDE.Accent",
+                AccentLight = "NSprakIDE.AccentLight",
                 Background = "NSprakIDE.Background",
                 Background2 = "NSprakIDE.Background2",
                 Toolbar = "NSprakIDE.Toolbar";

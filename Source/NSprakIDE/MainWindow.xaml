@@ -190,8 +190,8 @@
                     <TabItem Name="ScreenTab" Header="Computer Screen">
                         <Controls:ScreenView x:Name="ScreenView"/>
                     </TabItem>
-                    <TabItem Header="Log">
-                        <Controls:OutputView x:Name="OutputView"/>
+                    <TabItem Name="LogTab" Header="Log">
+                        <Controls:OutputView x:Name="LogView"/>
                     </TabItem>
                 </TabControl>
 
