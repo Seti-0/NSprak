@@ -35,7 +35,7 @@
     <Border Background="{StaticResource NSprakIDE.Toolbar}" Padding="5">
         <DockPanel LastChildFill="True" HorizontalAlignment="Center" VerticalAlignment="Center">
             <DockPanel DockPanel.Dock="Bottom">
-                <Button Name="Cancel" DockPanel.Dock="Right" IsCancel="True" Click="OnCancel">Cancel</Button>
+                <Button Name="Cancel" DockPanel.Dock="Right" Click="OnCancel">Cancel</Button>
                 <StackPanel DockPanel.Dock="Left" 
                     Orientation="Horizontal"
                     HorizontalAlignment="Left">

@@ -130,6 +130,24 @@ namespace NSprakIDE
                 if (item.IsMouseOver)
                 {
                     ComputerEditor editor = (ComputerEditor)item.Content;
+                    
+                    if (editor.HasChanges)
+                    {
+                        string title = "Confirmation";
+                        string message = "Do you want to save this file?";
+                        DialogType type = DialogType.YesNoCancel;
+
+                        Dialog dialog = new Dialog(title, message, type);
+                        dialog.ShowDialog();
+                        DialogResponse response = dialog.Response;
+
+                        if (response == DialogResponse.Cancel)
+                            return;
+
+                        if (response == DialogResponse.Yes)
+                            editor.Save();
+                    }
+
                     DocumentView.Items.RemoveAt(i);
                     editor.Dispose();
                     break;
