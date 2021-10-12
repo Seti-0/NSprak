@@ -44,12 +44,6 @@ namespace NSprakIDE.Controls
         public string Text
         {
             get => MainEditor.Text;
-
-            set
-            {
-                MainEditor.Text = value;
-                _originalSource = value;
-            }
         }
 
         public bool HasChanges => _diffMargin.HasChanges;
@@ -112,6 +106,16 @@ namespace NSprakIDE.Controls
 
             //MainEditor.TextArea.TextEntering += TextArea_TextEntering;
             //MainEditor.TextArea.TextEntered += TextArea_TextEntered;
+        }
+
+        public void SetText(string text, bool resetDiff)
+        {
+            MainEditor.Text = text;
+            
+            if (resetDiff)
+                _originalSource = text;
+
+            _diffMargin.Update(text, _originalSource);
         }
 
         public void Highlight(int index)

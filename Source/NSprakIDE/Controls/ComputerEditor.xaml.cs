@@ -28,6 +28,8 @@ namespace NSprakIDE.Controls
 
         public string FilePath;
 
+        public string TempPath;
+
         public MessageView MessageView;
 
         public ScreenView ScreenView;
@@ -54,8 +56,6 @@ namespace NSprakIDE.Controls
 
         private readonly Executor _executor;
         private readonly MemoryViewContext _memoryContext;
-
-        private readonly string _filePath;
 
         private readonly SourceEditor _sourceEditor;
         private readonly ExpressionView _expressionView;
@@ -112,10 +112,6 @@ namespace NSprakIDE.Controls
 
             MainContent.Content = _sourceEditor;
 
-            _filePath = environment.FilePath;
-            _sourceEditor.Text = File.ReadAllText(environment.FilePath);
-            Compile();
-
             SetupBindings();
 
             _executor.Paused += Executor_OnPaused;
@@ -126,17 +122,19 @@ namespace NSprakIDE.Controls
                 Dispatcher.Invoke(Compile);
             };
 
+            UpdateMode(ComputerEditorMode.Source);
+
+            LoadTemp();
+
             _sourceEditor.HasChangesChanged += (obj, e) =>
             {
-                OnHasChangesChanged();
+                OnHasChangesChanged(EventArgs.Empty);
             };
-
-            UpdateMode(ComputerEditorMode.Source);
         }
 
-        protected virtual void OnHasChangesChanged()
+        protected virtual void OnHasChangesChanged(EventArgs e)
         {
-            HasChangesChanged?.Invoke(this, EventArgs.Empty);
+            HasChangesChanged?.Invoke(this, e);
         }
 
         public void Dispose()
@@ -144,6 +142,15 @@ namespace NSprakIDE.Controls
             Environment.ScreenView.Supplier.End(Environment.GivenID);
             Environment.MessageView.Supplier.End(Environment.GivenID);
             Environment.MemoryView.Supplier.End(Environment.GivenID);
+
+            File.Delete(Environment.TempPath);
+            string currentDir = Path.GetDirectoryName(Environment.TempPath);
+            while (Directory.Exists(currentDir) && Directory.GetFiles(currentDir).Length == 0)
+            {
+                Directory.Delete(currentDir);
+                currentDir = Path.GetDirectoryName(currentDir);
+            }
+
             OnClosing();
         }
 
@@ -177,6 +184,8 @@ namespace NSprakIDE.Controls
                 .Executable;
 
             _executor.Reset();
+
+            SaveTemp();
 
             OnCompiled();
         }
@@ -213,9 +222,35 @@ namespace NSprakIDE.Controls
 
         public void Save()
         {
-            Logs.Core.LogInformation("Saving '" + Path.GetFileName(_filePath) + "'");
-            File.WriteAllText(_filePath, _sourceEditor.Text);
+            Logs.Core.LogInformation("Saving '" + Path.GetFileName(Environment.FilePath) + "'");
+            
+            Directory.CreateDirectory(Path.GetDirectoryName(Environment.FilePath));
+            File.WriteAllText(Environment.FilePath, _sourceEditor.Text);
+            
             _sourceEditor.ResetDiff();
+        }
+
+        public void SaveTemp()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(Environment.TempPath));   
+            File.WriteAllText(Environment.TempPath, _sourceEditor.Text);
+        }
+
+        public void Load()
+        {
+            string content = File.ReadAllText(Environment.FilePath);
+            _sourceEditor.SetText(content, resetDiff: true);
+        }
+
+        public void LoadTemp()
+        {
+            Load();
+
+            if (File.Exists(Environment.TempPath))
+            {
+                string content = File.ReadAllText(Environment.TempPath);
+                _sourceEditor.SetText(content, resetDiff: false);
+            }
         }
 
         public void ShowSource()

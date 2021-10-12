@@ -41,6 +41,9 @@ namespace NSprakIDE
 
             SetupViewHiding(ScreenView, ScreenTab, OutputTabs);
             SetupViewHiding(MemoryView, MemoryTab, InfoTabs);
+
+            foreach (FileOpenedEventArgs item in FileView.EnumerateOpenedFiles())
+                OnOpenFile(FileView, item);
         }
 
         public void ShowLogView()
@@ -50,10 +53,10 @@ namespace NSprakIDE
 
         private void OnOpenFile(object sender, FileOpenedEventArgs e)
         {
-            OpenComputerEditor(e.Path);
+            OpenComputerEditor(e.SourcePath, e.TempPath);
         }
 
-        private void OpenComputerEditor(string filePath)
+        private void OpenComputerEditor(string filePath, string tempPath)
         {
             // Start at index 1, the tab at index 0 is the FileView!
             for (int i = 1; i < DocumentView.Items.Count; i++)
@@ -82,6 +85,7 @@ namespace NSprakIDE
                 Name = name,
                 GivenID = id,
                 FilePath = filePath,
+                TempPath = tempPath,
                 MessageView = MessageView,
                 ScreenView = ScreenView,
                 MemoryView = MemoryView
@@ -96,13 +100,16 @@ namespace NSprakIDE
                 Style = (Style)FindResource("DocumentTabItem")
             };
 
-            editor.HasChangesChanged += (obj, e) =>
+            void UpdateHeader()
             {
                 string header = name;
                 if (editor.HasChanges)
                     header += "*";
                 newTab.Header = header;
-            };
+            }
+
+            UpdateHeader();
+            editor.HasChangesChanged += (obj, e) => UpdateHeader();
 
             void OnTabSelected()
             {

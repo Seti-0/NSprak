@@ -11,7 +11,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.Files;
@@ -23,20 +22,21 @@ namespace NSprakIDE.Controls
 
     public class FileOpenedEventArgs
     {
-        public string Path { get; }
+        public string SourcePath { get; }
 
-        public FileOpenedEventArgs(string path)
+        public string TempPath { get; }
+
+        public FileOpenedEventArgs(string sourcePath, string tempPath)
         {
-            Path = path;
+            SourcePath = sourcePath;
+            TempPath = tempPath;
         }
     }
 
-    /// <summary>
-    /// Interaction logic for FileView.xaml
-    /// </summary>
     public partial class FileView : UserControl
     {
         public const string SaveDir = "Computers";
+        public const string TempDir = "Editing";
 
         public FileTreeItem Root { 
             
@@ -68,6 +68,33 @@ namespace NSprakIDE.Controls
             Root.IsSelected = true;
 
             SetupBindings();
+        }
+
+        public IEnumerable<FileOpenedEventArgs> EnumerateOpenedFiles()
+        {
+            string saveRoot = Path.GetFullPath(SaveDir);
+            string tempRoot = Path.GetFullPath(TempDir);
+
+            List<FileOpenedEventArgs> events = new List<FileOpenedEventArgs>();
+            
+            if (Directory.Exists(tempRoot))
+                AddOpenFiles(tempRoot, events);
+            
+            return events;
+
+            void AddOpenFiles(string directory, List<FileOpenedEventArgs> target)
+            {
+                foreach (string tempPath in Directory.EnumerateFiles(directory))
+                {
+                    string relative = Path.GetRelativePath(tempRoot, tempPath);
+                    string savePath = Path.Combine(saveRoot, relative);
+
+                    target.Add(new FileOpenedEventArgs(savePath, tempPath));
+                }
+
+                foreach (string directoryPath in Directory.EnumerateDirectories(directory))
+                    AddOpenFiles(directoryPath, target);
+            }
         }
 
         private void SetupBindings()
@@ -183,9 +210,9 @@ namespace NSprakIDE.Controls
 
             else if (item.IsFile)
             {
-                void Action(string path)
+                void Action(string savePath, string tempPath)
                 {
-                    OnFileOpened(new FileOpenedEventArgs(path));
+                    OnFileOpened(new FileOpenedEventArgs(savePath, tempPath));
                 };
 
                 PerformFileOp(Action, "open file", "Opening file");
@@ -220,7 +247,11 @@ namespace NSprakIDE.Controls
             PerformFileOp(FileHelper.OpenInFileExplorer, "open", "Opening in file explorer");
         }
 
-        private void PerformFileOp(Action<string> pathAction, 
+        private void PerformFileOp(Action<string> pathAction,
+            string errorName, string infoName, FileTreeItem item = null)
+            => PerformFileOp((path, _) => pathAction(path), errorName, infoName, item);
+
+        private void PerformFileOp(Action<string, string> pathAction, 
             string errorName, string infoName, FileTreeItem item = null)
         {
             if (item == null)
@@ -237,14 +268,17 @@ namespace NSprakIDE.Controls
                 return;
             }
 
-            string relativePath = item.Path;
+            string relativePath = Path.GetRelativePath("Computers", item.Path);
 
-            string saveDirPath = System.IO.Path.GetFullPath(SaveDir);
-            string fullPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(saveDirPath), relativePath);
+            string saveDirPath = Path.GetFullPath(SaveDir);
+            string fullPath = Path.Combine(saveDirPath, relativePath);
+
+            string tempDirPath = Path.GetFullPath(TempDir);
+            string tempPath = Path.Combine(tempDirPath, relativePath);
 
             try
             {
-                pathAction(fullPath);
+                pathAction(fullPath, tempPath);
             }
             catch (Exception e)
             {
