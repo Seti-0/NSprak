@@ -212,4 +212,16 @@
     <Folder Include="Computers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Computers\Examples\Fibonnacci.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Computers\Examples\Hello World.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Computers\Examples\Stats.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

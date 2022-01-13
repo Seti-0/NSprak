@@ -223,11 +223,13 @@ namespace NSprakIDE.Controls
         {
             // It would be nice if we could start editing the new file,
             // but I am not sure how to do that right now.
+            CheckRoot();
             PerformFileOp(FileHelper.AddComputer, "new file", "Creating new file in");
         }
 
         public void AddFolder()
         {
+            CheckRoot();
             PerformFileOp(FileHelper.AddNewFolder, "new folder", "Creating new folder in");
         }
 
@@ -245,6 +247,12 @@ namespace NSprakIDE.Controls
         public void OpenInFileExplorer()
         {
             PerformFileOp(FileHelper.OpenInFileExplorer, "open", "Opening in file explorer");
+        }
+
+        private void CheckRoot()
+        {
+            string fullPath = Path.GetFullPath(SaveDir);
+            FileHelper.EnsureDirectory(fullPath);
         }
 
         private void PerformFileOp(Action<string> pathAction,

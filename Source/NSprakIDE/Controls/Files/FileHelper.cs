@@ -9,6 +9,11 @@ namespace NSprakIDE.Controls.Files
 {
     public static class FileHelper
     {
+        public static void EnsureDirectory(string fullPath)
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
         public static void AddNewFolder(string parentPath)
         {
             string newPath = GetUniquePath(Path.Combine(parentPath, "New Folder"));
