@@ -1,0 +1,68 @@
+# Taking a look at a very simple stats on arrays of numbers
+# We'll cover the Mean (a type of average), the Standard Deviation (a
+# measure of spread), and a count for uniqueness.
+
+number Mean(array X)
+   number total = 0
+   loop x in X
+       total += x
+   end
+   return (total / Count(X))
+end
+
+number StdDev(array X)
+   number total = 0
+   number mean = Mean(X)
+   loop x in X
+       total += Pow(x - mean, 2)
+   end
+   return Sqrt(total / Count(X))
+end
+
+number CountUnique(array X)
+   array set = []
+   number total = 0
+   
+   loop x in X
+       
+       boolean found = false
+       loop y in set
+           if x == y
+               found = true
+           end
+       end
+       
+       if found
+           continue
+       end
+       
+       Append(set, x)
+       total++
+   end
+   return total
+end
+
+# To test these, then, a function
+void Test(number n)
+   
+   array X = []
+   loop i from 0 to n
+       Append(X, Round(Random()*10))
+   end
+   
+   Print(X)
+   Print('Mean: '+Mean(X))
+   Print('Standard Deviation: '+StdDev(X)
+   Print('Count Unique: '+CountUnique(X))
+end
+
+number count = 0
+loop
+   if count > 5
+       break
+   end
+
+   count++
+   Test((count+1)*3)
+end
+

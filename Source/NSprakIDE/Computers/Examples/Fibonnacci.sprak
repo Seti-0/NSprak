@@ -1,0 +1,31 @@
+
+void Fib(number n)
+   
+   # Calculate the numbers
+   
+   if n == 1
+       return 1
+   end
+   
+   if n == 2
+       return 1
+   end
+   
+   number a = 1
+   number b = 1
+   number c = 2
+   
+   loop i from 1 to (n-1)
+       c = a + b
+       a = b
+       b = c
+   end
+
+   return c
+end
+
+# Test it thoroughly
+loop n in [1,2,3,4,5,6,7,8,9]
+   Print(n+': '+Fib(n))
+end
+

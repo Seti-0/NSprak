@@ -1,23 +1,6 @@
-# Ignore anything not listed here
-# Caveat: It will not ignore files that have no extension
-*.*
+# Visual Studio Config
+.vs
 
-# Repo-related
-!.gitignore
-!LICENSE
-!README.md
-
-# CSharp
-!*.cs
-!*.xaml
-!*.csproj
-!*.sln
-
-# Icons
-!*.png
-!.ps
-!.fx
-
-# Project-specific
-!*.sprak
-!*.layout
+# Build output
+bin/
+obj/
