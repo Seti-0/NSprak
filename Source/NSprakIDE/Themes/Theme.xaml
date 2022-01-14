@@ -78,7 +78,13 @@
 
     <SolidColorBrush x:Key="NSprakIDE.Screen.Border" Color="#777777"/>
     <SolidColorBrush x:Key="NSprakIDE.Screen.Background" Color="Black"/>
-    <SolidColorBrush x:Key="NSprakIDE.Screen.Text" Color="White"/>
+    
+    <!-- 
+        This is set in NSprak at the moment, and so does not adapt to the theme! 
+        I might go back to making it a part of theme.
+        Note: if it is reverted, a corresponding entry needs to be added back to the class in Theme.cs
+    -->
+    <!--<SolidColorBrush x:Key="NSprakIDE.Screen.Text" Color="White"/>-->
 
     <!-- Callstack -->
 

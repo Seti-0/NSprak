@@ -10,6 +10,7 @@ using NSprak.Functions;
 using NSprak.Functions.Signatures;
 using NSprak.Language;
 using NSprak.Language.Values;
+using NSprak.Messaging;
 
 namespace NSprak.Execution
 {
@@ -169,7 +170,7 @@ namespace NSprak.Execution
         public void EndScope()
         {
             if (CurrentScope.Parent == null)
-                throw new InvalidOperationException("Cannot end root scope");
+                throw new SprakInternalRuntimeException("Cannot end root scope");
 
             CurrentScope = CurrentScope.Parent;
 
@@ -179,19 +180,19 @@ namespace NSprak.Execution
         public void Declare(string name, Value initialValue)
         {
             if (!CurrentScope.TryDeclareVariable(name, initialValue))
-                throw new ArgumentException($"A variable named \"{name}\" has already been declared");
+                throw new SprakInternalRuntimeException($"A variable named \"{name}\" has already been declared");
         }
 
         public void SetVariable(string name, Value value)
         {
             if (!CurrentScope.TrySetVariable(name, value))
-                throw new ArgumentException($"Cannot find a variable named \"{name}\"");
+                throw new SprakInternalRuntimeException($"Cannot find a variable named \"{name}\"");
         }
 
         public Value GetVariable(string name)
         {
             if (!CurrentScope.TryFindVariable(name, out Value result))
-                throw new ArgumentException($"Cannot find a variable named \"{name}\"");
+                throw new SprakInternalRuntimeException($"Cannot find a variable named \"{name}\"");
 
             return result;
         }
@@ -227,13 +228,10 @@ namespace NSprak.Execution
         {
             Value value = PopValue();
 
-            // This needs to be cleaned up
             if (!_converter.TryConvertValue(value, type, out Value result))
             {
-                string message = $"Failed to convert stack value {value.ToDebugString()}" +
-                    $" to {type.InternalName}";
-
-                throw new Exception(message);
+                PushValue(value); // This is a recoverable runtime error, so restore the stack.
+                throw new SprakRuntimeException(Messages.UexpectedType, type, value.Type, value);
             }
 
             return result;

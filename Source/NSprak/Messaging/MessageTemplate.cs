@@ -12,7 +12,9 @@ namespace NSprak.Messaging
 
         public bool IsError => Severity == MessageSeverity.Error;
 
-        public string Summary { get; set; }
+        public string Title { get; set; } = "(No Title)";
+
+        public string Summary { get; set; } = "(No Summary)";
 
         public override string ToString()
         {

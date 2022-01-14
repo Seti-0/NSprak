@@ -8,10 +8,34 @@ namespace NSprak.Messaging
     {
         public static MessageTemplate
 
+            AssignmentTypeMismatch = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A value of type {Src} cannot be assigned to a variable of type {Dest}"
+            },
+
+            BlockNotClosed = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "No end found for this header"
+            },
+
             CanOnlyIndexArrays = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Only an array can be indexed. Found: {Type}"
+            },
+
+            DuplicateFunction = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A function of name '{Name}' has already been declared in this scope"
+            },
+
+            DuplicateVariable = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A variable of name '{Name}' has already been declared in this scope"
             },
 
             ExpectedAssignmentOperator = new MessageTemplate
@@ -32,16 +56,16 @@ namespace NSprak.Messaging
                 Summary = "'{Operator}' is an assignment operator, and cannot be used as an expression"
             },
 
-            VariableFromDisconnectedBlock = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "This variable was declared in the same scope but in a disconnected block, and cannot be used here"
-            },          
-            
             IncompatibleReturnValue = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Return value of type '{Src}' is not assignable to declared function type '{Dst}'"
+            },
+
+            IndexerNotSupported = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Sprak only supports indexing of variable names"
             },
 
             IndexShouldBeNumber = new MessageTemplate
@@ -56,10 +80,10 @@ namespace NSprak.Messaging
                 Summary = "Only the '=' operator may be used to declare variables"
             },
 
-            IndexerNotSupported = new MessageTemplate
+            InvalidIndexDeclaration = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Sprak only supports indexing of variable names"
+                Summary = "A single index cannot be declared on its own"
             },
 
             MissingReturnValue = new MessageTemplate
@@ -68,16 +92,16 @@ namespace NSprak.Messaging
                 Summary = "A return statement in a function that is not void must have a value"
             },
 
-            InvalidIndexDeclaration = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "A single index cannot be declared on its own"
-            },
-
             MultipleIndices = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Sprak only allows one layer of indexing"
+            },
+
+            NestedFunction = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "A function inside a block is not allowed. (Have you forgotten to close the previous block?)"
             },
 
             ReturnOutsideFunction = new MessageTemplate
@@ -92,34 +116,16 @@ namespace NSprak.Messaging
                 Summary = "A return statement in a void function cannot have a value"
             },
 
-            AssignmentTypeMismatch = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "A value of type {Src} cannot be assigned to a variable of type {Dest}"
-            },
-
-            UnrecognizedSymbols = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "Unrecognized symbols"
-            },
-
-            UnrecognizedOperator = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "Unrecognized operator: '{Content}'"
-            },
-
-            UnrecognizedName = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "Unrecognized name: '{Name}'"
-            },
-
             ReferenceBeforeDefinition = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Name referenced before its local definition: '{Name}'"
+            },
+
+            UnresolvedCall = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unable to resolve function call: {Signature}"
             },
 
             UnexpectedElseIfStatement = new MessageTemplate
@@ -134,10 +140,16 @@ namespace NSprak.Messaging
                 Summary = "'else' statement without preceding 'if' statement"
             },
 
-            UnresolvedCall = new MessageTemplate
+            UnexpectedEndOfLine = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Unable to resolve function call: {Signature}"
+                Summary = "Unexpected end of line"
+            },
+
+            UnrecognizedName = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unrecognized name: '{Name}'"
             },
 
             UnrecognizedNumber = new MessageTemplate
@@ -152,10 +164,16 @@ namespace NSprak.Messaging
                 Summary = "Unrecognized operation: '{Content}'"
             },
 
-            UnexpectedEndOfLine = new MessageTemplate
+            UnrecognizedOperator = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Unexpected end of line"
+                Summary = "Unrecognized operator: '{Content}'"
+            },
+
+            UnrecognizedSymbols = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unrecognized symbols"
             },
 
             UnexpectedToken = new MessageTemplate
@@ -170,28 +188,17 @@ namespace NSprak.Messaging
                 Summary = "End of statement reached. Unexpected token: '{Token}'"
             },
 
-            DuplicateVariable = new MessageTemplate
+            UexpectedType = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "A variable of name '{Name}' has already been declared in this scope"
+                Title = "Unexpected type",
+                Summary = "Expected {Expected}, found {Found}: '{Value}'"
             },
 
-            DuplicateFunction = new MessageTemplate
+            VariableFromDisconnectedBlock = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "A function of name '{Name}' has already been declared in this scope"
-            },
-
-            NestedFunction = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "A function inside a block is not allowed. (Have you forgotten to close the previous block?)"
-            },
-
-            BlockNotClosed = new MessageTemplate
-            {
-                Severity = MessageSeverity.Error,
-                Summary = "No end found for this header"
+                Summary = "This variable was declared in the same scope but in a disconnected block, and cannot be used here"
             };
     }
 }

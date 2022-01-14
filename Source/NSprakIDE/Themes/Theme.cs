@@ -89,8 +89,7 @@ namespace NSprakIDE.Themes
         {
             public const string
                 Border = "NSprakIDE.Screen.Border",
-                Background = "NSprakIDE.Screen.Background",
-                Text = "NSprakIDE.Screen.Text";
+                Background = "NSprakIDE.Screen.Background";
         }
 
         public static class Callstack

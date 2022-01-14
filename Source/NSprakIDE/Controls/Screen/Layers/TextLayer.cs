@@ -23,12 +23,25 @@ namespace NSprakIDE.Controls.Screen.Layers
 
         private bool _input = false;
         private string _inputText = "";
+        private Color _color;
+        private Brush _brush;
 
         private bool _cursorVisible = true;
         private readonly DispatcherTimer _blinkTimer = new DispatcherTimer();
 
         public bool HasContent => _lines.Count > 0
             || _lastLine.Length > 0 || _inputText.Length > 0;
+
+        public Color Color
+        {
+            get => _color;
+
+            set
+            {
+                _color = value;
+                _brush = new SolidColorBrush(value);
+            }
+        }
 
         public TextLayer()
         {
@@ -39,6 +52,8 @@ namespace NSprakIDE.Controls.Screen.Layers
                 _cursorVisible = !_cursorVisible;
                 Invalidate();
             };
+
+            Color = Colors.White;
         }
 
         public void CancelInput()
@@ -78,8 +93,7 @@ namespace NSprakIDE.Controls.Screen.Layers
         {
             _lastLine += text;
 
-            Brush brush = Theme.GetBrush(Theme.Screen.Text);
-            _lines.Add(Screen.GetFormattedText(_lastLine, brush));
+            _lines.Add(Screen.GetFormattedText(_lastLine, _brush));
             _lastLine = "";
 
             Invalidate();
@@ -118,7 +132,7 @@ namespace NSprakIDE.Controls.Screen.Layers
                 cursor.Y += _lines[i].Height;
             }
 
-            Brush brush = Theme.GetBrush(Theme.Screen.Text);
+            Brush brush = _brush;
 
             string text = _lastLine;
             if (_input)

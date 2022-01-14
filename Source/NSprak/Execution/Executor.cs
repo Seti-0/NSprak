@@ -4,15 +4,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using NSprak.Exceptions;
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
 using NSprak.Functions;
 using NSprak.Functions.Resolution;
-using NSprak.Operations;
-using NSprak.Operations.Types;
-
-using EReturn = NSprak.Expressions.Types.Return;
-using OReturn = NSprak.Operations.Types.Return;
 
 namespace NSprak.Execution
 {
@@ -34,6 +30,12 @@ namespace NSprak.Execution
         public ExecutorStepMode StepMode { get; set; }
 
         public ExecutorState State { get; private set; }
+
+        // If this is true, and the executor is paused,
+        // stepping or continuing may cause an internal 
+        // runtime error due to the memory being in an invalid state.
+        // Only stopping should be allowed from here.
+        public bool HasRuntimeError { get; set; }
 
         private readonly ExecutionContext _context;
         private bool _stopRequested;
@@ -63,6 +65,7 @@ namespace NSprak.Execution
             SignatureResolver signatures = new SignatureResolver(libraries, assignments);
 
             signatures.SpecifyUserFunctions(computer.Executable.FunctionDeclarations);
+            signatures.SpecifyOperationBindings(new List<OperationBinding>());
 
             _context = new ExecutionContext(computer, signatures);
 
@@ -76,9 +79,11 @@ namespace NSprak.Execution
                 return;
 
             _context.Reset();
+            HasRuntimeError = false;
             State = ExecutorState.Idle;
 
             Computer.Screen?.SetColor(Color.White);
+            Computer.Screen?.SetPrintColor(Color.White);
         }
 
         protected void OnPause(EventArgs e)
@@ -330,18 +335,44 @@ namespace NSprak.Execution
                 string sourceTrace = null;
 
                 if (Instructions.HasCurrent)
-                    sourceTrace = "at " + Instructions.CurrentInfo?.SourceExpression?.GetTraceString();
+                    sourceTrace = Instructions.CurrentInfo?.SourceExpression?.GetTraceString();
 
+                IComputerScreen screen = Computer.Screen;
+                if (screen != null)
+                {
+                    if (e is SprakRuntimeException runtimeException)
+                    {
+                        screen.SetPrintColor(Color.Red);
+                        screen.Print("Runtime Error: " + runtimeException.Template.Title);
+                        screen.Print(runtimeException.Template.Render(runtimeException.Args));
 
-                string opString = Instructions.HasCurrent ? Instructions.Current.ToString() : "null";
+                        if (sourceTrace != null)
+                            screen.Print("At: " + sourceTrace);
 
-                string message = $"Exception occured while executing op {Instructions.Index}: {opString}";
-                string exception = e.ToString();
+                        screen.Print("Execution paused at error location.");
+                    }
+                    else
+                    {
+                        screen.SetPrintColor(Color.Red);
+                        screen.Print("Internal error: " + e.GetType().Name);
+                        screen.Print(e.Message);
 
-                Computer.Screen?.SetColor(Color.Red);
-                Computer.Screen?.Print(message);
-                Computer.Screen?.Print(sourceTrace);
-                Computer.Screen?.Print(exception);
+                        if (Instructions.HasCurrent)
+                            screen.Print("Op: " + Instructions.Current.ToString());
+
+                        if (sourceTrace != null)
+                            screen.Print("Expression: " + sourceTrace);
+
+                        HasRuntimeError = true;
+
+                        // TODO: NSprakIDE does not handle this well at the moment - the handling of the
+                        // error is delayed and a bit strange since the Executor is run in a separate
+                        // thread. I'm guessing there is some missing error handling that needs fixing
+                        // throw;
+                    }
+                }
+                // Same caveat/TODO as above
+                else throw;
 
                 _breakRequested = true;
             }

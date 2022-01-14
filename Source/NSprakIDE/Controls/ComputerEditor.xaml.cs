@@ -200,9 +200,11 @@ namespace NSprakIDE.Controls
             bool Running() => _executor.State == ExecutorState.Running;
             bool Paused() => _executor.State == ExecutorState.Paused;
             bool Idle() => _executor.State == ExecutorState.Idle;
+            bool Safe() => !_executor.HasRuntimeError;
 
-            bool IdleOrPaused() => Paused() || Idle();
             bool RunningOrPaused() => Running() || Paused();
+            bool SafelyPaused() => Paused() && Safe();
+            bool IdleOrSafelyPaused() => Idle() || (Paused() && Safe());
 
             Bind(this, EditorCommands.Save, Save);
 
@@ -210,12 +212,12 @@ namespace NSprakIDE.Controls
             Bind(this, EditorCommands.ViewExpressionTree, ShowExpressionTree);
             Bind(this, EditorCommands.ViewOperations, ShowExecutable);
 
-            Bind(this, EditorCommands.StartDebug, StartOrContinue, IdleOrPaused);
+            Bind(this, EditorCommands.StartDebug, StartOrContinue, IdleOrSafelyPaused);
             Bind(this, EditorCommands.Stop, _executor.RequestStop, RunningOrPaused);
             Bind(this, EditorCommands.Pause, _executor.RequestPause, Running);
-            Bind(this, EditorCommands.StepOver, StepOver, Paused);
-            Bind(this, EditorCommands.StepInto, StepInto, IdleOrPaused);
-            Bind(this, EditorCommands.StepOut, StepOut, Paused);
+            Bind(this, EditorCommands.StepOver, StepOver, SafelyPaused);
+            Bind(this, EditorCommands.StepInto, StepInto, IdleOrSafelyPaused);
+            Bind(this, EditorCommands.StepOut, StepOut, SafelyPaused);
 
             Bind(this, EditorCommands.ToggleBreakpoint, ToggleBreakpoint);
         }

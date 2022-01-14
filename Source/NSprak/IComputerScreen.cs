@@ -10,13 +10,11 @@ namespace NSprak
 
         public double Width { get; }
 
-        public void SetColor(Color color);
-
-        public Color GetColor();
-
         public bool IsKeyPressed(string key);
 
         // Text Layer
+
+        public void SetPrintColor(Color color);
 
         public void Print(string line);
 
@@ -29,6 +27,10 @@ namespace NSprak
         public void CancelInput();
 
         // Graphical Layer
+
+        public void SetColor(Color color);
+
+        public Color GetColor();
 
         public void Line(double x1, double y1, double x2, double y2);
 

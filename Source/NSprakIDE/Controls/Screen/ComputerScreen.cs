@@ -117,6 +117,14 @@ namespace NSprakIDE.Controls.Screen
             Invoke(() => _graphics.AddLine(x1, y1, x2, y2));
         }
 
+        public void SetPrintColor(SprakColor color)
+        {
+            WindowsColor converted = WindowsColor
+                .FromRgb(color.R, color.G, color.B);
+
+            Invoke(() => _text.Color = converted);
+        }
+
         public void Print(string line)
         {
             Invoke(() => _text.Print(line));
