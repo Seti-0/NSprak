@@ -56,6 +56,9 @@
     <local:Icon x:Key="Icon_StepOut" IconName="arrow-up"/>
     <local:Icon x:Key="LargeIcon_StepOut" IconName="arrow-up" Large="true"/>
 
+    <local:Icon x:Key="Icon_Test" IconName="test-tube"/>
+    <local:Icon x:Key="LargeIcon_Test" IconName="test-tube" Large="true"/>
+
     <!-- Breakpoints -->
 
     <local:Icon x:Key="Icon_Breakpoint" IconName="breakpoint"/>

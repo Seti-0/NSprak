@@ -167,11 +167,14 @@
                             <TabItem Name="MessageTab" Header="Messages">
                                 <Controls:MessageView x:Name="MessageView"/>
                             </TabItem>
+
+                            <TabItem Name="TestsTab" Header="Tests">
+                                <Controls:TestView x:Name="TestsView"/>
+                            </TabItem>
                             
                             <TabItem Name="MemoryTab" Header="Memory">
                                 <Controls:MemoryView x:Name="MemoryView"/>
                             </TabItem>
-                        
                         </TabControl>
 
                     </DockPanel>

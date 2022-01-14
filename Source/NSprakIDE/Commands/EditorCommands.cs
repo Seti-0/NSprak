@@ -12,7 +12,7 @@ namespace NSprakIDE.Commands
     {
         public readonly static ICommand
 
-           // File
+            // File
 
             Save = CreateCommand("Save", Key.S, ModifierKeys.Control),
 
@@ -24,7 +24,7 @@ namespace NSprakIDE.Commands
 
             // Debugging
 
-            Start = CreateCommand("Start", "Run",  Key.F5, ModifierKeys.Control),
+            Start = CreateCommand("Start", "Run", Key.F5, ModifierKeys.Control),
             StartDebug = CreateCommand("StartDebug", "Start", Key.F5),
             Stop = CreateCommand("Stop", Key.F5, ModifierKeys.Control),
             Restart = CreateCommand("Restart"),
@@ -34,6 +34,8 @@ namespace NSprakIDE.Commands
             StepOver = CreateCommand("StepOver", "Step over", Key.F10),
             StepInto = CreateCommand("StepInto", "Step into", Key.F11),
             StepOut = CreateCommand("StepOutOf", "Step out", Key.F11, ModifierKeys.Shift),
+
+            StartTest = CreateCommand("StartTest", "Start test", Key.F6),
 
             // Breakpoints
 

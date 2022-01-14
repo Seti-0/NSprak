@@ -70,6 +70,7 @@
                         <General:CommandButton IconName="StepOut" UICommand="{x:Static Cmd:EditorCommands.StepOut}"/>
                         <General:CommandButton IconName="StepOver" UICommand="{x:Static Cmd:EditorCommands.StepOver}"/>
                     </StackPanel>
+                    <General:CommandButton Size="Large" IconName="Test" UICommand="{x:Static Cmd:EditorCommands.StartTest}"/>
                 </StackPanel>
             </DockPanel>
 

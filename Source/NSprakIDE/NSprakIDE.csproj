@@ -47,6 +47,7 @@
     <None Remove="Icons\Images\icons8-breakpoint-disabled-16.png" />
     <None Remove="Icons\Images\icons8-breakpoint-disabled-30.png" />
     <None Remove="Icons\Images\icons8-cancel-16.png" />
+    <None Remove="Icons\Images\icons8-cancel-30.png" />
     <None Remove="Icons\Images\icons8-circled-play-16.png" />
     <None Remove="Icons\Images\icons8-circled-play-30%281%29.png" />
     <None Remove="Icons\Images\icons8-circled-play-30.png" />
@@ -79,8 +80,12 @@
     <None Remove="Icons\Images\icons8-folder-tree-16.png" />
     <None Remove="Icons\Images\icons8-folder-tree-30.png" />
     <None Remove="Icons\Images\icons8-go-back-30.png" />
+    <None Remove="Icons\Images\icons8-help-16.png" />
+    <None Remove="Icons\Images\icons8-help-30.png" />
     <None Remove="Icons\Images\icons8-historical-30.png" />
     <None Remove="Icons\Images\icons8-icosahedron-30.png" />
+    <None Remove="Icons\Images\icons8-ok-16.png" />
+    <None Remove="Icons\Images\icons8-ok-30.png" />
     <None Remove="Icons\Images\icons8-opened-folder-30.png" />
     <None Remove="Icons\Images\icons8-outline-16.png" />
     <None Remove="Icons\Images\icons8-outline-30.png" />
@@ -100,6 +105,8 @@
     <None Remove="Icons\Images\icons8-system-information-30.png" />
     <None Remove="Icons\Images\icons8-system-report-30.png" />
     <None Remove="Icons\Images\icons8-system-task-30.png" />
+    <None Remove="Icons\Images\icons8-test-tube-16.png" />
+    <None Remove="Icons\Images\icons8-test-tube-30.png" />
     <None Remove="Icons\Images\icons8-tree-structure-30.png" />
     <None Remove="Icons\Images\icons8-upward-arrow-30.png" />
     <None Remove="Icons\Images\icons8-variable-30.png" />
@@ -147,6 +154,7 @@
     <Resource Include="Icons\Images\icons8-breakpoint-disabled-16.png" />
     <Resource Include="Icons\Images\icons8-breakpoint-disabled-30.png" />
     <Resource Include="Icons\Images\icons8-cancel-16.png" />
+    <Resource Include="Icons\Images\icons8-cancel-30.png" />
     <Resource Include="Icons\Images\icons8-circled-play-16.png" />
     <Resource Include="Icons\Images\icons8-circled-play-30.png" />
     <Resource Include="Icons\Images\icons8-circled-play-debug-16.png" />
@@ -178,8 +186,12 @@
     <Resource Include="Icons\Images\icons8-folder-tree-16.png" />
     <Resource Include="Icons\Images\icons8-folder-tree-30.png" />
     <Resource Include="Icons\Images\icons8-go-back-30.png" />
+    <Resource Include="Icons\Images\icons8-help-16.png" />
+    <Resource Include="Icons\Images\icons8-help-30.png" />
     <Resource Include="Icons\Images\icons8-historical-30.png" />
     <Resource Include="Icons\Images\icons8-icosahedron-30.png" />
+    <Resource Include="Icons\Images\icons8-ok-16.png" />
+    <Resource Include="Icons\Images\icons8-ok-30.png" />
     <Resource Include="Icons\Images\icons8-opened-folder-30.png" />
     <Resource Include="Icons\Images\icons8-outline-16.png" />
     <Resource Include="Icons\Images\icons8-outline-30.png" />
@@ -199,6 +211,8 @@
     <Resource Include="Icons\Images\icons8-system-information-30.png" />
     <Resource Include="Icons\Images\icons8-system-report-30.png" />
     <Resource Include="Icons\Images\icons8-system-task-30.png" />
+    <Resource Include="Icons\Images\icons8-test-tube-16.png" />
+    <Resource Include="Icons\Images\icons8-test-tube-30.png" />
     <Resource Include="Icons\Images\icons8-tree-structure-30.png" />
     <Resource Include="Icons\Images\icons8-upward-arrow-30.png" />
     <Resource Include="Icons\Images\icons8-variable-30.png" />
@@ -209,17 +223,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Computers\" />
+    <Folder Include="Controls\Tests\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Computers\Examples\Fibonnacci.sprak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Computers\Examples\Geometry\Angles.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Computers\Examples\Geometry\Circles.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Computers\Examples\Geometry\Squares.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Computers\Examples\Geometry\The Eye.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Computers\Examples\Hello World.sprak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Computers\Examples\Stats.sprak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Computers\Examples\Test.sprak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

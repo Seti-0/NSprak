@@ -1,0 +1,20 @@
+﻿#! test: Hello World
+
+Print("Hello World")
+#! output: Hello World
+
+#! test: Variables
+
+number x = 3
+
+number y = x
+#! y = x
+
+#! test: Input
+
+string input = Input("Please enter input: ")
+
+#! input: My favourite colour is...
+
+Print(input)
+#! output: My favourite color is...

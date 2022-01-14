@@ -1,0 +1,47 @@
+array zeros(number N)
+	array result = []
+	loop i from 0 to (N - 1)
+		Append(result, 0)
+	end
+	return result
+end
+
+number N = 20
+array X = zeros(N)
+array Y = zeros(N)
+array S = zeros(N)
+array H = zeros(N)
+
+number dt = 0.001
+number L = Width()/5
+
+void reset(number i)
+	X[i] = Random() * Width()
+	Y[i] = Random() * Height()
+	S[i] = Random() * L
+	H[i] = Random()
+end
+
+void update(number i)
+	S[i] -= dt * L
+	if S[i] <= 0
+		reset(i)
+	end
+end
+
+void draw(number i)
+	array color = HSVToRGB(H[i], 1, 1)
+	Color(color[0], color[1], color[2])
+	number s = L - S[i]
+	Rect(X[i] - (s/2), Y[i] - (s/2), s, s)
+end
+
+
+loop
+	loop i from 0 to (N - 1)
+		update(i)
+		draw(i)
+	end
+	DisplayGraphics()
+	Sleep(dt)
+end

@@ -1,0 +1,29 @@
+﻿number PI = 3.14159
+number w = Width()
+number h = Width()
+number ox = w/2
+number oy = h/2
+
+number N = 100
+number r = w / 10
+
+loop i from 1 to (N)
+	
+	number angle = 2*PI*i/N
+	number tx = r*Cos(angle)
+	number ty = r*Sin(angle)
+	
+	number s = 0.5
+	Rect(ox + tx - 0.5*s, oy + ty - 0.5*s, s, s)
+	
+	number dx = ty*2
+	number dy = -tx*2
+	
+	array rgb = HSVToRGB(i/(N+1), 1, 1)
+	Color(rgb[0], rgb[1], rgb[2])
+	
+	Line(ox + tx - dx, oy + ty - dy, ox + tx + dx, oy + ty + dy) 
+	
+end
+
+DisplayGraphics()

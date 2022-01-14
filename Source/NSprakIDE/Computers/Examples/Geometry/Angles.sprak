@@ -1,0 +1,71 @@
+﻿# Some experiments with geometry.
+# Not actually needed, in the end, but the diagram is cool.
+
+number PI = 3.1415926535
+number w = Width()
+number h = Height()
+
+number r = w/10
+number cx = w/2
+number cy = h/2
+
+# Draw a circle
+
+number n = 50
+loop i from 1 to n
+	number angle = 2 * PI * (i/ n)
+	number x = cx + r*Cos(angle)
+	number y = cy + r*Sin(angle)
+	Color(1, 1, 0)
+	Rect(x-0.5, y-0.5, 1, 1)
+end
+
+# Draw a radius at angle alpha
+
+number alpha = 4.1
+number x2 = cx + r*Cos(alpha)
+number y2 = cy + r*Sin(alpha)
+Color(1, 0, 0)
+Line(cx, cy, x2, y2)
+
+# Draw a tangent line
+
+number beta = (PI/2) - alpha
+number dx = (w+h) * r *Cos(beta)
+number dy = -(w+h)* r *Sin(beta)
+Color(1, 0, 0)
+Line(x2 - dx, y2 - dy, x2+ dx, y2 + dy)
+
+# Borders
+
+number h2 = Height()/4
+number w2 = Width()/3
+
+Color(0, 0, 1)
+Line(cx-w, (cy - h2), cx+w, (cy - h2))
+Line(cx-w, (cy + h2), cx+w, (cy + h2))
+Line((cx + w2), (cy - h), (cx + w2), (cy + h)) 
+Line((cx - w2), (cy - h), (cx - w2), (cy + h)) 
+
+# Point of intersection (Vertical constraint...)
+
+number r3 = (h2 + r * Sin(alpha)) / Cos(alpha)
+number r2 = Sqrt(Pow(r3, 2) + Pow(r, 2))
+
+number xh = r * Cos(alpha) + r3 * Sin(alpha)
+number yh = r3 * Cos(alpha) - r * Sin(alpha)
+Color(1, 1, 1)
+Line(cx, cy, (cx + xh), (cy - yh))
+
+# Horizontally constrained instead
+
+number r3w = (w2 - r * Cos(alpha)) / Sin(alpha)
+number r2w = Sqrt(Pow(r3w, 2) + Pow(r, 2))
+
+number xw = r * Cos(alpha) + r3w * Sin(alpha)
+number yw = r3w * Cos(alpha) - r * Sin(alpha)
+Color(1, 0, 1)
+Line(cx, cy, (cx + xw), (cy - yw))
+
+DisplayGraphics()
+
