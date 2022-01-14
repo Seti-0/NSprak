@@ -17,6 +17,17 @@ namespace NSprak.Expressions
         public SingleTokenExpression(Token token)
         {
             Token = token;
+            token.ExpressionHint = this;
+        }
+
+        public override IEnumerable<Expression> GetSubExpressions()
+        {
+            return Enumerable.Empty<Expression>();
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return Token;
         }
     }
 }

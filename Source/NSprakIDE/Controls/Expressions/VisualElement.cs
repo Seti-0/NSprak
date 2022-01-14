@@ -18,6 +18,7 @@ using NSprak.Language.Values;
 using NSprak.Operations;
 
 using NSprakIDE.Themes;
+using NSprak.Tokens;
 
 namespace NSprakIDE.Controls.Expressions
 {
@@ -165,6 +166,14 @@ namespace NSprakIDE.Controls.Expressions
                     AddChildren(expression);
                     break;
 
+                case Token token:
+                    AddDebugParameter("Type", Enum.GetName(typeof(TokenType), token.Type));
+                    AddDebugParameter("Expression Hint", token.ExpressionHint?.ToString());
+                    AddDebugParameter("LineIndex", token.LineNumber);
+                    AddDebugParameter("Col. Start", token.ColumnStart);
+                    AddDebugParameter("Col. End", token.ColumnEnd);
+                    break;
+
                 case OpDebugInfo op:
                     AddParameter("Code", op.Op.ShortName);
                     AddParameter("Param", op.Op.RawParam);
@@ -196,6 +205,8 @@ namespace NSprakIDE.Controls.Expressions
 
                 AddDebugParameter("Operators", ops);
             }
+
+            AddDebugParameter("Tokens", parent.GetTokens().ToList());
 
             switch (parent)
             {
@@ -458,6 +469,10 @@ namespace NSprakIDE.Controls.Expressions
 
                 case Operator op:
                     RenderOperator(op.Name);
+                    break;
+
+                case Token token:
+                    RenderKeyword(token.Content);
                     break;
 
                 case NSprakExpression expr:

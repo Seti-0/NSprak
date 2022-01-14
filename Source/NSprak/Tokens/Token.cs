@@ -2,10 +2,8 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using NSprak.Exceptions;
-using NSprak.Language;
-using Microsoft.VisualBasic.CompilerServices;
-using NSprak.Language.Values;
+
+using NSprak.Expressions;
 
 namespace NSprak.Tokens
 {
@@ -45,6 +43,8 @@ namespace NSprak.Tokens
 
         public int LineNumber => Line.LineNumber;
 
+        public int Index { get; }
+
         public int ColumnStart { get; }
 
         public int ColumnEnd { get; }
@@ -55,20 +55,17 @@ namespace NSprak.Tokens
 
         public string Content { get; }
 
-        public int Start
-        {
-            get => Line.Start + ColumnStart;
-        }
+        public int Start => Line.Start + ColumnStart;
 
-        public int End
-        {
-            get => Line.Start + ColumnEnd;
-        }
+        public int End => Line.Start + ColumnEnd;
 
-        public Token(PageLine line, RawToken token)
+        public Expression ExpressionHint { get; set; }
+
+        public Token(PageLine line, int index, RawToken token)
         {
             Page = line.Page;
             Line = line;
+            Index = index;
 
             ColumnStart = token.ColumnStart;
             ColumnEnd = token.ColumnEnd;
@@ -86,6 +83,36 @@ namespace NSprak.Tokens
         public override string ToString()
         {
             return $"[{Type}:{Content}]{{{Start}:{End}}}";
+        }
+
+        public Token FindNextToken()
+        {
+            if (Index + 1 < Line.TokenCount)
+                return Line[Index + 1];
+
+            PageLine line = Line.GetNextLine();
+            while (line != null)
+                if (line.TokenCount > 0)
+                    return line[0];
+                else
+                    line = line.GetNextLine();
+
+            return null;
+        }
+
+        public Token FindPreviousToken()
+        {
+            if (Index - 1 > 0)
+                return Line[Index - 1];
+
+            PageLine line = Line.GetPreviousLine();
+            while (line != null)
+                if (line.TokenCount > 0)
+                    return line[^0];
+                else
+                    line = line.GetPreviousLine();
+
+            return null;
         }
     }
 }

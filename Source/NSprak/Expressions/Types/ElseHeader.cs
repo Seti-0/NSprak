@@ -31,6 +31,7 @@ namespace NSprak.Expressions.Types
         {
             elseToken.AssertKeyword(Keywords.Else);
             ElseToken = elseToken;
+            elseToken.ExpressionHint = this;
         }
 
         public override string ToString()
@@ -41,6 +42,11 @@ namespace NSprak.Expressions.Types
         public override IEnumerable<Expression> GetSubExpressions()
         {
             return Enumerable.Empty<Expression>();
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return ElseToken;
         }
     }
 }

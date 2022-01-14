@@ -25,6 +25,7 @@ namespace NSprak.Expressions.Types
         {
             returnToken.AssertKeyword(Keywords.Return);
             ReturnToken = returnToken;
+            returnToken.ExpressionHint = this;
 
             Value = expression;
         }
@@ -43,6 +44,11 @@ namespace NSprak.Expressions.Types
         {
             if (Value != null)
                 yield return Value;
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return ReturnToken;
         }
     }
 }

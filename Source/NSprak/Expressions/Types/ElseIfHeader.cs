@@ -35,9 +35,11 @@ namespace NSprak.Expressions.Types
         {
             elseToken.AssertKeyword(Keywords.Else);
             ElseToken = elseToken;
+            elseToken.ExpressionHint = this;
 
             ifToken.AssertKeyword(Keywords.If);
             IfToken = ifToken;
+            elseToken.ExpressionHint = this;
 
             Condition = condition;
         }
@@ -50,6 +52,12 @@ namespace NSprak.Expressions.Types
         public override IEnumerable<Expression> GetSubExpressions()
         {
             return new Expression[] { Condition };
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return ElseToken;
+            yield return IfToken;
         }
     }
 }

@@ -25,21 +25,30 @@ namespace NSprak.Expressions.Types
 
         public Token NameToken { get; }
 
+        public Token OpeningBracketToken { get; }
+
+        public Token ClosingBracketToken { get; }
+
         public override Token StartToken => NameToken;
 
-        public override Token EndToken { get; }
+        public override Token EndToken => ClosingBracketToken;
 
-        public FunctionCall(Token nameToken, Token endToken, List<Expression> arguments)
+        public FunctionCall(Token nameToken, Token openingToken, Token endToken, List<Expression> arguments)
         {
             nameToken.AssertName();
             endToken.AssertKeySymbol(Symbols.CloseBracket);
 
             NameToken = nameToken;
-            EndToken = endToken;
+            OpeningBracketToken = openingToken;
+            ClosingBracketToken = endToken;
 
             Arguments = arguments;
 
             NameToken.Hints |= TokenHints.Function;
+
+            nameToken.ExpressionHint = this;
+            openingToken.ExpressionHint = this;
+            endToken.ExpressionHint = this;
         }
 
         public override string ToString()
@@ -51,6 +60,13 @@ namespace NSprak.Expressions.Types
         public override IEnumerable<Expression> GetSubExpressions()
         {
             return Arguments;
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return NameToken;
+            yield return OpeningBracketToken;
+            yield return ClosingBracketToken;
         }
     }
 }

@@ -22,11 +22,20 @@ namespace NSprak.Expressions.Types
             OpenBracket = open;
             Value = value;
             CloseBracket = close;
+
+            open.ExpressionHint = this;
+            close.ExpressionHint = this;
         }
 
         public override IEnumerable<Expression> GetSubExpressions()
         {
             return new Expression[] { Value };
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return OpenBracket;
+            yield return CloseBracket;
         }
     }
 }

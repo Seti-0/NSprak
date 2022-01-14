@@ -30,5 +30,10 @@ namespace NSprak.Expressions.Types
         {
             return "Main Header";
         }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            return Enumerable.Empty<Token>();
+        }
     }
 }

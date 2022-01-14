@@ -26,6 +26,9 @@ namespace NSprak.Expressions.Types
             StartToken = startToken;
             EndToken = endToken;
             Elements = elements;
+
+            startToken.ExpressionHint = this;
+            endToken.ExpressionHint = this;
         }
 
         public override string ToString()
@@ -37,6 +40,12 @@ namespace NSprak.Expressions.Types
         public override IEnumerable<Expression> GetSubExpressions()
         {
             return Elements;
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return StartToken;
+            yield return EndToken;
         }
     }
 }

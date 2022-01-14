@@ -19,10 +19,5 @@ namespace NSprak.Expressions.Types
         {
             return $"(var: {Name})";
         }
-
-        public override IEnumerable<Expression> GetSubExpressions()
-        {
-            return Enumerable.Empty<Expression>();
-        }
     }
 }

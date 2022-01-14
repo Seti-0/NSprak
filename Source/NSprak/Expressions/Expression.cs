@@ -27,6 +27,8 @@ namespace NSprak.Expressions
 
         public abstract IEnumerable<Expression> GetSubExpressions();
 
+        public abstract IEnumerable<Token> GetTokens();
+
         public bool IsDescendantOf(Expression other)
         {
             Expression ancestor = ParentHint;
@@ -60,17 +62,6 @@ namespace NSprak.Expressions
                 }
 
             return null;
-        }
-
-        public IEnumerable<Expression> GetSubExpressionDeep()
-        {
-            foreach (Expression child in GetSubExpressions())
-            {
-                yield return child;
-
-                foreach (Expression descendent in child.GetSubExpressionDeep())
-                    yield return descendent;
-            }
         }
 
         public virtual string GetTraceString()

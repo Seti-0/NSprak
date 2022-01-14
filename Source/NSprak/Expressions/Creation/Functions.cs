@@ -23,6 +23,7 @@ namespace NSprak.Expressions.Creation
 
             iterator.AssertTokenType(TokenType.Name, out Token name);
             iterator.AssertKeySymbol(Symbols.OpenBracket, out _);
+            Token open = (Token)iterator.Current;
 
             if (iterator.Next(out List<Expression> arguments))
                 iterator.MoveNext();
@@ -34,7 +35,7 @@ namespace NSprak.Expressions.Creation
 
             iterator.AssertEnd();
 
-            FunctionCall result = new FunctionCall(name, end, arguments);
+            FunctionCall result = new FunctionCall(name, open, end, arguments);
             return result;
         }
 
@@ -43,6 +44,7 @@ namespace NSprak.Expressions.Creation
             iterator.AssertTokenType(TokenType.Type, out Token typeToken);
             iterator.AssertTokenType(TokenType.Name, out Token nameToken);
             iterator.AssertKeySymbol(Symbols.OpenBracket, out _);
+            Token open = (Token)iterator.Current;
 
             CollectedParameters parameters;
             if (iterator.Next(out parameters))
@@ -60,7 +62,7 @@ namespace NSprak.Expressions.Creation
                 FunctionSignature.Local, nameToken.Content, typeSignature);
 
             FunctionHeader result = new FunctionHeader(
-                typeToken, nameToken, end, signature, parameters.Names);
+                typeToken, nameToken, open, end, signature, parameters.Names);
             return result;
         }
     }

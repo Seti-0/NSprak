@@ -67,6 +67,7 @@ namespace NSprak.Expressions.Types
             LoopToken = loop;
 
             LoopType = LoopType.Infinite;
+            loop.ExpressionHint = this;
         }
 
         public LoopHeader(Token loop, Expression name, Token from, 
@@ -82,6 +83,9 @@ namespace NSprak.Expressions.Types
             RangeEnd = end;
 
             LoopType = LoopType.Range;
+            loop.ExpressionHint = this;
+            from.ExpressionHint = this;
+            to.ExpressionHint = this;
         }
 
         public LoopHeader(Token loop, Expression array)
@@ -131,6 +135,23 @@ namespace NSprak.Expressions.Types
 
             if (RangeEnd != null)
                 yield return RangeEnd;
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return LoopToken;
+
+            if (NameToken != null)
+                yield return NameToken;
+
+            if (FromToken != null)
+                yield return FromToken;
+
+            if (ToToken != null)
+                yield return ToToken;
+
+            if (InToken != null)
+                yield return InToken;
         }
     }
 }

@@ -29,11 +29,20 @@ namespace NSprak.Expressions.Types
             OpeningBracket = opener;
             IndexExpression = index;
             ClosingBracket = closer;
+
+            opener.ExpressionHint = this;
+            closer.ExpressionHint = this;
         }
 
         public override IEnumerable<Expression> GetSubExpressions()
         {
             return new Expression[] { SourceExpression, IndexExpression };
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return OpeningBracket;
+            yield return ClosingBracket;
         }
     }
 }

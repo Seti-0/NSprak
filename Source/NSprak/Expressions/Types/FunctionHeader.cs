@@ -29,13 +29,17 @@ namespace NSprak.Expressions.Types
 
         public Token NameToken { get; }
 
+        public Token OpeningBracket { get; }
+
+        public Token ClosingBracket { get; }
+
         public override Token StartToken => TypeToken;
 
-        public override Token EndToken { get; }
+        public override Token EndToken => ClosingBracket;
 
         public IReadOnlyList<SprakType> ParameterTypes => Signature.TypeSignature.Parameters;
 
-        public FunctionHeader(Token typeToken, Token nameToken, Token endToken, 
+        public FunctionHeader(Token typeToken, Token nameToken, Token openToken, Token endToken, 
             FunctionSignature signature, IReadOnlyList<string> parameterNames)
         {
             nameToken.AssertName();
@@ -44,12 +48,16 @@ namespace NSprak.Expressions.Types
 
             TypeToken = typeToken;
             NameToken = nameToken;
-            EndToken = endToken;
+            ClosingBracket = endToken;
 
             Signature = signature;
             ParameterNames = parameterNames;
 
             NameToken.Hints |= TokenHints.Function;
+
+            typeToken.ExpressionHint = this;
+            nameToken.ExpressionHint = this;
+            endToken.ExpressionHint = this;
         }
 
         public override string ToString()
@@ -60,6 +68,14 @@ namespace NSprak.Expressions.Types
         public override IEnumerable<Expression> GetSubExpressions()
         {
             return Enumerable.Empty<Expression>();
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            yield return TypeToken;
+            yield return NameToken;
+            yield return OpeningBracket;
+            yield return ClosingBracket;
         }
     }
 }

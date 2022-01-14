@@ -46,7 +46,7 @@ namespace NSprak.Tokens
                     end = indices[i + 1];
 
                 TokenHelper.TryParse(line, out IList<RawToken> tokens);
-                PageLine pageLine = new PageLine(this, start, end, tokens, messenger);
+                PageLine pageLine = new PageLine(this, i, start, end, tokens, messenger);
                 _lines.Add(pageLine);
 
                 CharacterCount = end;

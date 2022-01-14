@@ -53,6 +53,10 @@ namespace NSprak.Expressions.Types
             OperatorToken = operatorToken;
 
             Value = value;
+
+            typeToken.ExpressionHint = this;
+            nameToken.ExpressionHint = this;
+            operatorToken.ExpressionHint = this;
         }
 
         public override string ToString()
@@ -78,6 +82,14 @@ namespace NSprak.Expressions.Types
                 result = result.Append(Value);
 
             return result;
+        }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            return new Token[]
+            {
+                TypeToken, NameToken, OperatorToken
+            };
         }
     }
 }

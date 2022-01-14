@@ -68,5 +68,10 @@ namespace NSprak.Expressions.Types
 
             return false;
         }
+
+        public override IEnumerable<Token> GetTokens()
+        {
+            return Enumerable.Empty<Token>();
+        }
     }
 }

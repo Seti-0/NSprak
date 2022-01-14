@@ -48,6 +48,8 @@ namespace NSprak.Expressions.Types
                 default: throw new TokenCheckException(
                     token, $"Unsupported token for {nameof(LiteralGet)}: {token}");
             }
+
+            token.ExpressionHint = this;
         }
 
         public override string ToString()

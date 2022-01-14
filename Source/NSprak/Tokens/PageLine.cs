@@ -45,23 +45,27 @@ namespace NSprak.Tokens
             LineNumber = lineNumber;
         }
 
-        public PageLine(TokenPage page, int lineStart, int lineEnd, IList<RawToken> tokens, Messenger messenger)
+        public PageLine(TokenPage page, int lineNumber, int lineStart, int lineEnd, IList<RawToken> tokens, Messenger messenger)
         {
             Page = page;
 
             _tokens = new List<Token>(tokens.Count);
+            int i = 0;
             foreach (RawToken raw in tokens)
             {
-                Token token = new Token(this, raw);
+                Token token = new Token(this, i, raw);
                 
                 if (raw.Error)
                     messenger.AtToken(token, raw.ErrorMessage, raw.ErrorParams);
-            }
 
-            _tokens = tokens.Select(x => new Token(this, x)).ToArray();
+                _tokens.Add(token);
+                
+                i++;
+            }
 
             Start = lineStart;
             Length = lineEnd - lineStart;
+            LineNumber = lineNumber;
         }
 
         public void UpdateLocation(int start, int lineNumber)
@@ -90,6 +94,22 @@ namespace NSprak.Tokens
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _tokens.GetEnumerator();
+        }
+
+        public PageLine GetNextLine()
+        {
+            if (LineNumber + 1 < Page.LineCount)
+                return Page[LineNumber + 1];
+
+            return null;
+        }
+
+        public PageLine GetPreviousLine()
+        {
+            if (LineNumber - 1 > 0)
+                return Page[LineNumber - 1];
+
+            return null;
         }
     }
 }
