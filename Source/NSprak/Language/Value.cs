@@ -10,6 +10,11 @@ namespace NSprak.Language
 {
     public abstract class Value
     {
+        public static bool TryParse(string text, out Value value)
+        {
+            return Tokens.TokenHelper.TryParse(text, out value);
+        }
+
         public static bool IsBoolean(string text)
         {
             return text == "true" || text == "false";
@@ -17,7 +22,7 @@ namespace NSprak.Language
 
         public static bool IsNumber(string text)
         {
-            return double.TryParse(text, out _);
+            return Symbols.IsValidNumber(text);
         }
 
         public SprakString ToSprakString()

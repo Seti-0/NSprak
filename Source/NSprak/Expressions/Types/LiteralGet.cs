@@ -24,7 +24,7 @@ namespace NSprak.Expressions.Types
                 case TokenType.Boolean:
 
                     if (bool.TryParse(token.Content, out bool boolean))
-                        Value = new SprakBoolean(boolean);
+                        Value = SprakBoolean.From(boolean);
 
                     else throw new TokenCheckException(token, $"Unable to parse boolean from {token}");
 

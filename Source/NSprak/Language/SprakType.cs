@@ -94,7 +94,7 @@ namespace NSprak.Language
                 Text = "bool",
                 ValueType = typeof(SprakBoolean),
 
-                _default = new SprakBoolean()
+                _default = SprakBoolean.False
             },
 
             Number = new SprakType

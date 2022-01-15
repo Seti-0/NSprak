@@ -19,7 +19,7 @@ namespace NSprak.Operations.Types
             SprakNumber second = context.Memory.PopValue<SprakNumber>();
             SprakNumber first = context.Memory.PopValue<SprakNumber>();
 
-            SprakBoolean result = new SprakBoolean(first.Value >= second.Value);
+            SprakBoolean result = SprakBoolean.From(first.Value >= second.Value);
 
             context.Memory.PushValue(result);
         }

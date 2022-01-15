@@ -107,19 +107,19 @@ namespace NSprak.Language.Libraries
         [SprakOperator(Operator.Names.Not, InputSides.Right)]
         public static SprakBoolean Not(SprakBoolean right)
         {
-            return new SprakBoolean(!right.Value);
+            return SprakBoolean.From(!right.Value);
         }
 
         [SprakOperator(Operator.Names.And)]
         public static SprakBoolean And(SprakBoolean left, SprakBoolean right)
         {
-            return new SprakBoolean(left.Value && right.Value);
+            return SprakBoolean.From(left.Value && right.Value);
         }
 
         [SprakOperator(Operator.Names.Or)]
         public static SprakBoolean Or(SprakBoolean left, SprakBoolean right)
         {
-            return new SprakBoolean(left.Value || right.Value);
+            return SprakBoolean.From(left.Value || right.Value);
         }
 
         /*
@@ -131,73 +131,73 @@ namespace NSprak.Language.Libraries
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakBoolean left, SprakBoolean right)
         {
-            return new SprakBoolean(left.Value == right.Value);
+            return SprakBoolean.From(left.Value == right.Value);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left == right);
+            return SprakBoolean.From(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakString left, SprakString right)
         {
-            return new SprakBoolean(left == right);
+            return SprakBoolean.From(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakArray left, SprakArray right)
         {
-            return new SprakBoolean(left == right);
+            return SprakBoolean.From(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(SprakConnection left, SprakConnection right)
         {
-            return new SprakBoolean(left == right);
+            return SprakBoolean.From(left == right);
         }
 
         [SprakOperator(Operator.Names.EqualTo)]
         public static SprakBoolean Equal(Value left, Value right)
         {
-            return new SprakBoolean(left == right);
+            return SprakBoolean.From(left == right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakBoolean left, SprakBoolean right)
         {
-            return new SprakBoolean(left != right);
+            return SprakBoolean.From(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left != right);
+            return SprakBoolean.From(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakString left, SprakString right)
         {
-            return new SprakBoolean(left != right);
+            return SprakBoolean.From(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakArray left, SprakArray right)
         {
-            return new SprakBoolean(left != right);
+            return SprakBoolean.From(left != right);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(SprakConnection left, SprakConnection right)
         {
-            return new SprakBoolean(left.ConnectionString != right.ConnectionString);
+            return SprakBoolean.From(left.ConnectionString != right.ConnectionString);
         }
 
         [SprakOperator(Operator.Names.NotEqualTo)]
         public static SprakBoolean NotEqual(Value left, Value right)
         {
-            return new SprakBoolean(left != right);
+            return SprakBoolean.From(left != right);
         }
 
         /*
@@ -209,25 +209,25 @@ namespace NSprak.Language.Libraries
         [SprakOperator(Operator.Names.GreaterThan)]
         public static SprakBoolean GreaterThan(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left.Value > right.Value);
+            return SprakBoolean.From(left.Value > right.Value);
         }
 
         [SprakOperator(Operator.Names.LessThan)]
         public static SprakBoolean LessThan(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left.Value < right.Value);
+            return SprakBoolean.From(left.Value < right.Value);
         }
 
         [SprakOperator(Operator.Names.GreaterThanOrEquals)]
         public static SprakBoolean GreaterThanOrEquals(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left.Value >= right.Value);
+            return SprakBoolean.From(left.Value >= right.Value);
         }
 
         [SprakOperator(Operator.Names.LessThanOrEquals)]
         public static SprakBoolean LessThanOrEquals(SprakNumber left, SprakNumber right)
         {
-            return new SprakBoolean(left.Value <= right.Value);
+            return SprakBoolean.From(left.Value <= right.Value);
         }
     }
 }

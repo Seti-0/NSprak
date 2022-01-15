@@ -8,6 +8,20 @@ namespace NSprak.Language.Values
 {
     public class SprakNumber : Value
     {
+        public static bool TryParse(string text, out SprakNumber result)
+        {
+            if (Symbols.IsValidNumber(text) && double.TryParse(text, out double raw))
+            {
+                result = new SprakNumber(raw);
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
         public double Value { get; }
 
         public override SprakType Type => SprakType.Number;

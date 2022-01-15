@@ -8,11 +8,39 @@ namespace NSprak.Language.Values
 {
     public class SprakBoolean : Value
     {
+        public static SprakBoolean
+            True = new SprakBoolean(true),
+            False = new SprakBoolean(false);
+
+        public static SprakBoolean From(bool boolean)
+        {
+            return boolean ? True : False;
+        }
+
+        public static bool TryParse(string text, out SprakBoolean result)
+        {
+            if (text == "true")
+            {
+                result = True;
+                return true;
+            }
+            else if (text == "false")
+            {
+                result = False;
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
         public bool Value { get; }
 
         public override SprakType Type => SprakType.Boolean;
 
-        public SprakBoolean(bool value = false)
+        private SprakBoolean(bool value = false)
         {
             Value = value;
         }

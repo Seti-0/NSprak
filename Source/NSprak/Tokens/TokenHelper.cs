@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 
 using NSprak.Language;
+using NSprak.Language.Values;
 using NSprak.Messaging;
 
 namespace NSprak.Tokens
@@ -14,6 +15,69 @@ namespace NSprak.Tokens
         private enum TokenPrototype
         {
             KeySymbol, Word, Number, String, Operator, Comment, Array
+        }
+
+        public static bool TryParse(string line, out Value result)
+        {
+            TryParse(line, out IList<RawToken> tokens);
+            return TryParse(tokens, out result);
+        }
+
+        private static bool TryParse(IList<RawToken> tokens, out Value result)
+        {
+            result = null;
+
+            if (tokens.Count == 0)
+                return false;
+
+            else if (tokens.Count == 1)
+            {
+                RawToken token = tokens[0];
+                string content = token.Content;
+
+                switch (token.Type)
+                {
+                    case TokenType.Boolean
+                    when SprakBoolean.TryParse(content, out SprakBoolean raw):
+                        result = raw;
+                        return true;
+
+                    case TokenType.Number
+                    when SprakNumber.TryParse(content, out SprakNumber raw):
+                        result = raw;
+                        return true;
+
+                    case TokenType.String:
+                        result = new SprakString(content);
+                        return true;
+                }
+            }
+            else
+            {
+                if (tokens[0].Type != TokenType.KeySymbol || tokens[0].Content[0] != Symbols.OpenSquareBracket)
+                    return false;
+
+                if (tokens[0].Type != TokenType.KeySymbol || tokens[0].Content[0] != Symbols.CloseSquareBracket)
+                    return false;
+
+                List<Value> items = new List<Value>();
+                List<RawToken> current = new List<RawToken>();
+
+                for (int i = 1; i < tokens.Count - 1; i++)
+                {
+                    if (tokens[i].Type == TokenType.KeySymbol && tokens[i].Content[0] == Symbols.Comma)
+                    {
+                        if (!TryParse(tokens, out Value item))
+                            return false;
+
+                        items.Add(item);
+                        current.Clear();
+                    }
+                    else current.Add(tokens[i]);
+                }
+            }
+
+            return false;
         }
 
         public static void TryParse(string line, out IList<RawToken> tokens)

@@ -54,6 +54,12 @@ namespace NSprak.Language
                 || symbol == '_';
         }
 
+        public static bool IsValidWord(string text)
+        {
+            return IsWordStart(text[0])
+                && text[1..].All(c => IsWordCharacter(c));
+        }
+
         public static bool IsStringStart(char symbol)
         {
             return symbol == StringBoundary || symbol == StringBoundaryAlternate;
@@ -70,6 +76,16 @@ namespace NSprak.Language
             // For now, simple decimals only. It might be worth implementing scientific notation
             // and alternate bases at some point, if sprak supports them
             return char.IsDigit(symbol) || symbol == DecimalPoint;
+
+            // Also for goodness sake, it would be worth fixing the fact that 2 decimal points
+            // panicks the compiler...
+        }
+
+        public static bool IsValidNumber(string text)
+        {
+            return IsNumberStart(text[0])
+                && text[1..].All(c => IsNumberCharacter(c))
+                && double.TryParse(text, out _);
         }
 
         public static bool IsOperatorStart(char symbol)

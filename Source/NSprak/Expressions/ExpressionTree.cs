@@ -8,6 +8,8 @@ using NSprak.Expressions.Structure.Transforms;
 using NSprak.Expressions.Types;
 using NSprak.Language;
 using NSprak.Tokens;
+using NSprak.Messaging;
+using NSprak.Tests;
 
 namespace NSprak.Expressions
 {
@@ -38,10 +40,22 @@ namespace NSprak.Expressions
                     _flatStatements.Add(expression);
             }
 
+            ParseTestCommands(page, environment.Messages);
+
             Root = TreeBuilder.Build(_flatStatements, environment);
 
             foreach (ITreeTransform transform in _transforms)
                 transform.Apply(Root, environment);
+        }
+
+        private void ParseTestCommands(TokenPage page, Messenger messages)
+        {
+            foreach (PageLine line in page)
+                foreach (Token token in line)
+                    if (token.Type == TokenType.Comment && token.Content.StartsWith("#!"))
+                    {
+                        TestCommand.FromToken(token, messages);
+                    }
         }
     }
 }

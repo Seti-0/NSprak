@@ -91,7 +91,7 @@ namespace NSprak.Language.Libraries
                 .FindFunctions(name.Value)
                 .Any();
 
-            return new SprakBoolean(exists);
+            return SprakBoolean.From(exists);
         }
 
         public static SprakNumber Height(ExecutionContext context)
@@ -184,7 +184,7 @@ namespace NSprak.Language.Libraries
             ExecutionContext context, SprakString key)
         {
             bool result = context.Computer?.Screen.IsKeyPressed(key.Value) ?? false;
-            return new SprakBoolean(result);
+            return SprakBoolean.From(result);
         }
 
         // L

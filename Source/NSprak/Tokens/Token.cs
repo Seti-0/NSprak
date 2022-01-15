@@ -108,11 +108,23 @@ namespace NSprak.Tokens
             PageLine line = Line.GetPreviousLine();
             while (line != null)
                 if (line.TokenCount > 0)
-                    return line[^0];
+                    return line[line.TokenCount -1];
                 else
                     line = line.GetPreviousLine();
 
             return null;
+        }
+
+        public bool IsInitial()
+        {
+            Token current = FindPreviousToken();
+            while (current != null)
+                if (current.Type != TokenType.Comment)
+                    return false;
+                else
+                    current = current.FindPreviousToken();
+
+            return true;
         }
     }
 }

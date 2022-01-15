@@ -4,10 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using NSprak.Tokens;
+
 namespace NSprak.Language.Values
 {
     public class SprakArray : Value
     {
+        public bool TryParse(string text, out SprakArray result)
+        {
+            if (TokenHelper.TryParse(text, out Value raw) && raw is SprakArray array)
+            {
+                result = array;
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
         public List<Value> Value { get; }
 
         public override SprakType Type => SprakType.Array;

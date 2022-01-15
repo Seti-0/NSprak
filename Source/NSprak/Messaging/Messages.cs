@@ -86,6 +86,12 @@ namespace NSprak.Messaging
                 Summary = "A single index cannot be declared on its own"
             },
 
+            MissingContent = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Missing test command content"
+            },
+
             MissingReturnValue = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
@@ -122,10 +128,22 @@ namespace NSprak.Messaging
                 Summary = "Name referenced before its local definition: '{Name}'"
             },
 
-            UnresolvedCall = new MessageTemplate
+            TestParseError = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Summary = "Unable to resolve function call: {Signature}"
+                Summary = "Unable to parse test command: '{Content}'"
+            },
+
+            TestValueParseError = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unable to parse test command value: '{Value}'"
+            },
+
+            UnexpectedAssertion = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Assertion found outside of test case"
             },
 
             UnexpectedElseIfStatement = new MessageTemplate
@@ -146,6 +164,12 @@ namespace NSprak.Messaging
                 Summary = "Unexpected end of line"
             },
 
+            UnrecognizedError = new MessageTemplate
+            {
+                Severity = MessageSeverity.Warning,
+                Summary = "Unrecognized error message: '{Name}'"
+            },
+
             UnrecognizedName = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
@@ -156,6 +180,12 @@ namespace NSprak.Messaging
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Unrecognized number: '{Content}'"
+            },
+
+            UnresolvedCall = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Unable to resolve function call: {Signature}"
             },
 
             UnresolvedOperation = new MessageTemplate
@@ -174,6 +204,12 @@ namespace NSprak.Messaging
             {
                 Severity = MessageSeverity.Error,
                 Summary = "Unrecognized symbols"
+            },
+
+            UnexpectedTestTitle = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Test titles are only valid at the top of files"
             },
 
             UnexpectedToken = new MessageTemplate
