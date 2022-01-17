@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using Microsoft.VisualBasic;
+using System.Linq;
+
 using NSprak.Exceptions;
 using NSprak.Execution;
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
 using NSprak.Functions;
-using NSprak.Functions.Resolution;
 using NSprak.Functions.Signatures;
 using NSprak.Operations.Creation;
 using NSprak.Operations.Types;
 using NSprak.Tokens;
+using NSprak.Tests;
 
 namespace NSprak.Operations
 {
@@ -53,6 +55,8 @@ namespace NSprak.Operations
         {
             expression.OperatorsHint.Clear();
 
+            int startIndex = Operations.Count;
+
             _sources.Push(expression);
 
             switch (expression)
@@ -83,6 +87,26 @@ namespace NSprak.Operations
             }
 
             _sources.Pop();
+
+            if (startIndex == Operations.Count)
+                // No operations have been added, there is no point
+                // trying to link test commands
+                return;
+
+            int endIndex = Operations.Count - 1;
+            
+            OpDebugInfo firstOp = DebugInfo[startIndex];
+            OpDebugInfo lastOp = DebugInfo[endIndex];
+
+            if (expression.TestsHint != null)
+                foreach (TestCommand command in expression.TestsHint)
+                {
+                    if (command.IsPreOp && firstOp != null)
+                        firstOp.AddTest(command);
+
+                    else if (!command.IsPreOp && lastOp != null)
+                        lastOp.AddTest(command);
+                }
         }
 
         public void ThrowError(string errorMessage)

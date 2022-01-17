@@ -200,7 +200,7 @@ namespace NSprakIDE.Controls
             bool Running() => _executor.State == ExecutorState.Running;
             bool Paused() => _executor.State == ExecutorState.Paused;
             bool Idle() => _executor.State == ExecutorState.Idle;
-            bool Safe() => !_executor.HasRuntimeError;
+            bool Safe() => !_executor.HasUnsafeError;
 
             bool RunningOrPaused() => Running() || Paused();
             bool SafelyPaused() => Paused() && Safe();
@@ -213,6 +213,7 @@ namespace NSprakIDE.Controls
             Bind(this, EditorCommands.ViewOperations, ShowExecutable);
 
             Bind(this, EditorCommands.StartDebug, StartOrContinue, IdleOrSafelyPaused);
+            Bind(this, EditorCommands.StartTest, StartTest, Idle);
             Bind(this, EditorCommands.Stop, _executor.RequestStop, RunningOrPaused);
             Bind(this, EditorCommands.Pause, _executor.RequestPause, Running);
             Bind(this, EditorCommands.StepOver, StepOver, SafelyPaused);
@@ -302,6 +303,12 @@ namespace NSprakIDE.Controls
             else
                 Task.Run(_executor.Continue);
 
+            ClearRuntimeHighlights();
+        }
+
+        public void StartTest()
+        {
+            Task.Run(_executor.StartTest);
             ClearRuntimeHighlights();
         }
 

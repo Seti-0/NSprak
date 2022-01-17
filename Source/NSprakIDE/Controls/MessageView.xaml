@@ -7,11 +7,34 @@
              xmlns:local="clr-namespace:NSprakIDE.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Controls/General/Toolbar.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <!-- 
+                Make the style given in the merged dictionary the default style
+                for that type in this document.
+            -->
+            <Style TargetType="general:FlatToggleButton" BasedOn="{StaticResource FlatToggleButton}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <DockPanel>
-        <!-- Choose which file to focus on, if any -->
-        <general:ViewSelect x:Name="ViewSelect" DockPanel.Dock="Top"
+        <DockPanel DockPanel.Dock="Top" LastChildFill="True" 
+                   Background="{StaticResource NSprakIDE.Toolbar}">
+            <general:ViewSelect x:Name="ViewSelect"
+                                DockPanel.Dock="Left"
                             Description="Show messages from: "
                             Selected="ViewSelect_Selected"/>
+            <general:FlatToggleButton x:Name="ShowTypeIDColumn"  
+                                      DockPanel.Dock="Left" 
+                                      IconName="TemplateID"
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,10,0"/>
+            <!-- Choose which file to focus on, if any -->
+        </DockPanel>
         <!-- Dispay messages as a table -->
         <DataGrid x:Name="MessagesGrid" 
                   AutoGenerateColumns="False" GridLinesVisibility="Vertical" 
@@ -62,6 +85,14 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Source}" Margin="5,0,5,0" Foreground="#FF3242DE"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <!-- Column for the message type name -->
+                <DataGridTemplateColumn Header="Type" x:Name="TypeIDColumn">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" Margin="5,0,5,0" Foreground="#FF3242DE"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

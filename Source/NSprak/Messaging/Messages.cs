@@ -1,12 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.Reflection;
 
 namespace NSprak.Messaging
 {
     public static class Messages
     {
+        public static Dictionary<string, MessageTemplate> Templates { get; }
+
+        static Messages()
+        {
+            Templates = typeof(Messages)
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Where(field => field.FieldType == typeof(MessageTemplate))
+                .ToDictionary(field => field.Name, field => (MessageTemplate)field.GetValue(null));
+
+            foreach ((string name, MessageTemplate template) in Templates)
+            {
+                template.Name = name;
+                template.Title = ToSentenceCase(name);
+            }
+        }
+
+        private static string ToSentenceCase(string word)
+        {
+            StringBuilder output = new StringBuilder(word.Length + 10);
+            IEnumerator<char> input = word.ToCharArray().AsEnumerable().GetEnumerator();
+
+            if (!input.MoveNext())
+                return "";
+            
+            output.Append(char.ToUpper(input.Current));
+
+            while (input.MoveNext())
+            {
+                if (char.IsUpper(input.Current))
+                    output.Append(' ');
+
+                output.Append(char.ToLower(input.Current));
+            }
+
+            return output.ToString();
+        }
+
         public static MessageTemplate
+
+            // At some point these assertion errors should be split up.
+            // Or maybe a chained template system introduced.
+
+            AssertionFailed = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "{Message}"
+            },
+
+            AssertionExecutionFailed = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "Failed to execute assertion: {Message}"
+            },
 
             AssignmentTypeMismatch = new MessageTemplate
             {
@@ -42,6 +96,12 @@ namespace NSprak.Messaging
             {
                 Severity = MessageSeverity.Error,
                 Summary = "'{Operator}' is an expression operator, and cannot be used for assignment"
+            },
+
+            ExpectedExpressionForCommand = new MessageTemplate
+            {
+                Severity = MessageSeverity.Error,
+                Summary = "An {Desc} assertion must come before or after an expression"
             },
 
             ExtraEndStatement = new MessageTemplate
@@ -224,10 +284,9 @@ namespace NSprak.Messaging
                 Summary = "End of statement reached. Unexpected token: '{Token}'"
             },
 
-            UexpectedType = new MessageTemplate
+            UnexpectedType = new MessageTemplate
             {
                 Severity = MessageSeverity.Error,
-                Title = "Unexpected type",
                 Summary = "Expected {Expected}, found {Found}: '{Value}'"
             },
 

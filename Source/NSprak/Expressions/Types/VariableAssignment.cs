@@ -54,7 +54,9 @@ namespace NSprak.Expressions.Types
 
             Value = value;
 
-            typeToken.ExpressionHint = this;
+            if (typeToken != null)
+                typeToken.ExpressionHint = this;
+
             nameToken.ExpressionHint = this;
             operatorToken.ExpressionHint = this;
         }

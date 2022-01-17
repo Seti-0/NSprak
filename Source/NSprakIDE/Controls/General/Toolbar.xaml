@@ -75,5 +75,57 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    
+    <!-- Simple flat icon toggle button -->
+    <Style TargetType="{x:Type General:FlatToggleButton}" x:Key="FlatToggleButton">
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type General:FlatToggleButton}">
+                    <Border x:Name="Root" BorderThickness="1" BorderBrush="{x:Null}">
+                        <StackPanel x:Name="Panel" Margin="4,1,4,1">
+                            <Image x:Name="Image" 
+                                       Source="{TemplateBinding ImageSource}"/>
+                            <TextBlock Name="Text" Text="{TemplateBinding Content}"
+                                            VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="True">
+                            <Setter TargetName="Panel" Property="Orientation" Value="Horizontal"/>
+                            <Setter TargetName="Image" Property="Width" Value="16"/>
+                            <Setter TargetName="Image" Property="Height" Value="16"/>
+                            <Setter TargetName="Image" Property="Margin" Value="3,3,3,3"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Panel" Property="Orientation" Value="Horizontal"/>
+                            <Setter TargetName="Image" Property="Width" Value="16"/>
+                            <Setter TargetName="Image" Property="Height" Value="16"/>
+                            <Setter TargetName="Image" Property="Margin" Value="3,3,3,3"/>
+                            <Setter TargetName="Image" Property="Effect">
+                                <Setter.Value>
+                                    <Icons:GrayscaleEffect/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="Text" Property="Foreground" Value="#777777"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="#99C9EF"/>
+                            <Setter TargetName="Root" Property="BorderBrush" Value="#57A5E5"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="#99C9EF"/>
+                            <Setter TargetName="Root" Property="BorderBrush" Value="#57A5E5"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="#57A5E5"/>
+                            <Setter TargetName="Root" Property="BorderBrush" Value="#57A5E5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
 </ResourceDictionary>

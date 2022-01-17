@@ -1,6 +1,9 @@
-﻿using NSprak.Expressions;
+﻿using System.Collections.Generic;
+
+using NSprak.Expressions;
 using NSprak.Operations.Types;
 using NSprak.Tokens;
+using NSprak.Tests;
 
 namespace NSprak.Operations
 {
@@ -18,6 +21,8 @@ namespace NSprak.Operations
 
         public bool Breakpoint { get; set; }
 
+        public List<TestCommand> Tests { get; set; }
+
         public OpDebugInfo(Op op, int index, Expression source, 
             Token focus = null, string comment = null)
         {
@@ -26,6 +31,14 @@ namespace NSprak.Operations
             SourceExpression = source;
             FocusToken = focus;
             Comment = comment;
+        }
+
+        public void AddTest(TestCommand command)
+        {
+            if (Tests == null)
+                Tests = new List<TestCommand>();
+
+            Tests.Add(command);
         }
 
         public override string ToString()

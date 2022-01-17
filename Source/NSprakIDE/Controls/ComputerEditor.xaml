@@ -63,6 +63,7 @@
                 <TextBlock Style="{DynamicResource GroupTitle}">Execution</TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <General:CommandButton Size="Large" IconName="ContinueDebug" UICommand="{x:Static Cmd:EditorCommands.StartDebug}"/>
+                    <General:CommandButton Size="Large" IconName="Test" UICommand="{x:Static Cmd:EditorCommands.StartTest}"/>
                     <General:CommandButton Size="Large" IconName="Pause" UICommand="{x:Static Cmd:EditorCommands.Pause}"/>
                     <General:CommandButton Size="Large" IconName="Stop" UICommand="{x:Static Cmd:EditorCommands.Stop}"/>
                     <StackPanel>
@@ -70,7 +71,6 @@
                         <General:CommandButton IconName="StepOut" UICommand="{x:Static Cmd:EditorCommands.StepOut}"/>
                         <General:CommandButton IconName="StepOver" UICommand="{x:Static Cmd:EditorCommands.StepOver}"/>
                     </StackPanel>
-                    <General:CommandButton Size="Large" IconName="Test" UICommand="{x:Static Cmd:EditorCommands.StartTest}"/>
                 </StackPanel>
             </DockPanel>
 

@@ -85,6 +85,15 @@ namespace NSprak.Tokens
             return $"[{Type}:{Content}]{{{Start}:{End}}}";
         }
 
+        public Token FindNextToken(Predicate<Token> predicate)
+        {
+            Token result = FindNextToken();
+            while (result != null && !predicate(result))
+                result = result.FindNextToken();
+
+            return result;
+        }
+
         public Token FindNextToken()
         {
             if (Index + 1 < Line.TokenCount)
@@ -98,6 +107,15 @@ namespace NSprak.Tokens
                     line = line.GetNextLine();
 
             return null;
+        }
+
+        public Token FindPreviousToken(Predicate<Token> predicate)
+        {
+            Token result = FindPreviousToken();
+            while (result != null && !predicate(result))
+                result = result.FindPreviousToken();
+
+            return result;
         }
 
         public Token FindPreviousToken()

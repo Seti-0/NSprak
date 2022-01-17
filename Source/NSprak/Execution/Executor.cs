@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 using NSprak.Exceptions;
 using NSprak.Expressions;
 using NSprak.Expressions.Types;
 using NSprak.Functions;
 using NSprak.Functions.Resolution;
+using NSprak.Tests.Types;
+using NSprak.Tests;
+using NSprak.Messaging;
 
 namespace NSprak.Execution
 {
@@ -35,9 +39,12 @@ namespace NSprak.Execution
         // stepping or continuing may cause an internal 
         // runtime error due to the memory being in an invalid state.
         // Only stopping should be allowed from here.
-        public bool HasRuntimeError { get; set; }
+        public bool HasUnsafeError { get; set; }
 
         private readonly ExecutionContext _context;
+
+        private bool _runTestCommands;
+
         private bool _stopRequested;
         private bool _pauseRequested;
 
@@ -79,11 +86,13 @@ namespace NSprak.Execution
                 return;
 
             _context.Reset();
-            HasRuntimeError = false;
+            HasUnsafeError = false;
             State = ExecutorState.Idle;
 
             Computer.Screen?.SetColor(Color.White);
             Computer.Screen?.SetPrintColor(Color.White);
+
+            _runTestCommands = false;
         }
 
         protected void OnPause(EventArgs e)
@@ -120,9 +129,15 @@ namespace NSprak.Execution
             }
         }
 
-        public void Start()
+        public void Start() => Start(false);
+
+        public void StartTest() => Start(true);
+
+        private void Start(bool assertions)
         {
             if (State != ExecutorState.Idle) return;
+
+            _runTestCommands = assertions;
 
             Instructions.Step();
             
@@ -135,10 +150,16 @@ namespace NSprak.Execution
             Run(StepIndefinitely, Stop);
         }
 
-        public void StepInto()
+        public void StepInto() => StepInto(false);
+
+        public void StepIntoTest() => StepInto(true);
+
+        private void StepInto(bool assertions)
         {
             if (State != ExecutorState.Paused && State != ExecutorState.Idle)
                 return;
+
+            _runTestCommands = assertions;
 
             Run(StepSingle, Pause);
         }
@@ -325,7 +346,13 @@ namespace NSprak.Execution
 
             try
             {
+                if (_runTestCommands)
+                    InvokeTestCommands(pre: true);
+
                 Instructions.Current.Execute(_context);
+
+                if (_runTestCommands)
+                    InvokeTestCommands(pre: false);
 
                 if (step)
                     Instructions.Step();
@@ -334,28 +361,18 @@ namespace NSprak.Execution
             {
                 string sourceTrace = null;
 
-                if (Instructions.HasCurrent)
-                    sourceTrace = Instructions.CurrentInfo?.SourceExpression?.GetTraceString();
-
                 IComputerScreen screen = Computer.Screen;
                 if (screen != null)
                 {
                     if (e is SprakRuntimeException runtimeException)
-                    {
-                        screen.SetPrintColor(Color.Red);
-                        screen.Print("Runtime Error: " + runtimeException.Template.Title);
-                        screen.Print(runtimeException.Template.Render(runtimeException.Args));
+                        HandleRuntimeError(runtimeException, screen);
 
-                        if (sourceTrace != null)
-                            screen.Print("At: " + sourceTrace);
-
-                        screen.Print("Execution paused at error location.");
-                    }
                     else
                     {
                         screen.SetPrintColor(Color.Red);
                         screen.Print("Internal error: " + e.GetType().Name);
                         screen.Print(e.Message);
+                        screen.Print(e.StackTrace);
 
                         if (Instructions.HasCurrent)
                             screen.Print("Op: " + Instructions.Current.ToString());
@@ -363,19 +380,135 @@ namespace NSprak.Execution
                         if (sourceTrace != null)
                             screen.Print("Expression: " + sourceTrace);
 
-                        HasRuntimeError = true;
-
-                        // TODO: NSprakIDE does not handle this well at the moment - the handling of the
-                        // error is delayed and a bit strange since the Executor is run in a separate
-                        // thread. I'm guessing there is some missing error handling that needs fixing
-                        // throw;
+                        HasUnsafeError = true;
+                        _breakRequested = true;
                     }
                 }
-                // Same caveat/TODO as above
-                else throw;
+                else
+                {
+                    // Ideally the error would be reported with some sort of log
+                    // as well, but there is no logging mechanism at the moment,
+                    // so the best that can be done without an output screen is to stop.
+                    HasUnsafeError = true;
+                    _breakRequested = true;
+                }
+            }
+        }
 
+        private void InvokeTestCommands(bool pre)
+        {
+            if (!Instructions.HasCurrent)
+                return;
+
+            IEnumerable<TestCommand> commands = Instructions.CurrentInfo.Tests;
+            if (commands == null)
+                return;
+
+            IComputerScreen screen = Computer.Screen;
+
+            foreach (TestCommand command in commands)
+            {
+                if (pre != command.IsPreOp)
+                    continue;
+
+                try
+                {
+                    command.Invoke(_context);
+
+                    if (screen != null)
+                    {
+                        screen.SetPrintColor(Color.Green);
+                        screen.Print("Assertion passed: " + command.Description);
+                        screen.SetPrintColor(Color.White);
+                    }
+                }
+                catch (SprakRuntimeException e)
+                {
+                    // Since operations can't be reversed as of writing this, failing 
+                    // an assertion after the operation is complete leaves the execution in
+                    // in a state where it cannot try the operation and assertion again.
+                    HasUnsafeError = true;
+
+                    // Add a bit of context, and then let the standard runtime error
+                    // handling handle things.
+                    e.Context = "While executing assertion: " + command.Description;
+                    throw;
+                }
+            }
+        }
+
+        private void HandleRuntimeError(SprakRuntimeException e, IComputerScreen screen)
+        {
+            // First, consider assertions - the error could be expected, in which case the executor can log
+            // a success and move on. Or it could be a different error to what was expected, so that the 
+            // assertion fails.
+
+            ErrorTest test = null;
+            if (Instructions.HasCurrent) 
+                test = Instructions.CurrentInfo.Tests?.OfType<ErrorTest>().FirstOrDefault();
+
+            if (test != null && _runTestCommands)
+            {
+                if (test.ErrorName == e.Template.Name)
+                {
+                    // Success! The error was expected.
+                    screen.SetPrintColor(Color.Green);
+                    screen.Print($"Assertion passed: error '{test.ErrorName}' occured.");
+                    Instructions.Step();
+                }
+                // This name comparison is a bit awkward, but doesn't seem worth rewriting
+                else if (e.Template.Name != nameof(Messages.AssertionFailed))
+                {
+                    // An error occurred as expected, but it was the wrong one!
+                    screen.SetPrintColor(Color.Red);
+                    screen.Print("Runtime error: Assertion Failed.");
+                    screen.Print($"Expected error: '{test.ErrorName}'. Found error: '{e.Template.Name}'");
+                    screen.Print("Found error details:");
+
+                    DisplayRuntimeError(e, screen);
+                    _breakRequested = true;
+                }
+                else
+                {
+                    DisplayRuntimeError(e, screen);
+                    _breakRequested = true;
+                }
+            }
+            else
+            {
+                // If there was no error test, then this is a runtime error
+                // to display and pause on.
+                DisplayRuntimeError(e, screen);
                 _breakRequested = true;
             }
+
+            screen.SetPrintColor(Color.White);
+        }
+
+        private void DisplayRuntimeError(SprakRuntimeException e, IComputerScreen screen)
+        {
+
+
+            screen.SetPrintColor(Color.Red);
+            screen.Print("Runtime Error: " + e.Template.Title);
+
+            screen.Print("Detail: " + e.Template.Render(e.Args));
+
+            string sourceTrace = GetCurrentTrace();
+            if (sourceTrace != null)
+                screen.Print("At: " + sourceTrace);
+
+            screen.Print("Execution paused at error location.");
+            screen.SetPrintColor(Color.White);
+        }
+
+        private string GetCurrentTrace()
+        {
+            string sourceTrace = null;
+            if (Instructions.HasCurrent)
+                sourceTrace = Instructions.CurrentInfo?.SourceExpression?.GetTraceString();
+
+            return sourceTrace;
         }
     }
 }

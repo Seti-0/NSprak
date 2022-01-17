@@ -19,6 +19,9 @@
     <local:Icon x:Key="Icon_Error" IconName="spam"/>
     <local:Icon x:Key="LargeIcon_Error" IconName="spam" Large="true"/>
 
+    <local:Icon x:Key="Icon_TemplateID" IconName="dog-tag"/>
+    <local:Icon x:Key="LargeIcon_TemplateID" IconName="dog-tag" Large="true"/>
+
     <!-- Code Editor View -->
 
     <local:Icon x:Key="Icon_Save" IconName="save"/>

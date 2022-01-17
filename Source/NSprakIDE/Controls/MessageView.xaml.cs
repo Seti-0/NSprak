@@ -23,6 +23,8 @@ namespace NSprakIDE.Controls
 
         public string Source { get; }
 
+        public string Name { get; }
+
         public MessageWrapper(Message message, string source)
         {
             Severity = message.Template.Severity.ToString();
@@ -40,6 +42,7 @@ namespace NSprakIDE.Controls
             }
 
             Source = source;
+            Name = message.Template.Name;
         }
     }
 
@@ -58,6 +61,15 @@ namespace NSprakIDE.Controls
 
             Supplier = new ViewSupplier<Messenger>(ViewSelect);
             Supplier.AllowNoSelection = true;
+
+            ShowTypeIDColumn.IsChecked = false;
+            TypeIDColumn.Visibility = Visibility.Collapsed;
+
+            ShowTypeIDColumn.Click += (sender, e) =>
+            {
+                TypeIDColumn.Visibility = (ShowTypeIDColumn.IsChecked ?? false) ?
+                    Visibility.Visible : Visibility.Collapsed;
+            };
         }
 
         public void Clear()

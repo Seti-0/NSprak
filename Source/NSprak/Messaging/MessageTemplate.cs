@@ -12,6 +12,8 @@ namespace NSprak.Messaging
 
         public bool IsError => Severity == MessageSeverity.Error;
 
+        public string Name { get; set; } = "(No Name)";
+
         public string Title { get; set; } = "(No Title)";
 
         public string Summary { get; set; } = "(No Summary)";

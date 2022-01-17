@@ -26,6 +26,10 @@ namespace NSprak
 
         public void CancelInput();
 
+        public void SendInput(string text);
+
+        public string RetrieveOutput();
+
         // Graphical Layer
 
         public void SetColor(Color color);

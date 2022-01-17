@@ -10,6 +10,8 @@ namespace NSprak.Messaging
 
         public MessageLocation Location { get; }
 
+        public bool AccountedFor { get; set; }
+
         public object[] Parameters { get; }
 
         public string RenderedText

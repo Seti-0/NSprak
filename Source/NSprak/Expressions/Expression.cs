@@ -8,6 +8,7 @@ using NSprak.Language;
 using NSprak.Messaging;
 using NSprak.Operations;
 using NSprak.Tokens;
+using NSprak.Tests;
 
 namespace NSprak.Expressions
 {
@@ -24,6 +25,8 @@ namespace NSprak.Expressions
         public SprakType TypeHint { get; set; } = SprakType.Unit;
 
         public List<OpDebugInfo> OperatorsHint { get; } = new List<OpDebugInfo>();
+
+        public List<TestCommand> TestsHint { get; private set; } = null;
 
         public abstract IEnumerable<Expression> GetSubExpressions();
 
@@ -86,6 +89,14 @@ namespace NSprak.Expressions
                 result = $"[line {line}] {result}";
 
             return result;
+        }
+
+        public void AddTest(TestCommand command)
+        {
+            if (TestsHint == null)
+                TestsHint = new List<TestCommand>();
+
+            TestsHint.Add(command);
         }
     }
 }

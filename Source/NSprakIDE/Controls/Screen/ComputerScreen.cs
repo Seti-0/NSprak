@@ -135,6 +135,16 @@ namespace NSprakIDE.Controls.Screen
             Invoke(() => _text.PrintS(text));
         }
 
+        public void SendInput(string text)
+        {
+            _text.SendInput(text);
+        }
+
+        public string RetrieveOutput()
+        {
+            return _text.RetrieveOutput();
+        }
+
         public void Rect(double x, double y, double w, double h)
         {
             Invoke(() => _graphics.AddRect(x, y, w, h));

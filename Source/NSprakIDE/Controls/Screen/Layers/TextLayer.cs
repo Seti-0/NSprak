@@ -26,6 +26,9 @@ namespace NSprakIDE.Controls.Screen.Layers
         private Color _color;
         private Brush _brush;
 
+        private string _sentInputText = null;
+        private string _retrievableOutputText = "";
+
         private bool _cursorVisible = true;
         private readonly DispatcherTimer _blinkTimer = new DispatcherTimer();
 
@@ -62,8 +65,20 @@ namespace NSprakIDE.Controls.Screen.Layers
                 EndInput();
         }
 
+        public void SendInput(string text)
+        {
+            _sentInputText = text;
+        }
+
         public string Input(string promt, Dispatcher dispatcher)
         {
+            if (_sentInputText != null)
+            {
+                string result = _sentInputText;
+                _sentInputText = null;
+                return result;
+            }
+
             _inputIdleEvent.WaitOne();
 
             dispatcher.Invoke(() => StartInput(promt));
@@ -73,6 +88,11 @@ namespace NSprakIDE.Controls.Screen.Layers
             return CollectInput();
         }
 
+        public string RetrieveOutput()
+        {
+            return _retrievableOutputText;
+        }
+
         public void Print(string text)
         {
             PrintS(text + "\n");
@@ -80,6 +100,8 @@ namespace NSprakIDE.Controls.Screen.Layers
 
         public void PrintS(string text)
         {
+            _retrievableOutputText = text.Replace("\n", "\\n");
+
             string[] lines = text.Split('\n');
             for (int i = 0; i < lines.Length - 1; i++)
                 PrintSingleLine(lines[i]);
@@ -109,6 +131,10 @@ namespace NSprakIDE.Controls.Screen.Layers
 
         public override void Render(DrawingContext context, Rect targetRect)
         {
+            // Currently, only one brush is used for each line - this means 
+            // that a PrintS followed by an assertion or error will be coloured wrong.
+            // This is rare and minor and awkward to fix though, so I'm leaving it for now.
+
             if (Screen.HeightChars == 0)
                 return;
 

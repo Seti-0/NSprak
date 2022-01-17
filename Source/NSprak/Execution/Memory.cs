@@ -189,6 +189,11 @@ namespace NSprak.Execution
                 throw new SprakInternalRuntimeException($"Cannot find a variable named \"{name}\"");
         }
 
+        public bool TryGetVariable(string name, out Value result)
+        {
+            return CurrentScope.TryFindVariable(name, out result);
+        }
+
         public Value GetVariable(string name)
         {
             if (!CurrentScope.TryFindVariable(name, out Value result))
@@ -231,7 +236,7 @@ namespace NSprak.Execution
             if (!_converter.TryConvertValue(value, type, out Value result))
             {
                 PushValue(value); // This is a recoverable runtime error, so restore the stack.
-                throw new SprakRuntimeException(Messages.UexpectedType, type, value.Type, value);
+                throw new SprakRuntimeException(Messages.UnexpectedType, type, value.Type, value);
             }
 
             return result;

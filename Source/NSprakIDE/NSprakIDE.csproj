@@ -64,6 +64,8 @@
     <None Remove="Icons\Images\icons8-console-30.png" />
     <None Remove="Icons\Images\icons8-delete-folder-30.png" />
     <None Remove="Icons\Images\icons8-design-30.png" />
+    <None Remove="Icons\Images\icons8-dog-tag-16.png" />
+    <None Remove="Icons\Images\icons8-dog-tag-30.png" />
     <None Remove="Icons\Images\icons8-download-30.png" />
     <None Remove="Icons\Images\icons8-electricity-30.png" />
     <None Remove="Icons\Images\icons8-end-30.png" />
@@ -170,6 +172,8 @@
     <Resource Include="Icons\Images\icons8-console-30.png" />
     <Resource Include="Icons\Images\icons8-delete-folder-30.png" />
     <Resource Include="Icons\Images\icons8-design-30.png" />
+    <Resource Include="Icons\Images\icons8-dog-tag-16.png" />
+    <Resource Include="Icons\Images\icons8-dog-tag-30.png" />
     <Resource Include="Icons\Images\icons8-download-30.png" />
     <Resource Include="Icons\Images\icons8-electricity-30.png" />
     <Resource Include="Icons\Images\icons8-end-30.png" />

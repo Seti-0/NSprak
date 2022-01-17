@@ -10,6 +10,8 @@ namespace NSprak.Exceptions
     {
         public MessageTemplate Template { get; }
 
+        public string Context { get; set; }
+
         public IList<object> Args { get; }
 
         public SprakRuntimeException(MessageTemplate template, params object[] args) 

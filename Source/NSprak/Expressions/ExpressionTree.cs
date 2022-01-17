@@ -40,12 +40,12 @@ namespace NSprak.Expressions
                     _flatStatements.Add(expression);
             }
 
-            ParseTestCommands(page, environment.Messages);
-
             Root = TreeBuilder.Build(_flatStatements, environment);
 
             foreach (ITreeTransform transform in _transforms)
                 transform.Apply(Root, environment);
+
+            ParseTestCommands(page, environment.Messages);
         }
 
         private void ParseTestCommands(TokenPage page, Messenger messages)
@@ -53,9 +53,7 @@ namespace NSprak.Expressions
             foreach (PageLine line in page)
                 foreach (Token token in line)
                     if (token.Type == TokenType.Comment && token.Content.StartsWith("#!"))
-                    {
-                        TestCommand.FromToken(token, messages);
-                    }
+                        TestCommand.ParseAndLinkToken(token, messages);
         }
     }
 }

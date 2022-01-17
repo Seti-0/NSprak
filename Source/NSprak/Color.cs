@@ -6,7 +6,8 @@ namespace NSprak
     {
         public static readonly Color
             White = new Color(255, 255, 255),
-            Red = new Color(255, 0, 0);
+            Red = new Color(255, 0, 0),
+            Green = new Color(0, 255, 0);
 
         public byte R, G, B;
 

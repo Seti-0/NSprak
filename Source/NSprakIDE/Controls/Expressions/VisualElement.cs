@@ -98,12 +98,12 @@ namespace NSprakIDE.Controls.Expressions
 
         private void AddParameter<T>(string name, IReadOnlyList<T> items)
         {
-            AddParameter(name, (object) items.ToList());
+            AddParameter(name, (object) items?.ToList());
         }
 
         private void AddDebugParameter<T>(string name, IReadOnlyList<T> items)
         {
-            AddDebugParameter(name, (object) items.ToList());
+            AddDebugParameter(name, (object) items?.ToList());
         }
 
         #endregion
@@ -180,6 +180,7 @@ namespace NSprakIDE.Controls.Expressions
                     AddParameter("Breakpoint", op.Breakpoint);
                     AddDebugParameter("Step", op.Op.StepAfterwards);
                     AddDebugParameter("Token", op.FocusToken);
+                    AddDebugParameter("Tests", op.Tests);
                     // We can't have the full expression here because the tree 
                     // is not lazy.
                     AddDebugParameter("Expression", op.SourceExpression.ToString());
