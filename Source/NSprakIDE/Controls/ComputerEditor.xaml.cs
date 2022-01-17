@@ -130,6 +130,10 @@ namespace NSprakIDE.Controls
             {
                 OnHasChangesChanged(EventArgs.Empty);
             };
+
+            // Run the program once on opening.
+            Compile();
+            StartOrContinue();
         }
 
         protected virtual void OnHasChangesChanged(EventArgs e)
