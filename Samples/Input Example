@@ -1,0 +1,8 @@
+Print("Hello World")
+
+string color = Input("Enter your favourite color: ")
+Print(color + "... Hmm.")
+string second = Input("No, really... :")
+Print(second + " it is then!")
+
+

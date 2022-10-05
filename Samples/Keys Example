@@ -1,0 +1,22 @@
+ClearText()
+
+loop
+	if IsKeyPressed("space")
+		Print("Space!")
+		Sleep(0.1)
+	else if IsKeyPressed("up")
+		Print("Up!")
+		Sleep(0.1)	
+	else if IsKeyPressed("left")
+		Print("Left!")
+		Sleep(0.1)
+	else if IsKeyPressed("down")
+		Print("Down!")
+		Sleep(0.1)
+	else if IsKeyPressed("right")
+		Print("Right!")
+		Sleep(0.1)
+	end
+	
+	Sleep(0.01)
+end

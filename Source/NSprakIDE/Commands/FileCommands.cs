@@ -10,6 +10,7 @@ namespace NSprakIDE.Commands
     public static class FileCommands
     {
         public readonly static ICommand
+            OpenFolder = CreateCommand("Open Workspace"),
 
             OpenSelected = CreateCommand("Open Selected", "Open", Key.Enter),
             OpenInFileExplorer = CreateCommand("Open in File Explorer"),

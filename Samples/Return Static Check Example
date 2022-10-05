@@ -1,0 +1,23 @@
+array test()
+	return 0
+end
+
+return
+
+void test2()
+	return 0
+end
+
+void test3()
+	return
+end
+
+number test4()
+	return 0
+end
+
+number test5()
+	# This should be an error, there is no return statement!
+end
+
+Print(Count(test()))

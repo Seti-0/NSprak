@@ -26,6 +26,10 @@ namespace NSprakIDE
 
             Instance = this;
 
+            // This should happen before the component tree is initialized, so that 
+            // components like the FileView have access to saved data.
+            SaveData.Load();
+
             InitializeComponent();
 
             OutputLog debug = LogView.Supplier.Start(
@@ -126,7 +130,7 @@ namespace NSprakIDE
             OnTabSelected();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void DocumentClose_Click(object sender, RoutedEventArgs e)
         {
             // I don't know of a way of extracting the button's parent
             // tab item directly, silly as that seems. (Is it possible to
@@ -136,30 +140,54 @@ namespace NSprakIDE
                 TabItem item = (TabItem)DocumentView.Items[i];
                 if (item.IsMouseOver)
                 {
-                    ComputerEditor editor = (ComputerEditor)item.Content;
-                    
-                    if (editor.HasChanges)
-                    {
-                        string title = "Confirmation";
-                        string message = "Do you want to save this file?";
-                        DialogType type = DialogType.YesNoCancel;
-
-                        Dialog dialog = new Dialog(title, message, type);
-                        dialog.ShowDialog();
-                        DialogResponse response = dialog.Response;
-
-                        if (response == DialogResponse.Cancel)
-                            return;
-
-                        if (response == DialogResponse.Yes)
-                            editor.Save();
-                    }
-
-                    DocumentView.Items.RemoveAt(i);
-                    editor.Dispose();
+                    CloseDocument(i);
                     break;
                 }
             }
+        }
+
+        public bool CloseAllDocuments()
+        {
+            // Starting at 1 here, index 0 is the file view and that is not to be
+            // closed here.
+            for (int i = 1; i < DocumentView.Items.Count; i++)
+            {
+                // CloseDocument returns false on the user clicking cancel,
+                // at which point the overall operation should be cancelled as well.
+                if (!CloseDocument(i))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool CloseDocument(int index)
+        {
+            TabItem item = (TabItem)DocumentView.Items[index];
+            ComputerEditor editor = (ComputerEditor)item.Content;
+
+            if (editor.HasChanges)
+            {
+                DocumentView.SelectedIndex = index;
+
+                string title = "Confirmation";
+                string message = "Do you want to save this file?";
+                DialogType type = DialogType.YesNoCancel;
+
+                Dialog dialog = new Dialog(title, message, type);
+                dialog.ShowDialog();
+                DialogResponse response = dialog.Response;
+
+                if (response == DialogResponse.Cancel)
+                    return false;
+
+                if (response == DialogResponse.Yes)
+                    editor.Save();
+            }
+
+            DocumentView.Items.RemoveAt(index);
+            editor.Dispose();
+            return true;
         }
 
         private void SetupViewHiding<T>(

@@ -1,0 +1,7 @@
+loop
+	if true
+		Print("a")
+	else if false
+		Print("b")
+	end
+end

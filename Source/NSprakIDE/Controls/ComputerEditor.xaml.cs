@@ -149,7 +149,9 @@ namespace NSprakIDE.Controls
 
             File.Delete(Environment.TempPath);
             string currentDir = Path.GetDirectoryName(Environment.TempPath);
-            while (Directory.Exists(currentDir) && Directory.GetFiles(currentDir).Length == 0)
+            while (Directory.Exists(currentDir) 
+                && Directory.GetDirectories(currentDir).Length == 0 
+                && Directory.GetFiles(currentDir).Length == 0)
             {
                 Directory.Delete(currentDir);
                 currentDir = Path.GetDirectoryName(currentDir);

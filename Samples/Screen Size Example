@@ -1,0 +1,10 @@
+Color(0, 0, 255)
+Rect(0, 0, Width(), Height())
+
+Color(255, 255, 0)
+Rect(Width()*0.25, Height()*0.25, Width()*0.5, Height()*0.5)
+
+Color(255, 0, 0)
+Rect(40, 40, 100, 100.1)
+Text(25, 25, "Hi")
+DisplayGraphics()

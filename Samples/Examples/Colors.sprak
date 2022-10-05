@@ -1,0 +1,68 @@
+ClearText()
+
+array X = []
+array Y = []
+array L = []
+array H = []
+
+number Width = Width()
+number Height = Height()
+number Scale = 100
+
+loop i from 1 to 20
+	Append(X, 0)
+	Append(Y, 0)
+	Append(L, 0)
+	Append(H, 0)
+end
+
+loop i from 0 to Count(X) - 1
+	Reset(i)
+end
+
+void Reset(number i)
+	X[i] = Random() * Width
+	Y[i] = Random() * Height
+	L[i] = (0.3 + Random()) * Scale
+	H[i] = Random()
+end
+
+void Draw(number i)
+
+	array rgb = HSVToRGB(H[i], 1, 1)
+	Color(rgb[0], rgb[1], rgb[2])
+
+	number x = X[i]
+	number y = Y[i]
+	number l = L[i]
+	number l2 = l/2
+		
+	Rect(x-l2, y-l2, l, l)
+
+end
+
+number ShrinkSpeed = 50
+number time = 0
+number dt = 0.01
+
+loop
+
+	time += dt
+	Sleep(dt)
+	
+	loop i from 0 to Count(X) - 1
+		
+		number length = L[i]
+		length -= dt * ShrinkSpeed
+		L[i] = length
+		
+		if length < 5
+			Reset(i)
+		end
+		
+		Draw(i)
+		
+	end
+	
+	DisplayGraphics()
+end

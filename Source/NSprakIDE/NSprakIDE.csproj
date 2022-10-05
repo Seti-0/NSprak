@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controls\Tests\**" />
     <Compile Remove="Settings\**" />
+    <EmbeddedResource Remove="Controls\Tests\**" />
     <EmbeddedResource Remove="Settings\**" />
+    <None Remove="Controls\Tests\**" />
     <None Remove="Settings\**" />
+    <Page Remove="Controls\Tests\**" />
     <Page Remove="Settings\**" />
   </ItemGroup>
 
@@ -224,10 +228,6 @@
     <Resource Include="Icons\Images\local-close-dark.png" />
     <Resource Include="Icons\Images\local-close-toolbar.png" />
     <Resource Include="Icons\Images\local-close-white.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controls\Tests\" />
   </ItemGroup>
 
   <ItemGroup>

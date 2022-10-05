@@ -1,0 +1,24 @@
+ClearText()
+
+array colLabels = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+array rowLabels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+PrintS("   ")
+loop label in colLabels
+	PrintS(label)
+	PrintS(" ")
+end
+Print("")
+
+loop i from 1 to 10
+
+	PrintS(" " + (i-1) + " ")
+
+	loop j from 1 to 10
+	
+		PrintS(". ")
+	
+	end
+	
+	Print("")
+end

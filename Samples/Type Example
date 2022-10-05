@@ -1,0 +1,10 @@
+ClearText()
+
+var x = 1
+Print(Type(x))
+
+x = "Hi"
+Print(Type(x))
+
+x = []
+Print(Type(x))

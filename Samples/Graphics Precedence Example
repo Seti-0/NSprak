@@ -1,0 +1,6 @@
+Print("Hi")
+Sleep(1)
+
+Color(255, 0, 0)
+Rect(0, 0, 100, 100)
+DisplayGraphics()

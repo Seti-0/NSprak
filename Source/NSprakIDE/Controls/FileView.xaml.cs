@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -15,6 +16,9 @@ using System.Windows.Media;
 using NSprakIDE.Commands;
 using NSprakIDE.Controls.Files;
 using NSprakIDE.Controls.General;
+
+using FolderDialog = System.Windows.Forms.FolderBrowserDialog;
+using FolderDialogResult = System.Windows.Forms.DialogResult;
 
 namespace NSprakIDE.Controls
 {
@@ -35,8 +39,7 @@ namespace NSprakIDE.Controls
 
     public partial class FileView : UserControl
     {
-        public const string SaveDir = "Computers";
-        public const string TempDir = "Editing";
+        private const string TempDir = "Editing";
 
         public FileTreeItem Root { 
             
@@ -63,16 +66,17 @@ namespace NSprakIDE.Controls
 
             InitializeComponent();
 
-            Root = new FileTreeItem(SaveDir, parent: null, isFile: false);
-            Root.IsExpanded = true;
-            Root.IsSelected = true;
-
+            Refresh();
             SetupBindings();
         }
 
         public IEnumerable<FileOpenedEventArgs> EnumerateOpenedFiles()
         {
-            string saveRoot = Path.GetFullPath(SaveDir);
+            string workspace = SaveData.Instance.OpenFolder;
+            if (workspace == null)
+                return Enumerable.Empty<FileOpenedEventArgs>();
+
+            string saveRoot = Path.GetFullPath(workspace);
             string tempRoot = Path.GetFullPath(TempDir);
 
             List<FileOpenedEventArgs> events = new List<FileOpenedEventArgs>();
@@ -99,19 +103,23 @@ namespace NSprakIDE.Controls
 
         private void SetupBindings()
         {
-            Bind(this, FileCommands.AddFile, AddFile);
-            Bind(this, FileCommands.AddFolder, AddFolder);
-            Bind(this, FileCommands.OpenInFileExplorer, OpenInFileExplorer);
+            Bind(this, FileCommands.OpenFolder, OpenFolder);
 
-            bool isEditing() => _editTarget != null;
+            bool workspaceOpen() => SaveData.Instance.OpenFolder != null;
 
-            Bind(this, GeneralCommands.Rename, StartEditingSelected);
+            Bind(this, FileCommands.AddFile, AddFile, workspaceOpen);
+            Bind(this, FileCommands.AddFolder, AddFolder, workspaceOpen);
+            Bind(this, FileCommands.OpenInFileExplorer, OpenInFileExplorer, workspaceOpen);
+
+            bool isEditing() => workspaceOpen() && _editTarget != null;
+
+            Bind(this, GeneralCommands.Rename, StartEditingSelected, workspaceOpen);
             Bind(this, GeneralCommands.Escape, StopEditing, isEditing);
 
-            Bind(this, ApplicationCommands.Delete, Delete);
+            Bind(this, ApplicationCommands.Delete, Delete, workspaceOpen);
 
-            Bind(this, FileCommands.OpenSelected, OpenFile);
-            Bind(this, GeneralCommands.RefreshView, Refresh);
+            Bind(this, FileCommands.OpenSelected, OpenFile, workspaceOpen);
+            Bind(this, GeneralCommands.RefreshView, Refresh, workspaceOpen);
         }
 
         protected void OnFileOpened(FileOpenedEventArgs e)
@@ -177,8 +185,49 @@ namespace NSprakIDE.Controls
             }
         }
 
+        public void OpenFolder()
+        {
+            using FolderDialog dialog = new FolderDialog();
+
+            dialog.SelectedPath = Directory.GetCurrentDirectory();
+            if (SaveData.Instance.OpenFolder != null)
+                dialog.SelectedPath = SaveData.Instance.OpenFolder;
+
+            FolderDialogResult result = dialog.ShowDialog();
+            if (result != FolderDialogResult.OK || string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                return;
+
+            Logs.Core.LogInformation("Selected workspace: " + dialog.SelectedPath);
+            if (!MainWindow.Instance.CloseAllDocuments())
+            {
+                string msg = "Workspace change cannot proceed unless all files being edited are closed.";
+                Logs.Core.LogInformation(msg);
+                return;
+            }
+
+            SaveData.Instance.OpenFolder = dialog.SelectedPath;
+            SaveData.Save();
+            Refresh();
+        }
+
         public void Refresh()
         {
+            if (Root == null || Root.Path != SaveData.Instance.OpenFolder)
+            {
+                string openFolder = SaveData.Instance.OpenFolder;
+                if (openFolder == null)
+                {
+                    Root = null;
+                    Tree.Visibility = Visibility.Hidden;
+                    return;
+                }
+
+                Root = new FileTreeItem(openFolder, parent: null, isFile: false);
+                Root.IsExpanded = true;
+                Root.IsSelected = true;
+                Tree.Visibility = Visibility.Visible;
+            }
+
             Root.Refresh();
 
             // Well, the items system seems quite broken as of writing this.
@@ -251,8 +300,12 @@ namespace NSprakIDE.Controls
 
         private void CheckRoot()
         {
-            string fullPath = Path.GetFullPath(SaveDir);
-            FileHelper.EnsureDirectory(fullPath);
+            string openFolder = SaveData.Instance.OpenFolder;
+            if (openFolder != null)
+            {
+                string fullPath = Path.GetFullPath(openFolder);
+                FileHelper.EnsureDirectory(fullPath);
+            }
         }
 
         private void PerformFileOp(Action<string> pathAction,
@@ -269,6 +322,14 @@ namespace NSprakIDE.Controls
 
             Logs.Core.LogInformation("(FileOp) " + infoName + ": " + item.Path);
 
+            string workspaceFolder = SaveData.Instance.OpenFolder;
+            if (workspaceFolder == null)
+            {
+                string msg = "Attempted to perform file op without there being an open folder.";
+                Logs.Core.LogWarning(msg);
+                return;
+            }
+
             if (item.Unknown)
             {
                 string msg = $"Attempted an action a location that does not exist: {item.Path}";
@@ -276,9 +337,9 @@ namespace NSprakIDE.Controls
                 return;
             }
 
-            string relativePath = Path.GetRelativePath("Computers", item.Path);
-
-            string saveDirPath = Path.GetFullPath(SaveDir);
+            string relativePath = Path.GetRelativePath(workspaceFolder, item.Path);
+            
+            string saveDirPath = Path.GetFullPath(workspaceFolder);
             string fullPath = Path.Combine(saveDirPath, relativePath);
 
             string tempDirPath = Path.GetFullPath(TempDir);

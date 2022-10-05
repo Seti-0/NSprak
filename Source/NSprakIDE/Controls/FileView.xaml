@@ -28,10 +28,23 @@
 
     <DockPanel 
         Background="{StaticResource NSprakIDE.Toolbar}"
-        Focusable="True">
+        Focusable="True" LastChildFill="True">
+
+        <!-- Header Toolbar -->
+        <StackPanel DockPanel.Dock="Top" 
+                    Orientation="Horizontal"
+                    Background="{DynamicResource NSprakIDE.Toolbar}">
+
+            <General:CommandButton IconName="Folder" UICommand="{x:Static Cmd:FileCommands.OpenFolder}" Margin="5"/>
+            
+        </StackPanel>
+        <!-- End of Header Toolbar -->
+
+        <!-- Border -->
+        <Rectangle HorizontalAlignment="Stretch" Height="1" Stroke="{DynamicResource NSprakIDE.Accent}" DockPanel.Dock="Top"/>
 
         <!-- Main Tree -->
-        <TreeView Name="Tree" Margin="5,5,5,5" 
+        <TreeView Name="Tree" 
             SelectedItemChanged="Tree_SelectedItemChanged"
             PreviewMouseRightButtonDown="Tree_PreviewMouseRightButtonDown"
             MouseDoubleClick="Tree_MouseDoubleClick"
@@ -65,6 +78,7 @@
                     <MenuItem Command="{x:Static Cmd:FileCommands.OpenInFileExplorer}"/>
                     <Separator/>
                     <MenuItem Command="{x:Static Cmd:GeneralCommands.RefreshView}"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.OpenFolder}"/>
                 </ContextMenu>
                 <ContextMenu x:Key ="{x:Static Files:FileContexts.Folder}"  StaysOpen="true">
                     <MenuItem Command="{x:Static Cmd:FileCommands.AddFile}"/>
@@ -74,6 +88,7 @@
                     <MenuItem Command="{x:Static Cmd:FileCommands.OpenInFileExplorer}"/>
                     <Separator/>
                     <MenuItem Command="{x:Static Cmd:GeneralCommands.RefreshView}"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.OpenFolder}"/>
                 </ContextMenu>
                 <ContextMenu x:Key ="{x:Static Files:FileContexts.Computer}"  StaysOpen="true">
                     <MenuItem Command="{x:Static Cmd:FileCommands.OpenSelected}"/>
@@ -82,6 +97,7 @@
                     <MenuItem Command="{x:Static Cmd:FileCommands.OpenInFileExplorer}"/>
                     <Separator/>
                     <MenuItem Command="{x:Static Cmd:GeneralCommands.RefreshView}"/>
+                    <MenuItem Command="{x:Static Cmd:FileCommands.OpenFolder}"/>
                 </ContextMenu>
             </TreeView.Resources>
             <TreeView.ItemContainerStyle>

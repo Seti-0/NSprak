@@ -1,0 +1,31 @@
+void a(number x)
+	number a1 = 1
+	string a2 = "Hi"
+	Print("a")
+end
+
+void b(string x)
+	number b1 = 21
+	array b2 = []
+	Print("b")
+end
+
+void c()
+	number c1 = 31
+	a(1)
+	number c2 = 32
+	b("hi")
+	array c3 = [3]
+	array c4 = [3]
+	Print("c")
+end
+
+void d()
+	number d1 = 4
+	c()
+	Print("d")
+end
+
+number global = 2
+d()
+Print("Hi")
